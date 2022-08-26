@@ -12,3 +12,7 @@ $jobs\
 $character
 """
 
+[hostname]
+ssh_only = false
+format = "[$ssh_symbol on ](bold blue)[$hostname](bold red) "
+disabled = false

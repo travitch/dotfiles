@@ -8,9 +8,8 @@
 
 ;; ** Paths
 
-;; Most useful tools are in /usr/local on OS X
-(if (eq system-type 'darwin)
-    (setq exec-path (append exec-path '("/usr/local/bin"))))
+(setq ispell-program-name (executable-find "hunspell")
+      ispell-dictionary "en_US")
 
 ;; ** Core Behavior
 

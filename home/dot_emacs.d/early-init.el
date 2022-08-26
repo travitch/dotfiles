@@ -4,8 +4,12 @@
                                ;; restore after startup
                                (setq gc-cons-threshold 800000)))
 
+(when (display-graphic-p)
+  (tooltip-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1))
+
 (menu-bar-mode -1)
-(tooltip-mode -1)
 
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message nil)
@@ -16,8 +20,6 @@
 ;; Convince emacs that alacrity is fine
 (add-to-list 'term-file-aliases '("alacritty" . "xterm"))
 
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
 ;; Disable GUI stuff as early as possible
 (when (display-graphic-p)
   ;; Disable ctrl Z, but only in GUI mode.  This is still useful
