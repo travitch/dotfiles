@@ -1,0 +1,154 @@
+# ~/.zshrc
+
+# Use emacs keybindings in ZLE
+bindkey -e
+
+# Don't beep
+setopt nobeep
+
+# Ignore globbing errors
+setopt nonomatch
+
+# Use ZSH extended globbing
+setopt extended_glob
+
+# Update history after every command
+setopt inc_append_history
+setopt share_history
+setopt hist_ignore_all_dups
+setopt hist_find_no_dups
+
+# Enable ZSH multiple IO redirection streams
+setopt multios
+
+# Tweak pushd
+setopt pushd_to_home # pushd with no arguments goes home
+setopt pushd_ignore_dups
+
+# Don't remove the slash after a directory completion
+setopt noauto_remove_slash
+setopt mark_dirs
+
+# Complete filenames in --opt=$VAR/.. contexts
+setopt magic_equal_subst
+
+# Don't hash the directory each command is in.  Avoids annoying
+# problems with new commands added earlier in the path
+setopt nohash_dirs
+
+# Report the time of long-running commands
+REPORTTIME=10
+
+# Don't use the builtin zsh mail-checking
+MAIL=0
+
+# Aliases
+if [[ ! -d /Users ]]
+then
+  alias ls='ls --color=auto'
+fi
+
+alias df='df -h'
+alias du='du -h'
+alias ssh='ssh -Y'
+alias e="$EDITOR"
+
+# Key bindings
+# Make sure home/end and delete do what
+# logic suggests
+bindkey "^[[3~" delete-char
+case $TERM in
+	linux)
+	bindkey "^[[1~" beginning-of-line
+	bindkey "^[[4~" end-of-line
+;;
+	*xterm*|*rxvt*|(dt|k|a|E)term)
+	bindkey "^[[7~" beginning-of-line
+	bindkey "^[[8~" end-of-line
+;;
+esac
+
+autoload -z edit-command-line
+zle -N edit-command-line
+bindkey "^X^E" edit-command-line
+
+autoload -Uz bracketed-paste-magic
+zle -N bracket-paste bracketed-paste-magic
+
+# Load completion system
+autoload -U compinit promptinit
+autoload -U colors
+compinit
+promptinit
+colors
+
+# The zsh completion for cabal isn't very good, and has some poor interactions
+# with cabal new-build (especially new-run and the need for a -- command
+# separator).  This disables fancy completion for cabal and only offers up
+# filenames.
+compdef '_files -g "*"' cabal
+
+# export PROMPT="$fg[green]%n@%m $fg[cyan]%1~$fg[green] %(?,$fg[green]☺,$fg[red]☹) $fg[cyan]%#$reset_color
+# "
+
+# Have killall autocompletion show more processes
+zstyle ':completion:*:processes' command 'ps -u$USER'
+
+# Automatically detect new commands in PATH
+# zstyle ':completion:::::' completer _complete _approximate
+
+zstyle ':completion:*:descriptions' format "- %d -"
+zstyle ':completion:*:corrections' format "- %d - (errors %e})"
+zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:manuals' separate-sections true
+zstyle ':completion:*:manuals.(^1*)' insert-sections true
+zstyle ':completion:*' menu select
+zstyle ':completion:*' verbose yes
+
+source $HOME/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
+
+# source $HOME/.config/local/zsh/liquidprompt/liquidprompt
+eval "$(starship init zsh)"
+
+[ -n "$TMUX" ] && export TERM=screen-256color
+
+cds() {
+  local dir
+  # Invoke sk with exact matching so that word fragments are kept contiguous
+  dir=$(sk --exact)
+  cd "$dir"
+}
+
+pushds() {
+  local dir
+  # Invoke sk with exact matching so that word fragments are kept contiguous
+  dir=$(sk --exact)
+  pushd "$dir"
+}
+
+views() {
+  local file
+  # Invoke sk with exact matching so that word fragments are kept contiguous
+  file=$(sk --exact)
+  view "$file"
+}
+
+rg() {
+  if [ $# -gt 0 ]; then
+    command rg "$@"
+  else
+    sk \
+      --delimiter=':' \
+      --no-multi \
+      --interactive \
+      --preview='bat --color=always --style=numbers {1}' \
+      --cmd 'rg "{}" --hidden --line-number' \
+      | cut -f1,2 -d':' \
+      | sed 's/:/ \+/g' \
+      | awk ' { t = $1; $1 = $2; $2 = t; print;} ' \
+      | xargs -I{} sh -c '</dev/tty $EDITOR {}'
+  fi
+}

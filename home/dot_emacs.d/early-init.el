@@ -1,0 +1,28 @@
+;; * Speed startup
+(setq gc-cons-threshold 64000000)
+(add-hook 'after-init-hook #'(lambda ()
+                               ;; restore after startup
+                               (setq gc-cons-threshold 800000)))
+
+(menu-bar-mode -1)
+(tooltip-mode -1)
+
+(setq inhibit-startup-screen t)
+(setq initial-scratch-message nil)
+(setq initial-major-mode 'fundamental-mode)
+(setq inhibit-startup-message t)
+(setq inhibit-startup-buffer-menu t)
+
+;; Convince emacs that alacrity is fine
+(add-to-list 'term-file-aliases '("alacritty" . "xterm"))
+
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+;; Disable GUI stuff as early as possible
+(when (display-graphic-p)
+  ;; Disable ctrl Z, but only in GUI mode.  This is still useful
+  ;; in a terminal
+  (global-unset-key "\^z"))
+
+(provide 'early-init)
+;;; early-init.el ends here

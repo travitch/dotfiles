@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# Use xdotool to mute or unmute the current callgrind_annotate
+#
+# It assumes that only one call is active at a time
+
+set -euo pipefail
+IFS=$'\n\t'
+
+xdotool search --name '^Meet - .+ - Google Chrome$' windowactivate --sync keyup super+v key --clearmodifiers ctrl+d || \
+     xdotool search --name '^.*Zoom Meeting$' windowactivate --sync keyup super+v key --clearmodifiers alt+a || \
+     xdotool search --name '^.*Zoom for Government$' windowactivate --sync keyup super+v key --clearmodifiers alt+a
