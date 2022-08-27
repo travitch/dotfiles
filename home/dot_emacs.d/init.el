@@ -503,6 +503,10 @@
   (setq browse-url-browser-function 'browse-url-generic)
   (setq browse-url-generic-program "xdg-open"))
 
+;; Extends tramp with an access method for editing files inside of running
+;; Docker containers:
+;;
+;; > C-x C-f /docker:user@container:/path/to/file
 (use-package docker-tramp)
 
 ;; The ultimate git interface
@@ -513,6 +517,7 @@
   (setq magit-auto-revert-mode nil)
   (setq magit-auto-revert-immediately nil)
   (setq magit-diff-refine-hunk t)
+  ;; Edit it commit messages as if they were markdown
   (setq git-commit-major-mode 'markdown-mode)
   (setq git-commit-summary-max-length 500)
   (setq ediff-window-setup-function #'ediff-setup-windows-plain)
@@ -521,13 +526,17 @@
   (add-hook 'git-commit-mode-hook 'visual-line-mode)
   :bind ("C-x g" . magit-status))
 
+;; Interaction with github (or other forge) repositories (e.g., for issues and PRs)
 (use-package forge
   :after magit
   :commands (forge-pull forge-list-issues forge-list-pullreqs))
 
+;; An emacs interface for doing github code review
 (use-package code-review
   :commands (code-review-start code-review-forge-pr-at-point))
 
+;; This package (and keybinding) generates a link to the current point in the
+;; buffer (or selected range) on github
 (use-package git-link
   :bind ("C-c g l" . git-link))
 
@@ -543,6 +552,7 @@
   :ensure t
   :hook (after-init . global-clipetty-mode))
 
+;; Hide some minor mode indicators in the modeline
 (use-package diminish)
 
 (use-package ligature
