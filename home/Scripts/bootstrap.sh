@@ -62,6 +62,7 @@ gui_packages=(
     # GUI
     i3
     i3lock
+    i3status-rust
     dunst
     rofi
     pavucontrol
@@ -247,7 +248,12 @@ bootstrap_core() {
 
 bootstrap_gui() {
     local pkgs=( ${core_packages[@]} ${gui_packages[@]} )
+
+    # Set up COPR to pull in some extra packages *before* installing GUI packages
+    sudo dnf copr enable atim/i3status-rust -y
     install_packages ${pkgs[@]}
+
+
     # install_snaps
 }
 
