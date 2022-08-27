@@ -43,7 +43,6 @@ core_packages=(
     automake
     ninja-build
     cmake
-    doxygen
     lua
     ctags
     golang
@@ -69,6 +68,7 @@ gui_packages=(
     rofi
     pavucontrol
     graphviz
+    doxygen
     playerctl
     obs-studio
 
