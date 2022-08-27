@@ -52,6 +52,7 @@ core_packages=(
     musl-clang
     # SCM
     git
+    git-delta
     git-lfs
     tig
     mercurial
