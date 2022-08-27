@@ -212,7 +212,7 @@ install_git_machete() {
         tmpdir=$(mktemp -d)
         pushd "${tmpdir}"
         curl -L -o git-machete.rpm "${GIT_MACHETE_URL}"
-        sudo dnf install ./git-machete.rpm
+        sudo dnf install --assumeyes ./git-machete.rpm
         popd
         rm -rf "${tmpdir}"
     fi
@@ -235,7 +235,7 @@ install_packages() {
     # local manually_installed=$(apt-mark showmanual | xargs -n1 | sort -u)
     # local removed=$(comm -1 -3 <(echo "$sorted") <(echo "${manually_installed}"))
 
-    sudo dnf install $sorted
+    sudo dnf install --assumeyes $sorted
     # sudo apt-mark auto $(echo "${removed}") || echo "No unneeded packages"
 }
 
