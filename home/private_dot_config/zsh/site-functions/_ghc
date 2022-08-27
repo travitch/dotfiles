@@ -1,0 +1,66 @@
+#compdef ghc
+#
+# Author: Marcin Szamotulski
+# Copyright: 2019,2020
+
+_ghc_packages () {
+  local -a pkgs
+  pkgs=( $(ghc --show-packages 2&>/dev/null | grep "^name:" | awk '{print $2}' | uniq) )
+  _describe -t pkgs "packages" pkgs
+}
+
+_ghc_package_ids () {
+  local -a pkgs
+  pkgs=( $(ghc --show-packages 2&>/dev/null | grep "^id:" | awk '{print $2}' | uniq) )
+  _describe -t pkgs "package-ids" pkgs
+}
+
+_ghc () {
+  local opts current_word
+  current_word=$words[$CURRENT]
+
+  # only display -XNo options if one is explicitely assking for it
+  opts=( $(ghc --show-options | \
+	    grep -v -P '^(-pgm([acFiLlPs]|dll|lc|libtool|lowindres))$' | \
+	    grep -v -P '^(--exclude-module|-dep-makefile|-dumpdir|-hidir|-odir|-ohi)$' | \
+	    grep -v -P '^(-package-db|-package|-package-id|-main-is)$' | \
+	    grep -v -P '^(--show-iface|-fplugin|-plugin-package|-plugin-package-id)$' | \
+	    ([[ ${current_word:0:4} != '-XNo' ]] && grep -v '^-XNo' || tee) | \
+	    ([[ ${current_word:0:4} != '-fno' ]] && grep -v '^-fno' || tee) | \
+	    ([[ ${current_word:0:4} != '-Wno' ]] && grep -v '^-Wno' || tee) ) );
+
+  _arguments ${opts} \
+	     '*-package:package:_ghc_packages' \
+	     '*-plugin-package:package:_ghc_packages' \
+	     '-pgma:command:_cmdstring' \
+	     '-pgmc:command:_cmdstring' \
+	     '-pgmF:command:_cmdstring' \
+	     '-pgmi:command:_cmdstring' \
+	     '-pgmL:command:_cmdstring' \
+	     '-pgml:command:_cmdstring' \
+	     '-pgmP:command:_cmdstring' \
+	     '-pgms:command:_cmdstring' \
+	     '-pgmdll:command:_cmdstring' \
+	     '-pgmlc:command:_cmdstring' \
+	     '-pgmlibtool:command:_cmdstring' \
+	     '-pgmlowindres:command:_cmdstring' \
+	     '--excluded-module:directory:_files' \
+	     '-dep-makefile:directory:_files' \
+	     '-dumpdir:directory:_files -/' \
+	     '-hidir:directory:_files -/' \
+	     '-odir:directory:_files -/' \
+	     '-ohi:directory:_files' \
+	     '-outputdir:directory:_files -/' \
+	     '-stubdir:directory:_files -/' \
+	     '-package-db:package-db:_files' \
+	     '-package-id:package-id:_ghc_package_ids' \
+	     '-plugin-package-id:package-id:_ghc_package_ids' \
+	     '-main-is:main file:_files' \
+             '--show-iface:file:_files' \
+             '-fplugin:module:_guard ".*" ""'
+}
+
+compdef _ghc ghc
+compdef _ghc ghci
+
+# vim:ft=zsh:expandtab

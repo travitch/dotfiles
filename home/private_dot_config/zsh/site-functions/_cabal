@@ -1,0 +1,1036 @@
+#compdef cabal
+#
+# Author: Marcin Szamotulski
+# Copyright: 2019,2020
+#
+# TODO: pkgs specs of the form: pkgname:test:..
+#                               pkgname:exe:...
+# TODO: is there a way to handle strings in --ghc-options (multiple options)
+# TODO: -f --flag
+# TODO: --package-db
+# TODO: --with-PROG=PATH --PROG-option --PROG-options
+# TODO: cabal {fetch,install,get,info} - complete packages
+# TODO: --package-db=(global user or a file path)
+#
+# TODO: use only packages defined in `cabal.project` and / or
+#       `cabal.project.local` files.
+#
+# TODO: add support for `<package-name>:{lib|exec|bench|test}:<component-name>`
+
+source "$(dirname ${0})/_ghc"
+
+MAIN_CONTEXT=":complete:cabal:"
+
+_cabal_default_options () {
+  zstyle -s ":completion:${MAIN_CONTEXT}:options:" packages-tmp-file PACKAGES_TMP_FILE
+  if [[ -z ${PACKAGES_TMP_FILE} ]]; then
+    zstyle ":completion:${MAIN_CONTEXT}:options:" packages-tmp-file "/tmp/zsh-haskell-cabal-packages"
+  fi
+
+  zstyle -s ":completion:${MAIN_CONTEXT}:options:" depth depth
+  if [[ -z "${depth}" ]]; then
+    zstyle ":completion:${MAIN_CONTEXT}:options:" depth 4
+  fi
+}
+
+_cabal_subcommands=( bench build check clean configure "exec" \
+                     fetch freeze get "gen-bounds" haddock help \
+                     hscolour info init install list outdated repl \
+                     report run sdist "test" unpack update upload \
+                     "user-config" "list-bin" \
+                   )
+
+_cabal_commands () {
+    local subcommands
+    subcommands=(
+      "bench:Run benchmarks"
+      "build:Compile targets within the project."
+      "check:Check the package for common mistakes"
+      "clean:Clean the package store and remove temporary files."
+      "configure:Add extra project configuration."
+      "exec:Give a command access to the store."
+      "fetch:Downloads packages for later installation."
+      "freeze:Freeze dependencies."
+      "get:Download/Extract a package's source code (repository)."
+      "gen-bounds:Generate dependency bounds."
+      "haddock:Build Haddock documentation."
+      "help:Help about commands."
+      "hscolour:Generate HsColour colourised code, in HTML format."
+      "info:Display detailed information about a particular package."
+      "init:Create a new .cabal package file."
+      "install:Install packages."
+      "list:List packages matching a search string."
+      "outdated:Check for outdated dependencies."
+      "repl:Open an interactive session for the given component."
+      "report:Upload build reports to a remote server."
+      "run:Run an executable."
+      "sdist:Generate a source distribution file (.tar.gz)."
+      "test:Run test-suites."
+      "unpack:Download/Extract a package's source code (repository)."
+      "update:Updates list of known packages."
+      "upload:Uploads source packages or documentation to Hackage."
+      "user-config:Display and update the user's global cabal configuration."
+      "list-bin:List path to a single executable."
+    )
+    _describe -t subcommands 'cabal subcommands' subcommands
+}
+
+_cabal_list_files () {
+  # find all cabal files, but do not descent into dist-newstyle, dist or
+  # .stack-work directories
+  local depth
+  zstyle -s ":completion:${MAIN_CONTEXT}:options:" depth depth
+  # options might not be set if using outside of completion
+  [[ -z ${depth} ]] && depth=4
+  find -maxdepth ${depth} \
+                 -name "dist-newstyle" -prune , \
+                 -name "dist" -prune , \
+                 -name ".stack-work" -prune , \
+                 -name ".git" -prune , \
+                 -type f -name "*.cabal" \
+                 2&>/dev/null
+}
+
+
+# find cabal file by package name
+_cabal_find_package () {
+  local pkgname=${1}
+  local depth
+  zstyle -s ":completion:${MAIN_CONTEXT}:options:" depth depth
+  # options might not be set if using outside of completion
+  [[ -z ${depth} ]] && depth=4
+  res=$(find -maxdepth ${depth} \
+                 -name "dist-newstyle" -prune , \
+                 -name "dist" -prune , \
+                 -name ".stack-work" -prune , \
+                 -name ".git" -prune , \
+                 -type f -name "${pkgname}.cabal" \
+                 2&>/dev/null)
+  if [[ -n $res ]]; then
+    echo $res
+  else
+    for file in $(_cabal_list_files); do
+      local name=$(grep -i "name:" ${file} | sed 's/^name:\s*//i')
+      if [[ ${name} == ${pkgname} ]]; then
+        echo $file
+      fi
+    done
+  fi
+}
+
+_cabal_list_packages () {
+  # find all cabal packages
+  local file
+  for file in $(_cabal_list_files); do
+    name=$(grep -i "name:" ${file} 2&>/dev/null | sed 's/^name:\s*//i')
+  done;
+}
+
+_cabal_list_components () {
+  # find all components
+  local file cmps
+  for file in $(_cabal_list_files); do
+    grep -i -s -P '^(test-suite|executable|benchmark|library)\s+\S' $file 2&>/dev/null \
+      | awk '{print $2}' | sed -e 's/:/\\:/g'
+    [[ $(grep -s -i "^library\s*$" ${file}) ]] \
+      && grep -i "name:" ${file} 2&>/dev/null | sed 's/^name:\s*//i'
+  done;
+}
+
+_cabal_list_libraries () {
+  # find all components
+  local file cmps
+  for file in $(_cabal_list_files); do
+    grep -i -s -P '^library\s+\S' $file | awk '{print $2}' | sed -e 's/:/\\:/g' 2&>/dev/null
+    [[ $(grep -s -i "^library\s*$" ${file}) ]] \
+      && grep -i "name:" ${file} 2&>/dev/null | sed 's/^name:\s*//i'
+  done;
+}
+
+_cabal_component_names_in_file () {
+  local file=$1
+  local name=$(grep -i "name:" ${file} 2&>/dev/null | sed 's/^name:\s*//i')
+  grep -s -i '^\(library\|executable\|test-suite\|benchmark\)' ${file} 2&>/dev/null \
+    | sed -e "s/library\s*$/${name}/gi" \
+    | sed -e 's/library\s\+\(\S\)/\1/gi' \
+    | sed -e 's/executable\s\+//gi' \
+    | sed -e 's/test-suite\s\+//gi' \
+    | sed -e 's/benchmark\s\+//gi'
+}
+
+_cabal_components_in_file () {
+  local file=$1
+  local name=$(grep -i "name:" ${file} 2>/dev/null | sed 's/^name:\s*//i')
+  grep -s -i '^\(library\|executable\|test-suite\|benchmark\)' ${file} 2&>/dev/null \
+    | sed -e "s/library\s*$/${name}/gi" \
+    | sed -e 's/library\s\+\(\S\)/\1/gi' \
+    | sed -e 's/executable\s\+//gi' \
+    | sed -e 's/test-suite\s\+//gi' \
+    | sed -e 's/benchmark\s\+//gi'
+}
+
+_cabal_components_in_file_with_prefix () {
+  local file=$1
+  local name=$(grep -i "name:" ${file} 2>/dev/null | sed 's/^name:\s*//i')
+  grep -s -i '^\(library\|executable\|test-suite\|benchmark\)' ${file} 2&>/dev/null \
+    | sed -e "s/library\s*$/lib:${name}/gi" \
+    | sed -e 's/library\s\+\(\S\)/lib:\1/gi' \
+    | sed -e 's/executable\s\+/exe:/gi' \
+    | sed -e 's/test-suite\s\+/test:/gi' \
+    | sed -e 's/benchmark\s\+/bench:/gi'
+}
+
+_cabal_libraries_in_file () {
+  local file=$1
+  local name=$(grep -i "name:" ${file} 2&>/dev/null | sed 's/^name:\s*//i') 2&>/dev/null
+  grep -s -P '^library\s+\S' $file | awk '{print $2}' | sed -e "s/^/${name}:/"
+  [[ $(grep -s -i "^library\s*$" ${file}) ]] \
+    && grep -i "name:" ${file} 2&>/dev/null | sed 's/^name:\s*//i'
+}
+
+_cabal_list_all_executables () {
+  # find all executable components
+  local name;
+  local file;
+  for file in $(_cabal_list_files); do
+    name=$(grep -i "name:" ${file} | sed 's/^name:\s*//i')
+    grep -s -i '^\(test-suite\|executable\|benchmark\)\s\+' $file 2&>/dev/null \
+      | awk '{print $2}' | sed -e 's/:/\\:/g' | sed -e "s/^/${name}:/"
+  done;
+}
+
+_cabal_list_executables () {
+  # find all executable components
+  local file
+  for file in $(_cabal_list_files); do
+    grep -s -i '^executable\s\+' $file 2&>/dev/null | awk '{print $2}' | sed -e 's/:/\\:/g'
+  done;
+}
+
+_cabal_executables_in_file () {
+  local file=$1
+  grep -s -i '^executable\s\+' $file 2&>/dev/null | awk '{print $2}' | sed -e 's/:/\\:/gi'
+}
+
+_cabal_list_tests () {
+  # find all components
+  local name;
+  local file cmps;
+  for file in $(_cabal_list_files); do
+    name=$(grep -i "name:" ${file} | sed 's/^name:\s*//i')
+    grep -s -P '^test-suite\s+\S' $file 2&>/dev/null | awk '{print $2}' | sed -e "s/^/${name}:/"
+  done;
+}
+
+_cabal_tests_in_file () {
+  local file=$1
+  local name=$(grep -i "name:" ${file} | sed 's/^name:\s*//i');
+  grep -s -P '^test-suite\s+\S' $file 2&>/dev/null | awk '{print $2}' | sed -e "s/^/${name}:/"
+}
+
+_cabal_list_benchmarks () {
+  # find all benchmarks
+  local file
+  local name;
+  for file in $(_cabal_list_files); do
+    name=$(grep -i "name:" ${file} | sed 's/^name:\s*//i');
+    grep -s -i '^benchmark\s\+' $file 2&>/dev/null | awk '{print $2}' | sed -e "s/^/${name}:/"
+
+  done;
+}
+
+_cabal_benchmarks_in_file () {
+  local file=$1
+  local name=$(grep -i "name:" ${file} 2&>/dev/null | sed 's/^name:\s*//i')
+  grep -s -i '^benchmark\s\+' $file 2&>/dev/null | awk '{print $2}' | sed -e "s/^/${name}:/"
+}
+
+# completion for components
+# ```
+# _cabal_components_with_prefix "pkg:"
+# ```
+# or
+# ```
+# _cabal_components_with_prefix
+# ```
+_cabal_components_with_prefix () {
+  local prefix=$1
+  local -a components
+  local -a pkgs
+  local file name
+  local libs
+  local execs
+  local tests
+  local benches
+  for file in $(_cabal_list_files); do
+    libs=0
+    execs=0
+    tests=0
+    benches=0
+    name=$(grep -i "name:" ${file} | sed 's/^name:\s*//i')
+    pkgs+=("${prefix}${name}");
+    for component in $(_cabal_components_in_file_with_prefix $file); do
+      [[ ${component} =~ '^lib:' ]] && (( libs=${libs} + 1 ));
+      [[ ${component} =~ '^test:' ]] && (( tests=${tests} + 1 ));
+      [[ ${component} =~ '^exec:' ]] && (( execs=${execs} + 1 ));
+      [[ ${component} =~ '^benches:' ]] && (( benches=${benches} + 1 ));
+    done
+    [[ ${libs}    > 1 ]] && pkgs+=("${prefix}${name}:libs");
+    [[ ${tests}   > 1 ]] && pkgs+=("${prefix}${name}:tests");
+    [[ ${execs}   > 1 ]] && pkgs+=("${prefix}${name}:execs");
+    [[ ${benches} > 1 ]] && pkgs+=("${prefix}${name}:benches");
+  done 
+  # multi part inserts final ':' in pakcage names
+  # _multi_parts ":" pkgs
+  _arguments "*:pkgspecs:(${pkgs})"
+}
+
+# completion for `package-name:(libs|tests|benches|exes)` and
+# `package-name:(lib:test:bench:exe):component-name`
+_cabal_components () {
+  local -a components
+  local -a pkgs
+  local file name
+  local libs
+  local execs
+  local tests
+  local benches
+  for file in $(_cabal_list_files); do
+    libs=0
+    execs=0
+    tests=0
+    benches=0
+    name=$(grep -i "name:" ${file} | sed 's/^name:\s*//i')
+    pkgs+=("${name}")
+    for component_with_prefix in $(_cabal_components_in_file_with_prefix $file); do
+      local component=${component_with_prefix/*:/};
+      [[ ${component_with_prefix} =~ '^lib:'     ]] && (( libs=${libs} + 1 ));
+      [[ ${component_with_prefix} =~ '^test:'    ]] && (( tests=${tests} + 1 ));
+      [[ ${component_with_prefix} =~ '^exec:'    ]] && (( execs=${execs} + 1 ));
+      [[ ${component_with_prefix} =~ '^benches:' ]] && (( benches=${benches} + 1 ));
+      pkgs+=("${name}:${component}");
+    done
+    [[ ${libs}    > 1 ]] && pkgs+=("${name}:libs");
+    [[ ${tests}   > 1 ]] && pkgs+=("${name}:tests");
+    [[ ${execs}   > 1 ]] && pkgs+=("${name}:execs");
+    [[ ${benches} > 1 ]] && pkgs+=("${name}:benches");
+  done 
+  # multi part inserts final ':' in pakcage names
+  # it also does not allow to complete names with the same prefix as in
+  # `aaa:bbb` and `aaa-ccc:bbb`, after `aaa -<tab>-> aaa:` not giving a choice
+  # for `aaa-ccc:bbb`)
+  # _multi_parts ":" pkgs
+  _arguments "*:components:(${pkgs})"
+}
+
+_cabal_components_in_package () {
+  local pkgname=${1}
+  local word=${2}
+  local name;
+  local pkgs;
+  local libs=0
+  local execs=0
+  local tests=0
+  local benches=0
+  local file=$(_cabal_find_package ${pkgname})
+  name=$(grep -i "name:" ${file} | sed 's/^name:\s*//i')
+  if [[ ${name} == ${pkgname} ]]; then
+    for component_with_prefix in $(_cabal_components_in_file_with_prefix ${file}); do
+      local component=${component_with_prefix/*:/}
+      [[ ${component_with_prefix} =~ '^lib:'   ]] && (( libs=${libs} + 1 ));
+      [[ ${component_with_prefix} =~ '^test:'  ]] && (( tests=${tests} + 1 ));
+      [[ ${component_with_prefix} =~ '^exe:'   ]] && (( execs=${execs} + 1 ));
+      [[ ${component_with_prefix} =~ '^bench:' ]] && (( benches=${benches} + 1 ));
+      pkgs+=("${name}:${component}");
+      if [[ ${word} =~ ':lib:' || ${word} =~ ':exe:' || ${word} =~ ':bench:' ]]; then
+        pkgs+=("${name}:${component_with_prefix}");
+      fi
+    done
+    [[ ${libs}    > 1 ]] && pkgs+=("${name}:libs");
+    [[ ${tests}   > 1 ]] && pkgs+=("${name}:tests");
+    [[ ${execs}   > 1 ]] && pkgs+=("${name}:execs");
+    [[ ${benches} > 1 ]] && pkgs+=("${name}:benches");
+  fi
+  _arguments "*:components:(${pkgs})"
+}
+
+# test-suites, benchmarks and executables
+_cabal_all_executables () {
+  local -a components
+  components=( $(_cabal_list_all_executables) )
+  _arguments "*:components:(${components})" \
+             ${_cabal_build_options[@]}
+}
+
+# only executable components
+_cabal_executables () {
+  local -a components
+  components=( $(_cabal_list_executables) )
+  _arguments "*:components:(${components})" \
+             ${_cabal_build_options[@]}
+}
+
+_cabal_tests () {
+  local -a components
+  components=( $(_cabal_list_tests) )
+  _arguments "*:components:(${components})" \
+             ${_cabal_build_options[@]}
+}
+
+_cabal_benchmarks () {
+  local -a components
+  components=( $(_cabal_list_benchmarks) )
+  _arguments "*:components:(${components})" \
+             ${_cabal_build_options[@]}
+}
+
+_cabal_packages () {
+  local -a pkgs
+  pkgs=( $(_cabal_list_packages ) )
+  _describe -t pkgs 'packages' pkgs
+}
+
+# completion for `pkg:package-name:(libs|tests|benches|exes)` and
+# `pkg:package-name:(lib:test:bench:exe):component-name`
+_cabal_pkgspecs () {
+  _cabal_components_with_prefix "pkg:"
+}
+
+_cabal_executable_pkgspecs () {
+  local -a pkgs
+  local file name
+  for file in $(_cabal_list_files); do
+    name=$(grep -i "name:" ${file} | sed 's/^name:\s*//i')
+    [[ $(grep -s -i -P '^test-suite' ${file} 2&>/dev/null) ]] && pkgs+=("pkg:${name}:tests")
+    [[ $(grep -s -i -P '^benchmark'  ${file} 2&>/dev/null) ]] && pkgs+=("pkg:${name}:benches")
+    [[ $(grep -s -i -P '^executable' ${file} 2&>/dev/null) ]] && pkgs+=("pkg:${name}:exes")
+  done 
+  _multi_parts -i ":" pkgs
+}
+
+_cabal_tests_pkgspecs () {
+  local -a pkgs
+  local file name
+  for file in $(_cabal_list_files); do
+    name=$(grep -i "name:" ${file} 2&>/dev/null | sed 's/^name:\s*//i')
+    [[ $(grep -s -i -P '^test-suite' ${file} 2&>/dev/null) ]] && pkgs+=("pkg:${name}:tests")
+  done 
+  _multi_parts -i ":" pkgs
+}
+
+_cabal_benchmark_pkgspecs () {
+  local -a pkgs
+  local file name
+  for file in $(_cabal_list_files); do
+    name=$(grep -i "name:" ${file} 2&>/dev/null | sed 's/^name:\s*//i')
+    [[ $(grep -s -i -P '^benchmark'  ${file} 2&>/dev/null) ]] && pkgs+=("pkg:${name}:benches")
+  done 
+  _multi_parts -i ":" pkgs
+}
+
+# `lib:` pkgspecs
+_cabal_pkgspecs_lib () {
+  local -a pkgs
+  local cmp name
+  for cmp in $(_cabal_list_libraries); do
+    pkgs+=("lib:${cmp}")
+  done 
+  _multi_parts ":" pkgs
+}
+
+# `exe:` pkgspecs
+_cabal_pkgspecs_exe () {
+  local -a pkgs
+  local cmp name
+  for cmp in $(_cabal_list_executables); do
+    pkgs+=("exe:${cmp}")
+  done 
+  _multi_parts ":" pkgs
+}
+
+# `test:` pkgspecs
+_cabal_pkgspecs_test () {
+  local -a pkgs
+  local cmp name
+  for cmp in $(_cabal_list_tests); do
+    pkgs+=("test:${cmp}")
+  done 
+  _multi_parts ":" pkgs
+}
+
+# `bench:` pkgspec
+_cabal_pkgspecs_bench () {
+  local -a pkgs
+  local cmp name
+  for cmp in $(_cabal_list_benchmarks); do
+    pkgs+=("bench:${cmp}")
+  done 
+  _multi_parts ":" pkgs
+}
+
+# find all ghc which are in $PATH
+_cabal_find_ghc () {
+  local -a ghcs
+  for p in $( echo ${PATH} | sed 's/:/\n/g' ); do
+    for f in $(find ${p} -name 'ghc*' 2&>/dev/null | grep -s -P 'ghc(-\d+\.\d+(\.\d+)*)?$' 2&>/dev/null); do
+      ghcs+=($(basename ${f}))
+    done
+  done
+  _describe -t ghcs 'ghc' ghcs
+}
+
+_cabal_available_packages_cache () {
+  local packages_tmp_file;
+  zstyle -s ":completion:${MAIN_CONTEXT}:options:" packages-tmp-file packages_tmp_file;
+  echo " /creating list of avaialble packages: it might take a while .../"
+  cabal list --simple-output | awk '{print $1}' | uniq > ${packages_tmp_file}
+}
+
+_cabal_available_packages () {
+  # TODO: we don't take into account --package-db
+  local file="/tmp/zsh-haskell-cabal-packages"
+  local -A packages
+  local packages_tmp_file
+  zstyle -s ":completion:${MAIN_CONTEXT}:options:" packages-tmp-file packages_tmp_file
+  if [[ -e ${packages_tmp_file} ]]
+  then
+  else
+    _cabal_available_packages_cache;
+  fi
+  packages=${(f)"$(<${packages_tmp_file})"}
+  _arguments "*:package:(${packages})"
+}
+
+_cabal_build_options=( {-h,--help} \
+                       {-v=,--verbose=}':level:(0 1 2 3)' \
+                       '--builddir=:buiddir:_files -/' \
+                       {-g,--ghc} \
+                       '--ghcjs' \
+                       '--uhc' \
+                       '--haskell-suite' \
+                       '--cabal-file=:cabalfile:_files -g "*.cabal"' \
+                       '(-w --with-compiler)'{-w,--with-compiler}':compiler:_cabal_find_ghc' \
+                       '--with-hc-pkg=:hcpkg:_files' \
+                       '--prefix=:dir:_files -/' \
+                       '--binddir=:dir:_files -/' \
+                       '--libdir=:dir:_files -/' \
+                       '--libsubdir=:dir:_files -/' \
+                       '--dynlibdir=:dir:_files -/' \
+                       '--libexecdir=:dir:_files -/' \
+                       '--libexecsubdir=:dir:_files -/' \
+                       '--datadir=:dir:_files -/' \
+                       '--datasubdir=:dir:_files -/' \
+                       '--docdir=:dir:_files -/' \
+                       '--htmldir=:dir:_files -/' \
+                       '--haddockdir=:dir:_files -/' \
+                       '--sysconfdir=:dir:_files -/' \
+                       '--program-prefix' \
+                       '--program-suffix' \
+                       '--enable-library-vanilla' \
+                       '--disable-library-vanilla' \
+                       {-p,--disable-library-profiling} \
+                       '--disable-library-profiling' \
+                       '--enable-shared' \
+                       '--disable-shared' \
+                       '--enable-static' \
+                       '--disable-static' \
+                       '--enable-executable-dynamic' \
+                       '--disable-executable-dynamic' \
+                       '--enable-executable-static' \
+                       '--disable-executable-static' \
+                       '--enable-profiling' \
+                       '--disable-profiling' \
+                       '--enable-executable-profiling' \
+                       '--disable-executable-profiling' \
+                       '--profiling-detail:detail:(default none exported-functions all-functions)' \
+                       '--library-profiling-detail:detail:(default none exported-functions all-functions)' \
+                       {-O-,--enable-optimization=}':level:(0 1 2)' \
+                       '--disable-optimisation' \
+                       '--enable-debug-info:(0 1 2 3)' \
+                       '--disable-debug-info' \
+                       '--enable-library-for-ghci' \
+                       '--disable-library-for-ghci' \
+                       '--enable-split-sections' \
+                       '--disable-split-sections' \
+                       '--enable-split-objs' \
+                       '--disable-split-objs' \
+                       '--enable-executable-stripping' \
+                       '--disable-executable-stripping' \
+                       '--enable-library-stripping' \
+                       '--disable-library-stripping' \
+                       '--configure-option::_guard ".*" ""' \
+                       '--user' \
+                       '--global' \
+                       '--package-db=:package DB:_files -]' \
+                       {-f,--flags} \
+                       '--extra-lib-dirs=:path:_files -/' \
+                       '--enable-deterministic' \
+                       '--disable-deterministic' \
+                       '--ipid' \
+                       '--cid' \
+                       '--extra-lib-dirs=:extralib:_files -/' \
+                       '--extra-framework-dirs=:path:_files -/' \
+                       '--extra-prog-path=:path:_files -/' \
+                       '--instantiate-with' \
+                       '--enable-tests' \
+                       '--disable-tests' \
+                       '--enable-coverage' \
+                       '--disable-coverage' \
+                       '--enable-library-coverage' \
+                       '--disable-library-coverage' \
+                       '--enable-benchmarks' \
+                       '--disable-benchmarks' \
+                       '--enable-relocatable' \
+                       '--disable-relocatable' \
+                       '--disable-response-files' \
+                       '--allow-depending-on-private-libs' \
+                       '--cabal-lib-version' \
+                       '--constraint' \
+                       '--preference' \
+                       '--solver' \
+                       '--allow-older' \
+                       '--allow-newer' \
+                       '--write-ghc-environment-files=: :(always never ghc8.4.4+)' \
+                       '--enable-documentation' \
+                       '--disable-documentation' \
+                       '--doc-index-file=: :_files' \
+                       '--dry-run' \
+                       '--max-backjumps=:max backjumps:_guard "\d\+" "max backjumps"' \
+                       '--reorder-goals' \
+                       '--count-conflicts' \
+                       '--minimize-conflict-set' \
+                       '--independent-goals' \
+                       '--shadow-installed-packages' \
+                       '--strong-flags' \
+                       '--allow-boot-library-installs' \
+                       '--reject-unconstrained-dependencies: :(none all)' \
+                       '--reinstall' \
+                       '--avoid-reinstalls' \
+                       '--force-reinstalls' \
+                       '--upgrade-dependencies' \
+                       '--only-dependencies' \
+                       '--dependencies-only' \
+                       '--index-state' \
+                       '--root-cmd=: :_files' \
+                       '--symlink-bindir=: :_files -/' \
+                       '--build-summary' \
+                       '--build-log' \
+                       '--remote-build-reporting' \
+                       '--report-planning-failure' \
+                       '--enable-per-component' \
+                       '--disable-per-component' \
+                       '--one-shot' \
+                       '--run-tests' \
+                       {-j,--jobs}':number of jobs:' \
+                       '--keep-going' \
+                       '--offline' \
+                       '--project-file=: :_files' \
+                       '--haddock-hoogle' \
+                       '--haddock-html' \
+                       '--haddock-html-location=URL' \
+                       '--haddock-for-hackage' \
+                       '--haddock-executables' \
+                       '--haddock-tests' \
+                       '--haddock-benchmarks' \
+                       '--haddock-all' \
+                       '--haddock-internal' \
+                       '--haddock-css=: :_files' \
+                       '--haddock-hyperlink-source' \
+                       '--haddock-quickjump' \
+                       '--haddock-hscolour-css=: :_files' \
+                       '--haddock-contents-location' \
+                       '--test-log' \
+                       '--test-machine-log' \
+                       '--test-show-details' \
+                       '--test-keep-tix-files' \
+                       '--test-wrapper=: :_files' \
+                       '--test-fail-when-no-test-suites' \
+                       '--test-options' \
+                       '--test-option' \
+                       '--only-configure' \
+                       '--ghc-option:ghc option:_ghc' \
+                       '--ghc-options:ghc options:_ghc' \
+                     )
+
+_cabal_install_options=( '--lib' \
+                         '--installdir:dir:_files -/' \
+                         {--ignore-project,-z}':ignore project' \
+                         '--package-env: :_files' \
+                         '--overwrite-policy=:policy:(always never)' \
+                         '--install-method=:method:(default copy symlink)' \
+                       )
+
+_cabal_subcommand () {
+  local subcommands
+  _arguments "*:subcommand:(${_cabal_subcommands})"
+}
+
+_cabal () {
+  local context state state_descr line word current_word depth
+  local subcommand=""
+  typeset -A opt_args
+
+  _cabal_default_options
+
+  current_word=$words[$CURRENT]
+  for word in $words; do
+    if [[ -n ${word:*_cabal_subcommands} ]];then
+      subcommand=$word
+      break
+    fi
+  done
+  case ${subcommand:+subcommand_}"args" in
+    args)
+      # handle subcommands and global options"
+      _arguments ':subcommand:_cabal_subcommand' \
+                  {-h,--help} \
+                  {-v,--version} \
+                  '--numeric-version' \
+                  '--config-file=:cabal config file:_files' \
+                  '--sandbox-config-file=:sandbox config file:_files' \
+                  '--defalt-user-config=:user cabal config file:_files' \
+                  '--require-sandbox' \
+                  '--no-require-sandbox' \
+                  '--ignore-sandbox' \
+                  '--ignore-expiry' \
+                  '--http-transport: :_guard ".*" ""' \
+                  '--enable-nix' \
+                  '--disable-nix' \
+                  '--remote-repo: :_guard ".*" ""' \
+                  '--remote-repo-cache=:cache directory for remote repos:_files -/' \
+                  '--local-repo=: :_files -/' \
+                  {--logs-dir,--logsdir=}':log directory:_files -/' \
+                  '--world-file=: :_files' \
+                  {--store-dir=,--storedir=}':store directory:_files -/'
+    ;;
+    subcommand_args)
+      # handle subcommand arguments and options
+      case ${subcommand} in
+        build)
+          if [[ ${current_word:0:4} == "lib:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_lib'
+          elif [[ ${current_word:0:5} == "test:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_test'
+          elif [[ ${current_word:0:4} == "exe:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_exe'
+          elif [[ ${current_word:0:6} == "bench:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_bench'
+          elif [[ ${current_word:0:4} == "pkg:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs'
+          elif   [[ ${current_word} =~ ':' ]]; then
+            _cabal_components_in_package ${current_word/:*/} ${current_word}
+          else
+            _arguments '*:components:_cabal_components' \
+                     ${_cabal_build_options[@]}
+          fi
+        ;;
+        bench)
+          if [[ ${current_word:0:4} == "pkg:" ]]; then
+            _arguments '*:pkgspec:_cabal_benchmark_pkgspecs'
+          elif [[ ${current_word:0:6} == "bench:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_bench'
+          else
+            _alternative 'cmps:components:_cabal_benchmarks'
+          fi
+        ;;
+        check)
+          _arguments '::' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)'
+        ;;
+        clean)
+          _arguments '::' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     '--builddir=:The directory where Cabal puts generated build files:_files -/' \
+                     '--project-file=:Set the name of the cabal.project file to search for in parent directories:_guard ".\+"' \
+                     {-s,--save-config}
+
+        ;;
+        configure)
+          _arguments "1:packages:_cabal_packages" \
+                     ${_cabal_build_options[@]}
+        ;;
+        exec)
+          if [[ ${current_word:0:4} == "pkg:" ]]; then
+            _arguments '*:pkgspec:_cabal_executable_pkgspecs'
+          elif [[ ${current_word:0:4} == "lib:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_lib'
+          elif [[ ${current_word:0:5} == "test:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_test'
+          elif [[ ${current_word:0:4} == "exe:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_exe'
+          elif [[ ${current_word:0:6} == "bench:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_bench'
+          else
+            _alternative 'cmps:components:_cabal_all_executables'
+          fi
+        ;;
+        fetch)
+          _arguments "::" \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     '--numeric-version' \
+                     '--config-file=:Set an alternate location for the config file:_files' \
+                     '--sandbox-config-file=:Set an alternate location for the sandbox config file:_files' \
+                     '--default-user-config=:Set a location for a cabal.config file for projects without their own cabal.config freeze file.:_files' \
+                     '--require-sandbox' \
+                     '--no-require-sandbox' \
+                     '--ignore-sandbox' \
+                     '--no-ignore-sandbox' \
+                     '--http-transport=:Set a transport for http(s) requests.:(curl wget powershell plain-http)' \
+                     '--enable-nix' \
+                     '--disable-nix' \
+                     "*:package:_cabal_available_packages"
+
+        ;;
+        freeze)
+          _arguments '::' \
+                     ${_cabal_build_options[@]}
+
+        ;;
+        gen-bounds)
+          _arguments '::' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)'
+        ;;
+        get)
+          _arguments '::' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     {-d,--destdir=}':Where to place the package source.:_files -/' \
+                     {-s,--source-repository=}':source repository:_guard ".\+"' \
+                     '--index-state=:User source package index state:_guard ".\+"' \
+                     '--pristine' \
+                     "*:package:_cabal_available_packages"
+        ;;
+        haddock)
+          if [[ ${current_word:0:4} == "pkg:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs'
+          elif [[ ${current_word:0:4} == "lib:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_lib'
+          elif [[ ${current_word:0:5} == "test:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_test'
+          elif [[ ${current_word:0:4} == "exe:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_exe'
+          elif [[ ${current_word:0:6} == "bench:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_bench'
+          elif   [[ ${current_word} =~ ':' ]]; then
+            _cabal_components_in_package ${current_word/:*/}
+          else
+            _arguments '*:components:_cabal_components' \
+                     ${_cabal_build_options[@]}
+          fi
+        ;;
+        hscolour)
+          _arguments '::' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     '--builddir=:buiddir:_files -/' \
+                     '--executables' \
+                     '--tests' \
+                     '--benchmarks' \
+                     '--foreign-libraries' \
+                     '--all' \
+                     '--css:path:_files -/'
+        ;;
+        info)
+          _arguments '::' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     '--package-db=:package DB:_files -/' \
+                     "*:package:_cabal_available_packages"
+        ;;
+        init)
+          # TODO: better _guards
+          _arguments ':init:' \
+                     {-h,--help} \
+                     {-i,--interactive} \
+                     {-n,--non-interactive} \
+                     {-q,--quiet} \
+                     '--no-comments' \
+                     {-m,--minimal} \
+                     '--overwrite' \
+                     '--package-dir=:Root directory of the package (default = current directory).:_files -/' \
+                     {-p,--package-name=}':Name of the Cabal package to create.:_guard ".\+"' \
+                     '--version=:Initial version of the package.:_guard ".\+"' \
+                     '--cabal-version=:Version of the Cabal specification.:_guard ".\+"' \
+                     {-l,--license=}':Project license.:_guard ".\+"' \
+                     {-a,--author=}":Name of the project's author.:_guard '.\+'" \
+                     {-e,--email=}':Email address of the maintainer.:_guard ".\+"' \
+                     {-u,--homepage=}':Project homepage and/or repository.:_guard ".\+"' \
+                     {-s,--synopsis=}':Short project synopsis.:_guard ".\+"' \
+                     {-c,--category=}':Project category.:_guard ".\+"' \
+                     {-x,--extra-source-file=}':Extra source file to be distributed with tarball.:_files' \
+                    '--lib' \
+                    '--exe' \
+                    '--libandexe' \
+                    '--tests' \
+                    '--test-dir=:Directory containing tests.:_files -]' \
+                    '--simple' \
+                    '--main-is=:Specify the main module.:_files' \
+                    '--language=:Specify the default language.:_guard ".\+"' \
+                    {-o,--expose-module=}':Export a module from the package.:_guard ".\+"' \
+                    '--extension=:Use a LANGUAGE extension (in the other-extensions field).:_guard "\.+"' \
+                    {-d,--dependency=}':Package dependency.:_guard ".\+"' \
+                    '--application-dir=:Directory containing package application executable.:_files' \
+                    '--source-dir=:Directory containing package library source.:_files' \
+                    '--build-tool=:Required external build tool.:_files' \
+                    {-w,--with-compiler=}':give the path to a particular compiler:_files' \
+                    {-v=,--verbose=}':level:(0 1 2 3)'
+        ;;
+        install)
+          if [[ ${current_word:0:4} == "pkg:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs'
+          elif [[ ${current_word:0:4} == "lib:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_lib'
+          elif [[ ${current_word:0:5} == "test:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_test'
+          elif [[ ${current_word:0:4} == "exe:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_exe'
+          elif [[ ${current_word:0:6} == "bench:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_bench'
+          else
+            if [[ -e "cabal.project" && \
+                  ${words[(i)-z]} -gt ${#words} && \
+                  ${words[(i)--ignore-project]} -gt ${#words}
+               ]]
+            then
+              _arguments '*:components:_cabal_components' \
+                         ${_cabal_build_options[@]} \
+                         ${_cabal_install_options[@]}
+                        
+            else
+              _arguments '*:package:_cabal_available_packages'
+              # TODO:
+              # _arguments '*:package:_cabal_available_packages' \
+                         # ${_cabal_build_options[@]} \
+                         # ${_cabal_install_options[@]}
+                         
+            fi
+          fi
+        ;;
+        list)
+          _arguments '::' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     '--installed' \
+                     '--simple-output' \
+                     '--package-db=:package DB:_files -/' \
+                     '*:package:_cabal_available_packages'
+        ;;
+        outdated)
+          _arguments '::' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     '--freeze-file' \
+                     '--project-file=:project file:_files' \
+                     '--simple-output' \
+                     '--exit-code' \
+                     {-q,--quiet} \
+                     '--ignore' \
+                     '--minor'
+        ;;
+        repl)
+          if [[ ${current_word:0:4} == "pkg:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs'
+          elif [[ ${current_word:0:4} == "lib:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_lib'
+          elif [[ ${current_word:0:5} == "test:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_test'
+          elif [[ ${current_word:0:4} == "exe:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_exe'
+          elif [[ ${current_word:0:6} == "bench:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_bench'
+          elif   [[ ${current_word} =~ ':' ]]; then
+            _cabal_components_in_package ${current_word/:*/}
+          else
+            _arguments '*:components:_cabal_components' \
+                     ${_cabal_build_options[@]}
+          fi
+        ;;
+        report)
+          _arguments '::' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     {-u,--username=}':username:_guard ".\+"' \
+                     {-p,--password=}':password:_guard ".\+"'
+
+        ;;
+        run)
+          if [[ ${current_word:0:4} == "pkg:" ]]; then
+            _arguments '*:pkgspec:_cabal_executable_pkgspecs'
+          elif [[ ${current_word:0:5} == "test:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_test'
+          elif [[ ${current_word:0:4} == "exe:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_exe'
+          elif [[ ${current_word:0:6} == "bench:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_bench'
+          else
+            _alternative 'cmps:components:_cabal_all_executables'
+          fi
+        ;;
+        sdist)
+          _arguments '::' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     '--builddir=:buiddir:_files -/' \
+                     '--project-file=:projectfile:_files' \
+                     {-l,--list-only} \
+                     {-z,--null-sep} \
+                     {-o,--output-dir=}':outputdir:_files -/'
+        ;;
+        test)
+          if [[ ${current_word:0:4} == "pkg:" ]]; then
+            _arguments '*:pkgspec:_cabal_tests_pkgspecs'
+          elif [[ ${current_word:0:4} == "lib:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_lib'
+          elif [[ ${current_word:0:5} == "test:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_test'
+          elif [[ ${current_word:0:4} == "exe:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_exe'
+          elif [[ ${current_word:0:6} == "bench:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_bench'
+          else
+            _alternative 'cmps:components:_cabal_tests'
+          fi
+        ;;
+        update)
+          _alternative 'cmps:components:_cabal_executables' \
+                       'pkg:pkgspec:_cabal_executable_pkgspecs'
+        ;;
+        upload)
+          _arguments '*:tar files:_files' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     '--publish' \
+                     {-d,--documentation} \
+                     {-u,--username} \
+                     {-p,--password} \
+                     {-P,--password-command}
+        ;;
+        user-config)
+          _arguments '*:user-config-command:(init diff update)' \
+                     {-h,--help} \
+                     {-v=,--verbose=}':level:(0 1 2 3)' \
+                     {-f,--force} \
+                     {-a,--augment=}':setting to augment:_guard ".\+"'
+        ;;
+        list-bin)
+          if [[ ${current_word:0:4} == "pkg:" ]]; then
+            _arguments '*:pkgspec:_cabal_executable_pkgspecs'
+          elif [[ ${current_word:0:5} == "test:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_test'
+          elif [[ ${current_word:0:4} == "exe:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_exe'
+          elif [[ ${current_word:0:6} == "bench:" ]]; then
+            _arguments '*:pkgspec:_cabal_pkgspecs_bench'
+          else
+            _alternative 'cmps:components:_cabal_all_executables'
+          fi
+        ;;
+      esac
+  esac
+}
+
+compdef _cabal cabal
