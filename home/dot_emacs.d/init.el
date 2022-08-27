@@ -299,50 +299,8 @@
 (use-package idris-mode
   :mode ("\\.idr$" . idris-mode))
 
-;; Highlighting for LLVM assembly (text version, not bit code)
-;;
-;; (use-package llvm-mode
-;;   :straight (llvm-mode :type git
-;;                        :host github
-;;                        :repo "llvm/llvm-project"
-;;                        :files ("llvm/utils/emacs/llvm-mode.el")
-;;                        :nonrecursive t)
-;;   :mode ("\\.ll$" . llvm-mode))
-
-;; Highlight LLVM tablegen files
-;;
-;; (use-package tablegen-mode
-;;   :straight (tablegen-mode :type git
-;;                            :host github
-;;                            :repo "llvm/llvm-project"
-;;                            :files ("llvm/utils/emacs/tablegen-mode.el")
-;;                            :nonrecursive t)
-;;   :mode ("\\.td$" . tablegen-mode))
-
 (use-package rust-mode
   :mode ("\\.rs$" . rust-mode))
-
-(use-package cargo
-  :commands (cargo-minor-mode)
-  :init
-  (add-hook 'rust-mode-hook 'cargo-minor-mode)
-  (add-hook 'toml-mode-hook 'cargo-minor-mode))
-
-(use-package flycheck-rust
-  :commands (flycheck-rust-setup)
-  :init
-  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-
-(use-package cryptol-mode
-  :mode ("\\.cry$" . cryptol-mode))
-
-(use-package saw-script
-  :straight (saw-script :type git
-                         :host github
-                         :repo "GaloisInc/saw-script"
-                         :files ("saw-script.el")
-                         :nonrecursive t)
-  :mode ("\\.saw$" . saw-script-mode))
 
 (use-package fstar-mode
   :mode ("\\.fsi$" . fstar-mode))
@@ -479,7 +437,7 @@
   (setq TeX-parse-self t)
   (setq TeX-source-correlate-start-server t))
 
-(use-package auctex ;; tex-site
+(use-package auctex
   :mode ("\\.tex$" . latex-mode)
   :init
   (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
@@ -495,15 +453,9 @@
 
 ;; ** Configuration modes
 
-
-;; (use-package gitignore-mode
-;;   :mode ("^\\.gitignore$" . gitignore-mode))
-
-;; (use-package gitconfig-mode
-;;   :mode ("gitconfig$" . gitconfig-mode))
-
-;; (use-package muttrc-mode
-;;   :mode ("\\.muttrc$" . muttrc-mode))
+(use-package git-modes
+  :mode (("^\\.gitignore$" . gitignore-mode)
+         ("gitconfig$" . gitconfig-mode)))
 
 (use-package ini-mode
   :mode ("\\.ini$" . ini-mode))
@@ -531,6 +483,17 @@
   :init
   ;; Scroll the compilation window as output is generated
   (setq compilation-scroll-output t))
+
+(use-package cargo
+  :commands (cargo-minor-mode)
+  :init
+  (add-hook 'rust-mode-hook 'cargo-minor-mode)
+  (add-hook 'toml-mode-hook 'cargo-minor-mode))
+
+(use-package flycheck-rust
+  :commands (flycheck-rust-setup)
+  :init
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 (use-package browse-url
   :straight nil
