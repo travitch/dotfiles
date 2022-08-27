@@ -1,4 +1,4 @@
-# ~/.zshrc
+# -*- mode: shell-script -*-
 
 # Use emacs keybindings in ZLE
 bindkey -e
