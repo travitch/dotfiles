@@ -185,7 +185,8 @@ YICES="$HOME/.local/bin/yices"
 install_yices() {
     if [ ! -x "${YICES}" ]
     then
-        local tmpdir=$(mktemp -d)
+        local tmpdir
+        tmpdir=$(mktemp -d)
         pushd "${tmpdir}"
         curl -L -o yices.tar.gz "${YICES_URL}"
         tar xf yices.tar.gz
@@ -200,6 +201,21 @@ install_solvers() {
     # install_yices
     # install_cvc4
     echo "solvers"
+}
+
+GIT_MACHETE_VERSION=3.12.0
+GIT_MACHETE_URL="https://github.com/VirtusLab/git-machete/releases/download/v${GIT_MACHETE_VERSION}/git-machete-${GIT_MACHETE_VERSION}-1.noarch.rpm"
+install_git_machete() {
+    if [ ! -x "$(which git-machete)" ]
+    then
+        local tmpdir
+        tmpdir=$(mktemp -d)
+        pushd "${tmpdir}"
+        curl -L -o git-machete.rpm "${GIT_MACHETE_URL}"
+        sudo dnf install ./git-machete.rpm
+        popd
+        rm -rf "${tmpdir}"
+    fi
 }
 
 REMOVED_PKGS=( chromium-browser
@@ -244,4 +260,5 @@ install_common() {
     install_rustup
     install_cargo_pkgs
     # install_solvers
+    install_git_machete
 }
