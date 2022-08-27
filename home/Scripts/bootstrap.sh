@@ -86,6 +86,7 @@ gui_packages=(
 CARGO_PKGS=( du-dust
              bat
              flamegraph
+             fselect
              )
 
 
