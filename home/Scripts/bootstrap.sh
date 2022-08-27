@@ -94,6 +94,7 @@ YICES_URL=https://yices.csl.sri.com/releases/2.6.1/yices-2.6.1-x86_64-pc-linux-g
 CVC4_URL=https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt
 
 install_cargo_pkgs() {
+    . $HOME/.cargo/env
     mkdir -p $HOME/.cargo/installed
     for PKG in "${CARGO_PKGS[@]}"
     do
