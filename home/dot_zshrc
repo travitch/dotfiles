@@ -96,14 +96,8 @@ compinit
 promptinit
 colors
 
-# export PROMPT="$fg[green]%n@%m $fg[cyan]%1~$fg[green] %(?,$fg[green]☺,$fg[red]☹) $fg[cyan]%#$reset_color
-# "
-
 # Have killall autocompletion show more processes
 zstyle ':completion:*:processes' command 'ps -u$USER'
-
-# Automatically detect new commands in PATH
-# zstyle ':completion:::::' completer _complete _approximate
 
 zstyle ':completion:*:descriptions' format "- %d -"
 zstyle ':completion:*:corrections' format "- %d - (errors %e})"
@@ -121,7 +115,6 @@ source $HOME/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
-# source $HOME/.config/local/zsh/liquidprompt/liquidprompt
 eval "$(starship init zsh)"
 
 [ -n "$TMUX" ] && export TERM=screen-256color
