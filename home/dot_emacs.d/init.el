@@ -8,9 +8,6 @@
 
 ;; ** Paths
 
-(setq ispell-program-name (executable-find "hunspell")
-      ispell-dictionary "en_US")
-
 ;; ** Core Behavior
 
 ;; Suppress annoying backup files
@@ -601,6 +598,8 @@
   :diminish flyspell-mode
   :commands (flyspell-mode flyspell-prog-mode)
   :init
+  (setq ispell-program-name (executable-find "hunspell")
+        ispell-dictionary "en_US")
   (add-hook 'rst-mode-hook 'flyspell-mode)
   (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   (add-hook 'mail-mode-hook 'flyspell-mode)
