@@ -50,6 +50,7 @@ core_packages=(
     musl-devel
     musl-gcc
     musl-clang
+    lastpass-cli
     # SCM
     git
     git-delta
