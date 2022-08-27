@@ -42,10 +42,21 @@ REPORTTIME=10
 # Don't use the builtin zsh mail-checking
 MAIL=0
 
+# Figure out what OS we are running on so that we can do OS-specific setup later
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+
 # Aliases
-if [[ ! -d /Users ]]
+if [[ "${machine}" == "Linux" ]];
 then
-  alias ls='ls --color=auto'
+    alias ls='ls --color=auto'
+elif [[ "${machine}" == "Darwin" ]];
+then
+    alias ls='ls -G'
 fi
 
 alias df='df -h'
