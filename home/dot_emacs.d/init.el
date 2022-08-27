@@ -301,22 +301,24 @@
   :mode ("\\.idr$" . idris-mode))
 
 ;; Highlighting for LLVM assembly (text version, not bit code)
-(use-package llvm-mode
-  :straight (llvm-mode :type git
-                       :host github
-                       :repo "llvm/llvm-project"
-                       :files ("llvm/utils/emacs/llvm-mode.el")
-                       :nonrecursive t)
-  :mode ("\\.ll$" . llvm-mode))
+;;
+;; (use-package llvm-mode
+;;   :straight (llvm-mode :type git
+;;                        :host github
+;;                        :repo "llvm/llvm-project"
+;;                        :files ("llvm/utils/emacs/llvm-mode.el")
+;;                        :nonrecursive t)
+;;   :mode ("\\.ll$" . llvm-mode))
 
 ;; Highlight LLVM tablegen files
-(use-package tablegen-mode
-  :straight (tablegen-mode :type git
-                           :host github
-                           :repo "llvm/llvm-project"
-                           :files ("llvm/utils/emacs/tablegen-mode.el")
-                           :nonrecursive t)
-  :mode ("\\.td$" . tablegen-mode))
+;;
+;; (use-package tablegen-mode
+;;   :straight (tablegen-mode :type git
+;;                            :host github
+;;                            :repo "llvm/llvm-project"
+;;                            :files ("llvm/utils/emacs/tablegen-mode.el")
+;;                            :nonrecursive t)
+;;   :mode ("\\.td$" . tablegen-mode))
 
 (use-package rust-mode
   :mode ("\\.rs$" . rust-mode))
@@ -630,15 +632,6 @@
 ;; Convert a buffer into HTML, preserving syntax highlighting
 (use-package htmlize
   :commands (htmlize))
-
-(use-package eww
-  :bind (("C-c w" . eww))
-  :config
-  (setq eww-search-prefix "https://www.google.com/search?q="))
-
-;; Search via the ag tool
-(use-package ag
-  :commands (ag ag-files ag-project ag-project-files ag-project-regexp ag-regexp))
 
 (use-package unfill
   :commands (unfill-toggle))
