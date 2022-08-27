@@ -28,7 +28,6 @@ core_packages=(
     rdiff-backup
     openssh
     gnupg2
-    docker-ce
     # Dev things
     ShellCheck
     clang
