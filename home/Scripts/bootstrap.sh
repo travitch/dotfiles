@@ -68,6 +68,7 @@ gui_packages=(
     doxygen
     playerctl
     obs-studio
+    alacritty
 
     # Tex
     texlive
