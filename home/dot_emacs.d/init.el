@@ -285,8 +285,8 @@
   :mode ("\\.lua$" . lua-mode))
 
 ;; The best ocaml mode
-;; (use-package tuareg
-;;   :mode ("\\.ml$\\|\\.mli$" . tuareg-mode))
+(use-package tuareg
+  :mode ("\\.ml$\\|\\.mli$" . tuareg-mode))
 
 (use-package vimrc-mode
   :mode ("vimrc" . vimrc-mode))
