@@ -55,9 +55,6 @@ core_packages=(
     git-lfs
     tig
     mercurial
-    # Python
-    python3-ipython
-    python3-jupyter-console
 )
 
 gui_packages=(
@@ -79,6 +76,10 @@ gui_packages=(
 
     # Tools
     vim-X11
+
+    # Python
+    python3-ipython
+    python3-jupyter-console
 )
 
 CARGO_PKGS=( du-dust
