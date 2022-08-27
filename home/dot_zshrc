@@ -86,6 +86,9 @@ bindkey "^X^E" edit-command-line
 autoload -Uz bracketed-paste-magic
 zle -N bracket-paste bracketed-paste-magic
 
+# Add a path for custom completions
+fpath+=$HOME/.config/zsh/site-functions
+
 # Load completion system
 autoload -U compinit promptinit
 autoload -U colors
