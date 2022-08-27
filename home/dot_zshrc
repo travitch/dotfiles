@@ -96,12 +96,6 @@ compinit
 promptinit
 colors
 
-# The zsh completion for cabal isn't very good, and has some poor interactions
-# with cabal new-build (especially new-run and the need for a -- command
-# separator).  This disables fancy completion for cabal and only offers up
-# filenames.
-compdef '_files -g "*"' cabal
-
 # export PROMPT="$fg[green]%n@%m $fg[cyan]%1~$fg[green] %(?,$fg[green]☺,$fg[red]☹) $fg[cyan]%#$reset_color
 # "
 
@@ -119,6 +113,9 @@ zstyle ':completion:*:manuals' separate-sections true
 zstyle ':completion:*:manuals.(^1*)' insert-sections true
 zstyle ':completion:*' menu select
 zstyle ':completion:*' verbose yes
+
+zstyle ":completion::complete:cabal::options:" depth 4
+zstyle ":completion::complete:cabal::options:" packages-tmp-file "/tmp/zsh-haskell-cabal-packages"
 
 source $HOME/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
