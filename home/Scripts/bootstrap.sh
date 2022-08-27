@@ -83,17 +83,21 @@ gui_packages=(
     python3-jupyter-console
 )
 
+
+RUSTUP=$HOME/.cargo/bin/rustup
+
+install_rustup() {
+    if [ ! -x "${RUSTUP}" ]
+    then
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --no-modify-path
+    fi
+}
+
 CARGO_PKGS=( du-dust
              bat
              flamegraph
              fselect
              )
-
-
-# Download URLs for various solvers
-Z3_URL=https://github.com/Z3Prover/z3/releases/download/z3-4.8.7/z3-4.8.7-x64-ubuntu-16.04.zip
-YICES_URL=https://yices.csl.sri.com/releases/2.6.1/yices-2.6.1-x86_64-pc-linux-gnu-static-gmp.tar.gz
-CVC4_URL=https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt
 
 install_cargo_pkgs() {
     . $HOME/.cargo/env
@@ -146,15 +150,12 @@ setup_haskell() {
     install_ghcs
 }
 
-RUSTUP=$HOME/.cargo/bin/rustup
 
-install_rustup() {
-    if [ ! -x "${RUSTUP}" ]
-    then
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --no-modify-path
-    fi
-}
 
+# Download URLs for various solvers
+Z3_URL=https://github.com/Z3Prover/z3/releases/download/z3-4.8.7/z3-4.8.7-x64-ubuntu-16.04.zip
+YICES_URL=https://yices.csl.sri.com/releases/2.6.1/yices-2.6.1-x86_64-pc-linux-gnu-static-gmp.tar.gz
+CVC4_URL=https://github.com/CVC4/CVC4/releases/download/1.7/cvc4-1.7-x86_64-linux-opt
 
 Z3=$HOME/.local/bin/z3
 install_z3() {
