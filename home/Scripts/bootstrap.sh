@@ -71,6 +71,7 @@ gui_packages=(
     playerctl
     obs-studio
     alacritty
+    code
 
     # Tex
     texlive
@@ -246,11 +247,22 @@ bootstrap_core() {
     install_packages ${pkgs[@]}
 }
 
-bootstrap_gui() {
-    local pkgs=( ${core_packages[@]} ${gui_packages[@]} )
-
+add_fedora_repositories() {
     # Set up COPR to pull in some extra packages *before* installing GUI packages
     sudo dnf copr enable atim/i3status-rust -y
+
+    # Add the upstream VSCode repo
+    if [ ! -f /etc/yum.repos.d/vscode.repo ]
+    then
+        sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+        sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+    fi
+}
+
+bootstrap_gui() {
+    add_fedora_repositories
+
+    local pkgs=( ${core_packages[@]} ${gui_packages[@]} )
     install_packages ${pkgs[@]}
 
 
