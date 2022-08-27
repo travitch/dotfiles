@@ -2,16 +2,15 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 
+;; Be a bit less noisy with async native compilation warnings
 (setq comp-async-report-warnings-errors nil)
-
-;; * Set globals
-
-;; ** Paths
 
 ;; ** Core Behavior
 
 ;; Suppress annoying backup files
 (setq make-backup-files nil)
+
+;; Set up authentication sources (used for forge)
 (setq auth-sources '((:source "~/.emacs.d/authinfo.gpg")))
 (setq auth-source-debug t)
 
@@ -194,9 +193,12 @@
   (setq solarized-scale-org-headlines nil)
   (load-theme 'solarized-light t))
 
+;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
 (use-package simple-modeline
   :hook (after-init . simple-modeline-mode))
 
+;; This mode provides a function that enables a server running from emacs that
+;; can edit text boxes in browsers using an appropriate extension (see Ghost Text)
 (use-package atomic-chrome
   :commands (atomic-chrome-start-server))
 
