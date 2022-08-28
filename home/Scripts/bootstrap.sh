@@ -6,16 +6,10 @@ IFS=$'\n\t'
 core_packages=(
     # System utilities
     emacs-nox
-    fd-find
-    starship
     tmux
     zsh
     htop
     powertop
-    ripgrep
-    exa
-    skim
-    tokei
     hunspell
     elinks
     mutt
@@ -101,6 +95,13 @@ CARGO_PKGS=( du-dust
              bat
              flamegraph
              fselect
+             ripgrep
+             fd-find
+             starship
+             exa
+             skim
+             tokei
+             jql
              )
 
 install_cargo_pkgs() {
@@ -111,7 +112,7 @@ install_cargo_pkgs() {
         local GUARD=$HOME/.cargo/installed/$PKG
         if [ ! -f $GUARD ]
         then
-            cargo install --force "${PKG}"
+            cargo install --locked --force "${PKG}"
             touch $GUARD
         fi
     done
