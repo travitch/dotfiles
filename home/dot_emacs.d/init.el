@@ -340,6 +340,9 @@
 (use-package json-mode
   :mode ("\\.json$" . json-mode))
 
+(use-package csv-mode
+  :mode ("\\.csv$" . csv-mode))
+
 (use-package riscv-mode
   :mode ("\\.riscv$" . riscv-mode))
 
