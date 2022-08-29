@@ -247,6 +247,7 @@ install_packages() {
 bootstrap_core() {
     local pkgs=( ${core_packages[@]} )
     install_packages ${pkgs[@]}
+    install_git_machete
 }
 
 add_fedora_repositories() {
@@ -281,5 +282,4 @@ install_common() {
     install_rustup
     install_cargo_pkgs
     # install_solvers
-    install_git_machete
 }
