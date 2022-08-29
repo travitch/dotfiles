@@ -111,6 +111,11 @@ zstyle ':completion:*' verbose yes
 zstyle ":completion::complete:cabal::options:" depth 4
 zstyle ":completion::complete:cabal::options:" packages-tmp-file "/tmp/zsh-haskell-cabal-packages"
 
+# Alacritty supports truecolor. It flags this to *some* programs by setting the
+# COLORTERM variable to truecolor. This doesn't propagate into Docker
+# containers, so we set it manually
+[ -n "$TMUX" && ] && export COLORTERM=truecolor
+
 source $HOME/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
