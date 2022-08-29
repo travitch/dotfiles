@@ -114,7 +114,7 @@ zstyle ":completion::complete:cabal::options:" packages-tmp-file "/tmp/zsh-haske
 # Alacritty supports truecolor. It flags this to *some* programs by setting the
 # COLORTERM variable to truecolor. This doesn't propagate into Docker
 # containers, so we set it manually
-[ -n "$TMUX" && ] && export COLORTERM=truecolor
+export COLORTERM=truecolor
 
 source $HOME/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
