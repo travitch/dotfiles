@@ -2,6 +2,14 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 
+;; Disable some unneeded UI elements
+(when (display-graphic-p)
+  (tooltip-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1))
+
+(menu-bar-mode -1)
+
 ;; Be a bit less noisy with async native compilation warnings
 (setq comp-async-report-warnings-errors nil)
 

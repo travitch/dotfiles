@@ -4,13 +4,6 @@
                                ;; restore after startup
                                (setq gc-cons-threshold 800000)))
 
-(when (display-graphic-p)
-  (tooltip-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1))
-
-(menu-bar-mode -1)
-
 (setq inhibit-startup-screen t)
 (setq initial-scratch-message nil)
 (setq initial-major-mode 'fundamental-mode)
