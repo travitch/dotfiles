@@ -253,7 +253,7 @@ set $base0F #d33682
 bar {
         # status_command $HOME/.config/local/conky-i3bar
         # status_command SCRIPT_DIR=$HOME/.config/local/i3blocks/i3blocks-contrib i3blocks
-        status_command $HOME/.cargo/bin/i3status-rs
+        status_command i3status-rs
         position top
         # output DVI-D-0
         # output LVDS1
