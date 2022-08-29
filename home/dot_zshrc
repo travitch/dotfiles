@@ -117,8 +117,6 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
 eval "$(starship init zsh)"
 
-[ -n "$TMUX" ] && export TERM=screen-256color
-
 cds() {
   local dir
   # Invoke sk with exact matching so that word fragments are kept contiguous
