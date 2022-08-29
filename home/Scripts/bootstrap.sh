@@ -47,7 +47,6 @@ core_packages=(
     lastpass-cli
     # SCM
     git
-    git-delta
     git-lfs
     tig
     mercurial
@@ -102,6 +101,7 @@ CARGO_PKGS=( du-dust
              skim
              tokei
              jql
+             git-delta
              )
 
 install_cargo_pkgs() {
