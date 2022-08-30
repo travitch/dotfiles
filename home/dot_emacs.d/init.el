@@ -343,6 +343,9 @@
 (use-package csv-mode
   :mode ("\\.csv$" . csv-mode))
 
+(use-package protobuf-mode
+  :mode ("\\.proto$" . protobuf-mode))
+
 (use-package riscv-mode
   :mode ("\\.riscv$" . riscv-mode))
 
