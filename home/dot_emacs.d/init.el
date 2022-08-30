@@ -294,6 +294,9 @@
 (use-package lua-mode
   :mode ("\\.lua$" . lua-mode))
 
+(use-package kotlin-mode
+  :mode ("\\.kt$" . kotlin-mode))
+
 ;; The best ocaml mode
 (use-package tuareg
   :mode ("\\.ml$\\|\\.mli$" . tuareg-mode))
