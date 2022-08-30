@@ -617,9 +617,10 @@
   (add-hook 'json-mode-hook 'flycheck-mode)
   (add-hook 'sh-mode-hook 'flycheck-mode))
 
-(use-package undo-fu
-  :commands (undo-fu-only-undo undo-fu-only-redo)
-  :bind (("C-/" . undo-fu-only-undo) ("C-?" . undo-fu-only-redo)))
+;; Visual undo (requires emacs-28)
+(use-package vundo
+  :commands (vundo)
+  :bind (("C-/" . vundo)))
 
 ;; Convert a buffer into HTML, preserving syntax highlighting
 (use-package htmlize
