@@ -16,11 +16,13 @@ block = "load"
 interval = 1
 format = "{1m}"
 
+{{- if .i3.use_battery }}
 [[block]]
 block = "battery"
 interval = 60
 format = "{percentage} {time}"
 hide_missing = true
+{{- end }}
 
 [[block]]
 block = "custom"
