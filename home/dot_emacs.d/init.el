@@ -436,6 +436,9 @@
 (use-package toc-org
   :after org)
 
+(use-package graphql-mode
+  :mode ("\\.graphql$" . graphql-mode))
+
 (use-package font-latex
   :straight nil
   :defer t
