@@ -931,6 +931,9 @@
   ;;(add-to-list 'completion-at-point-functions #'cape-line)
 )
 
+(straight-use-package
+ '(popon :type git :repo "https://codeberg.org/akib/emacs-popon.git"))
+
 (use-package corfu-terminal
   :straight (corfu-terminal :type git :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :init
