@@ -3,3 +3,12 @@ type = "archive"
 url = "https://github.com/zsh-users/zsh-syntax-highlighting/archive/refs/tags/0.7.1.tar.gz"
 exact = true
 stripComponents = 1
+
+[".vim/pack/tristan/start/vim-oscyank"]
+type = "git-repo"
+url = "https://github.com/ojroques/vim-oscyank.git"
+
+[".vim/pack/tristan/start/solarized"]
+type = "git-repo"
+url = "https://github.com/ericbn/vim-solarized.git"
+

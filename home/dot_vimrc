@@ -1,0 +1,61 @@
+" Set an easier-to-reach leader key.  This should be set before executing
+" pathogen so that the setting affects all bundles
+let mapleader=","
+let maplocalleader=","
+filetype off
+
+syntax on
+filetype plugin indent on
+
+set nocompatible
+
+set background=light
+colorscheme solarized
+
+finish
+
+" Only work with utf-8 files
+set encoding=utf-8
+
+" Always keep N lines between the cursor and edge of the window
+set scrolloff=3
+
+set noerrorbells
+
+" Tabs
+set expandtab
+set shiftwidth=2
+set softtabstop=2
+
+set showmode
+set showcmd
+
+" Allow switching from buffers without saving
+set hidden
+
+set wildignore+=*.o,.git,*.pdf,*.aux,*.bbl,*.toc,*.fls,*.idx,*.lof,*.lot,*.swp,*.blg,*.hi,*.dyn_hi,*.p_hi,*.p_o,*.dyn_o
+
+" Expect a fast terminal connection
+set ttyfast
+
+" Show file position
+set ruler
+
+" Smarter searching (more like emacs incremental search)
+set ignorecase
+set smartcase
+
+" Smarter replace (always global-by-line)
+set gdefault
+
+set incsearch
+set showmatch
+set hlsearch
+
+" Visible column 80 as a warning
+set colorcolumn=80
+
+" Easier clearing of hlsearch
+nnoremap <leader><space> :noh<cr>
+
+set spelllang=en_us
