@@ -279,6 +279,9 @@
 (use-package typescript-mode
   :mode ("\\.ts$" . typescript-mode))
 
+(use-package erlang
+  :mode ("\\.erl$" . erlang-mode))
+
 (use-package clojure-mode
   :mode ("\\.clj$" . clojure-mode))
 
