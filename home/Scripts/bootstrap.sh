@@ -74,6 +74,7 @@ gui_packages=(
 
     # Tools
     vim-X11
+    xdotool
 
     # Python
     python3-ipython
