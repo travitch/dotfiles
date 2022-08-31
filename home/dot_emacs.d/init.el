@@ -789,6 +789,16 @@
 (use-package resize-window
   :bind (("C-c ;" . resize-window)))
 
+(use-package dogears
+  :commands (dogears-list dogears-mode)
+  :init (dogears-mode)
+  ;; These bindings are optional, of course:
+  :bind (:map global-map
+              ("M-g d" . dogears-go)
+              ("M-g M-b" . dogears-back)
+              ("M-g M-f" . dogears-forward)
+              ("M-g M-d" . dogears-list)))
+
 ;; An interesting package for building modal commands
 (use-package hydra
   :config
