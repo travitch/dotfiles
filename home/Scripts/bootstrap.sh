@@ -103,6 +103,7 @@ CARGO_PKGS=( du-dust
              tokei
              jql
              git-delta
+             difftastic
              )
 
 install_cargo_pkgs() {
