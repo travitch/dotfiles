@@ -356,14 +356,18 @@
   :mode ("\\.riscv$" . riscv-mode))
 
 (use-package lsp-mode
+  :config
+  (add-hook 'java-mode-hook #'(lambda () (when (eq major-mode 'java-mode) (lsp-deferred))))
+  :commands (lsp)
   :hook ((lsp-mode . lsp-enable-which-key-integration)))
 
-(use-package lsp-ui)
+(use-package lsp-ui
+  :commands (lsp-ui-mode))
 
 (use-package lsp-java
+  :after lsp
   :config
   (add-hook 'java-mode-hook #'lsp))
-
 
 (use-package groovy-mode
   :mode (("\\.gradle$" . groovy-mode)
