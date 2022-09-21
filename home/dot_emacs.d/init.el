@@ -355,6 +355,16 @@
 (use-package riscv-mode
   :mode ("\\.riscv$" . riscv-mode))
 
+(use-package lsp-mode
+  :hook ((lsp-mode . lsp-enable-which-key-integration)))
+
+(use-package lsp-ui)
+
+(use-package lsp-java
+  :config
+  (add-hook 'java-mode-hook #'lsp))
+
+
 (use-package groovy-mode
   :mode (("\\.gradle$" . groovy-mode)
          ("\\.groovy$" . groovy-mode)))
