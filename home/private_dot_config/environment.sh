@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Environment settings shared across multiple machines
 
 EMACS=/usr/local/emacs/current/bin
@@ -12,3 +13,6 @@ then
 
     export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 fi
+
+LOCAL_ENV="$HOME/.config/local-environment.sh"
+[[ -f "$LOCAL_ENV" ]] && source "$LOCAL_ENV"
