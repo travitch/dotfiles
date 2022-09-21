@@ -355,6 +355,10 @@
 (use-package riscv-mode
   :mode ("\\.riscv$" . riscv-mode))
 
+(use-package groovy-mode
+  :mode (("\\.gradle$" . groovy-mode)
+         ("\\.groovy$" . groovy-mode)))
+
 ;; *** C++
 (use-package modern-cpp-font-lock
   :commands (modern-c++-font-lock-mode))
