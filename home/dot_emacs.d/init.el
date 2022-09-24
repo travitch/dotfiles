@@ -1145,6 +1145,9 @@ If I let Windows handle DPI everything looks blurry."
 
 (when (display-graphic-p)
   (add-hook 'window-size-change-functions #'tr/compute-font-size))
+
+(load "~/.emacs.d/local" 'noerror)
+
 ;; Local Variables:
 ;; eval: (outline-minor-mode 1)
 ;; End:
