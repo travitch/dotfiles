@@ -359,7 +359,6 @@
   :init
   (setq gc-cons-threshold 100000000)
   (setq read-process-output-max (* 1024 1024))
-  (setq lsp-use-plists t)
   (setq lsp-log-io nil)
   :config
   (add-hook 'java-mode-hook #'(lambda () (when (eq major-mode 'java-mode) (lsp-deferred))))
