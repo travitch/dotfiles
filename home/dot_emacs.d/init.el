@@ -548,12 +548,6 @@
   (setq browse-url-browser-function 'browse-url-generic)
   (setq browse-url-generic-program "xdg-open"))
 
-;; Extends tramp with an access method for editing files inside of running
-;; Docker containers:
-;;
-;; > C-x C-f /docker:user@container:/path/to/file
-(use-package docker-tramp)
-
 ;; The ultimate git interface
 (use-package magit
   :init
