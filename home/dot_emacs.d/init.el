@@ -389,8 +389,8 @@
   (defconst tristan-c-style
     '((c-tab-always-indent . t)
       (c-echo-syntactic-information-p . t)
-      (tab-width . 2)
-      (c-basic-offset . 2)
+      (tab-width . 4)
+      (c-basic-offset . 4)
       (indent-tabs-mode . nil))
     "My C Style")
 
