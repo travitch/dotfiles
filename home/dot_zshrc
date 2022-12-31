@@ -13,10 +13,14 @@ setopt nonomatch
 setopt extended_glob
 
 # Update history after every command
+export HISTFILE=~/.zsh_history
+export HISTSIZE=10000
+export SAVEHIST=10000
+
 setopt inc_append_history
-setopt share_history
 setopt hist_ignore_all_dups
 setopt hist_find_no_dups
+setopt hist_reduce_blanks
 
 # Enable ZSH multiple IO redirection streams
 setopt multios
@@ -121,7 +125,8 @@ source $HOME/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
 eval "$(starship init zsh)"
-eval "$(atuin init zsh)"
+export MCFLY_LIGHT=TRUE
+eval "$(mcfly init zsh)"
 
 cds() {
   local dir
