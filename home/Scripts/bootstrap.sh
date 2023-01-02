@@ -11,7 +11,6 @@ core_packages=(
     htop
     powertop
     hunspell
-    elinks
     mutt
     fuse-sshfs
     curl
@@ -35,16 +34,11 @@ core_packages=(
     lldb
     autoconf
     automake
-    ninja-build
     cmake
     lua
     ctags
     golang
     texinfo
-    musl-devel
-    musl-gcc
-    musl-clang
-    lastpass-cli
     # SCM
     git
     git-lfs
