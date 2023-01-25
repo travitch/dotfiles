@@ -276,6 +276,9 @@
   :init
   (setq-default js2-basic-offset 2))
 
+(use-package rjsx-mode
+  :mode ("\\.jsx$" . rjsx-mode))
+
 (use-package typescript-mode
   :mode ("\\.ts$" . typescript-mode))
 
