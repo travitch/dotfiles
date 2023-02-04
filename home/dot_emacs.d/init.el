@@ -990,7 +990,7 @@
 
 ;; * Tree sitter
 
-(when (treesit-available-p)
+(when (and (fboundp 'treesit-available-p) (treesit-available-p))
   (require 'treesit)
   (setq treesit-language-source-alist
         '((bash "https://github.com/tree-sitter/tree-sitter-bash")
