@@ -346,8 +346,8 @@
 (use-package matlab-mode
   :mode ("\\.m$" . matlab-mode))
 
-(use-package json-mode
-  :mode ("\\.json$" . json-mode))
+(use-package jsonian
+  :mode ("\\.json$" . jsonian-mode))
 
 (use-package csv-mode
   :mode ("\\.csv$" . csv-mode))
@@ -445,6 +445,8 @@
 
 ;; ** Markup modes
 
+(use-package plantuml-mode
+  :mode ("\\.plantuml$" . plantuml-mode))
 
 (use-package rst
   :mode ("\\.rst$" . rst-mode)
@@ -467,8 +469,12 @@
 (use-package toc-org
   :after org)
 
+(use-package d2-mode
+  :mode ("\\.d2$" . d2-mode))
+
 (use-package graphql-mode
-  :mode ("\\.graphql$" . graphql-mode))
+  :mode ("\\.graphql$" . graphql-mode)
+  ("\\.gql$" . graphql-mode))
 
 (use-package font-latex
   :straight nil
