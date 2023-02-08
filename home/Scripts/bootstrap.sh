@@ -103,6 +103,7 @@ CARGO_PKGS=( du-dust
              zellij
              mcfly
              procs
+             tagref
              )
 
 install_cargo_pkgs() {
