@@ -137,6 +137,11 @@
   (add-hook 'org-mode-hook 'toc-org-enable)
   (add-hook 'org-mode-hook 'visual-line-mode))
 
+(use-package org-modern
+  :init
+  (add-hook 'org-mode-hook #'org-modern-mode)
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
+
 ;; * Package selection and initialization
 
 ;; ** Built-in modes
