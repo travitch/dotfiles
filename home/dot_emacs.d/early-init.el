@@ -19,5 +19,7 @@
   ;; in a terminal
   (global-unset-key "\^z"))
 
+(setq package-enable-at-startup nil)
+
 (provide 'early-init)
 ;;; early-init.el ends here

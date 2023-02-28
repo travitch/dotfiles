@@ -103,32 +103,48 @@
 
 ;; * Package system setup
 ;;
-;; Currently using straight.el (with use-package compatibility)
+;; Currently using elpaca
 
-(setq straight-check-for-modifications '(check-on-save))
-(setq straight-cache-autoloads t)
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
 
-;; Set up use-package so that we can use that to specify package setup below
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
+(defvar elpaca-installer-version 0.2)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil
+                              :files (:defaults (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(when-let ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+           (build (expand-file-name "elpaca/" elpaca-builds-directory))
+           (order (cdr elpaca-order))
+           ((add-to-list 'load-path (if (file-exists-p build) build repo)))
+           ((not (file-exists-p repo))))
+  (condition-case-unless-debug err
+      (if-let ((buffer (pop-to-buffer-same-window "*elpaca-installer*"))
+               ((zerop (call-process "git" nil buffer t "clone"
+                                     (plist-get order :repo) repo)))
+               (default-directory repo)
+               ((zerop (call-process "git" nil buffer t "checkout"
+                                     (or (plist-get order :ref) "--"))))
+               (emacs (concat invocation-directory invocation-name))
+               ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                     "--eval" "(byte-recompile-directory \".\" 0 'force)"))))
+          (progn (require 'elpaca)
+                 (elpaca-generate-autoloads "elpaca" repo)
+                 (kill-buffer buffer))
+        (error "%s" (with-current-buffer buffer (buffer-string))))
+    ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+(require 'elpaca-autoloads)
 
-;; Next, we need a special hack to install org-mode because it has a complicated
-;; setup that straight.el can't handle yet.
-(require 'subr-x)
+;; Install use-package support
+(elpaca elpaca-use-package
+  ;; Enable :elpaca use-package keyword.
+  (elpaca-use-package-mode)
+  ;; Assume :elpaca t unless otherwise specified.
+  (setq elpaca-use-package-by-default t))(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
 
-(straight-use-package 'git)
+(elpaca-wait)
 
 (use-package org
   :mode ("\\.org$" . org-mode)
@@ -155,19 +171,19 @@
   (setq show-trailing-whitespace t))
 
 (use-package text-mode
-  :straight nil
+  :elpaca nil
   :preface (provide 'text-mode)
   :init
   (add-hook 'text-mode-hook 'tr/show-trailing-whitespace))
 
 (use-package prog-mode
-  :straight nil
+  :elpaca nil
   :preface (provide 'prog-mode)
   :init
   (add-hook 'prog-mode-hook 'tr/show-trailing-whitespace))
 
 (use-package conf-mode
-  :straight nil
+  :elpaca nil
   :preface (provide 'conf-mode)
   :init
   (add-hook 'conf-mode-hook 'tr/show-trailing-whitespace))
@@ -175,7 +191,7 @@
 ;; Set up some handling of mail mode (used through mutt).  mail-mode is provided
 ;; by the sendmail library built-in to emacs, but we want to add some hooks here.
 (use-package sendmail
-  :straight nil
+  :elpaca nil
   :mode ("/tmp/mutt.*" . mail-mode)
   :config
   (add-hook 'mail-mode-hook 'turn-on-visual-line-mode)
@@ -183,20 +199,17 @@
 
 (use-package abbrev
   :diminish abbrev-mode
-  :straight nil
+  :elpaca nil
   :config
   (if (file-exists-p abbrev-file-name)
       (quietly-read-abbrev-file)))
 
 ;; Give unique tags to buffers that have the same name to distinguish them.
 (use-package uniquify
-  :straight nil
+  :elpaca nil
   :config (setq uniquify-buffer-name-style 'post-forward-angle-brackets))
 
 ;; ** Themes
-
-(use-package zenburn-theme
-  :disabled)
 
 ;; Use solarized light, and turn down some of the more aggressive font choices
 ;; that (especially a few that are proportional).
@@ -391,6 +404,7 @@
 
 ;; Horrible C++ mode setup
 (use-package cc-mode
+  :elpaca nil
   :mode ("\\.c$" . c-mode)
   :mode ("\\.cpp$\\|\\.cc$\\|\\.C$\\|\\.cxx$\\|\\.hpp$\\|\\.h$" . c++-mode)
   :config
@@ -435,7 +449,7 @@
 ;; CPP is the sub-mode used to highlight C preprocessor directives.  It is
 ;; actually separate from cc-mode, so we configure it here.
 (use-package cpp
-  :straight nil
+  :elpaca nil
   :defer t
   :config
   (setq cpp-known-face 'default)
@@ -454,6 +468,7 @@
   :mode ("\\.plantuml$" . plantuml-mode))
 
 (use-package rst
+  :elpaca nil
   :mode ("\\.rst$" . rst-mode)
   :init
   (add-hook 'rst-mode-hook 'visual-line-mode))
@@ -482,14 +497,14 @@
   ("\\.gql$" . graphql-mode))
 
 (use-package font-latex
-  :straight nil
+  :elpaca nil
   :defer t
   :config
   (setq font-latex-fontify-script nil)
   (setq font-latex-fontify-sectioning 'color))
 
 (use-package tex
-  :straight nil
+  :elpaca nil
   :defer t
   :init
   (setq TeX-auto-save t)
@@ -523,7 +538,7 @@
   :mode ("Dockerfile$" . dockerfile-mode))
 
 (use-package eldoc
-  :straight nil
+  :elpaca nil
   :diminish eldoc-mode)
 
 ;; ** Major tools
@@ -537,7 +552,7 @@
   :config (which-key-mode))
 
 (use-package compile
-  :straight nil
+  :elpaca nil
   :defer
   :init
   ;; Scroll the compilation window as output is generated
@@ -555,7 +570,7 @@
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 (use-package browse-url
-  :straight nil
+  :elpaca nil
   :commands (browse-url-generic)
   :if window-system
   :init
@@ -609,7 +624,6 @@
 (use-package diminish)
 
 (use-package ligature
-  :straight (ligature :type git :host github :repo "mickeynp/ligature.el")
   :init
   (add-hook 'prog-mode-hook 'ligature-mode)
   :config
@@ -630,6 +644,7 @@
 ;; On-the-fly spell checking in various modes.  The prog-mode version spell
 ;; checks text appearing in comments and string literals.
 (use-package flyspell
+  :elpaca nil
   :diminish flyspell-mode
   :commands (flyspell-mode flyspell-prog-mode)
   :init
@@ -721,10 +736,12 @@
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
+  :elpaca nil
   :init
   (savehist-mode))
 
 (use-package emacs
+  :elpaca nil
   :init
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
@@ -753,11 +770,9 @@
         completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package crdt
-  :straight (crdt :type git :host nil :repo "https://code.librehq.com/qhong/crdt.el.git")
   :commands (crdt-share-buffer crdt-connect))
 
 (use-package consult
-  :straight (consult :type git :host github :repo "minad/consult" :branch "main")
   ;; Replace bindings
   :bind (("C-c o" . consult-outline)
          ("C-x b" . consult-buffer)
@@ -786,7 +801,6 @@
   (setq consult-project-root-function #'projectile-project-root))
 
 (use-package marginalia
-  :straight (marginalia :type git :host github :repo "minad/marginalia" :branch "main")
   ;; The :init configuration is always executed (Not lazy!)
   :init
   ;; Must be in the :init section of use-package such that the mode gets
@@ -962,23 +976,10 @@
   ;; Add `completion-at-point-functions', used by `completion-at-point'.
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
-  ;;(add-to-list 'completion-at-point-functions #'cape-history)
-  ;;(add-to-list 'completion-at-point-functions #'cape-keyword)
-  ;;(add-to-list 'completion-at-point-functions #'cape-tex)
-  ;;(add-to-list 'completion-at-point-functions #'cape-sgml)
-  ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345)
-  ;;(add-to-list 'completion-at-point-functions #'cape-abbrev)
-  ;;(add-to-list 'completion-at-point-functions #'cape-ispell)
-  ;;(add-to-list 'completion-at-point-functions #'cape-dict)
-  ;;(add-to-list 'completion-at-point-functions #'cape-symbol)
-  ;;(add-to-list 'completion-at-point-functions #'cape-line)
 )
 
-(straight-use-package
- '(popon :type git :repo "https://codeberg.org/akib/emacs-popon.git"))
-
 (use-package corfu-terminal
-  :straight (corfu-terminal :type git :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :elpaca (corfu-terminal :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :init
   (unless (display-graphic-p)
     (corfu-terminal-mode +1)))
@@ -1167,11 +1168,11 @@ narrowed."
           (forward-line ))))))
 
 (use-package haskell-pragma
-  :straight (haskell-pragma :type git :host github :repo "travitch/haskell-pragma.el")
+  :elpaca (haskell-pragma :host github :repo "travitch/haskell-pragma.el")
   :commands (hydra-haskell-pragma/body))
 
 (use-package haskell-interactive-import
-  :straight (haskell-interactive-import :type git :host github :repo "travitch/haskell-interactive-import.el")
+  :elpaca (haskell-interactive-import :host github :repo "travitch/haskell-interactive-import.el")
   :commands (haskell-interactive-import-begin))
 
 ;; * Keybindings
