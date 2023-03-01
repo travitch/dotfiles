@@ -141,7 +141,8 @@
   ;; Enable :elpaca use-package keyword.
   (elpaca-use-package-mode)
   ;; Assume :elpaca t unless otherwise specified.
-  (setq elpaca-use-package-by-default t))(add-hook 'after-init-hook #'elpaca-process-queues)
+  (setq elpaca-use-package-by-default t))
+(add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
 (elpaca-wait)
@@ -221,7 +222,7 @@
 
 ;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
 (use-package simple-modeline
-  :hook (after-init . simple-modeline-mode))
+  :hook (elpaca-after-init . simple-modeline-mode))
 
 ;; This mode provides a function that enables a server running from emacs that
 ;; can edit text boxes in browsers using an appropriate extension (see Ghost Text)
@@ -612,7 +613,7 @@
 ;; This uses the OSC 52 escape sequence to tell the terminal to sync the clipboard if running in a terminal
 (use-package clipetty
   :ensure t
-  :hook (after-init . global-clipetty-mode))
+  :hook (elpaca-after-init . global-clipetty-mode))
 
 ;; Hide some minor mode indicators in the modeline
 (use-package diminish)
