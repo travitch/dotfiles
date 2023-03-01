@@ -266,12 +266,6 @@
                              (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
                              (modes quote (haskell-mode literate-haskell-mode)))))))
 
-;; Use the Superior Lisp Interation ModE for Common Lisp
-(use-package slime
-  :commands (slime)
-  :init
-  (setq slime-contribs '(slime-fancy)))
-
 (use-package cmake-mode
   :mode ("CMakeLists.txt$" . cmake-mode))
 
