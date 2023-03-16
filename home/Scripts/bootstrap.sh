@@ -93,6 +93,7 @@ CARGO_PKGS=( du-dust
              fd-find
              starship
              exa
+             lsd
              skim
              tokei
              jql
