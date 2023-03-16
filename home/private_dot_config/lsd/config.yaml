@@ -1,0 +1,18 @@
+classic: false
+
+blocks:
+  - permission
+  - user
+  - group
+  - size
+  - date
+  - name
+
+color:
+  when: auto
+  theme: custom
+
+icons:
+  when: auto
+  theme: unicode
+  separator: "  "
