@@ -646,28 +646,15 @@
 
 ;; On-the-fly spell checking in various modes.  The prog-mode version spell
 ;; checks text appearing in comments and string literals.
-(use-package flyspell
-  :elpaca nil
-  :diminish flyspell-mode
-  :commands (flyspell-mode flyspell-prog-mode)
+(use-package jit-spell
+  :commands (jit-spell-correct-word jit-spell-mode)
   :init
   (setq ispell-program-name (executable-find "hunspell")
         ispell-dictionary "en_US")
-  (add-hook 'rst-mode-hook 'flyspell-mode)
-  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-  (add-hook 'mail-mode-hook 'flyspell-mode)
-  (add-hook 'text-mode-hook 'selective-text-flyspell))
-
-;; (use-package jit-spell
-;;   :commands (jit-spell-correct-word jit-spell-mode)
-;;   :init
-;;   (setq ispell-program-name (executable-find "hunspell")
-;;         ispell-dictionary "en_US")
-;;   (add-hook 'rst-mode-hook 'jit-spell-mode)
-;;   (add-hook 'prog-mode-hook 'jit-spell-mode)
-;;   (add-hook 'mail-mode-hook 'jit-spell-mode)
-;;   ;;(add-hook 'text-mode-hook 'selective-text-flyspell)
-;;   )
+  (add-hook 'text-mode-hook 'jit-spell-mode)
+  (add-hook 'rst-mode-hook 'jit-spell-mode)
+  (add-hook 'prog-mode-hook 'jit-spell-mode)
+  (add-hook 'mail-mode-hook 'jit-spell-mode))
 
 
 ;; (use-package flyspell-correct
