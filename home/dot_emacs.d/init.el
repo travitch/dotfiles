@@ -355,6 +355,9 @@
   :mode ("\\.lean$" . lean-mode))
 
 (use-package boogie-friends
+  :elpaca (boogie-friends :host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
+  :config
+  (setq lsp-dafny-preferred-version "4.0.0")
   :mode (("\\.bpl$" . boogie-mode)
          ("\\.dfy$" . dafny-mode)))
 
@@ -655,10 +658,22 @@
   (add-hook 'mail-mode-hook 'flyspell-mode)
   (add-hook 'text-mode-hook 'selective-text-flyspell))
 
-(use-package flyspell-correct
-  :commands (flyspell-correct-dummy)
-  :init
-  (setq flyspell-correct-interface #'flyspell-correct-dummy))
+;; (use-package jit-spell
+;;   :commands (jit-spell-correct-word jit-spell-mode)
+;;   :init
+;;   (setq ispell-program-name (executable-find "hunspell")
+;;         ispell-dictionary "en_US")
+;;   (add-hook 'rst-mode-hook 'jit-spell-mode)
+;;   (add-hook 'prog-mode-hook 'jit-spell-mode)
+;;   (add-hook 'mail-mode-hook 'jit-spell-mode)
+;;   ;;(add-hook 'text-mode-hook 'selective-text-flyspell)
+;;   )
+
+
+;; (use-package flyspell-correct
+;;   :commands (flyspell-correct-dummy)
+;;   :init
+;;   (setq flyspell-correct-interface #'flyspell-correct-dummy))
 
 ;; Do some on-the-fly linting using flycheck and various checkers.
 (use-package flycheck
