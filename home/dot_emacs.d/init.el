@@ -358,6 +358,7 @@
   :elpaca (boogie-friends :host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
   :config
   (setq lsp-dafny-preferred-version "4.0.0")
+  (add-hook 'dafny-mode-hook 'lsp)
   :mode (("\\.bpl$" . boogie-mode)
          ("\\.dfy$" . dafny-mode)))
 
