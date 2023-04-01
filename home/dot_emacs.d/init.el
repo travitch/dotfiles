@@ -225,17 +225,9 @@
   (setq solarized-scale-org-headlines nil)
   (load-theme 'solarized-light t))
 
-
-;; (use-package simple-modeline
-;;   :hook (elpaca-after-init . simple-modeline-mode))
-
 ;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
-(use-package nano-modeline
-  :init
-  (setq nano-modeline-position 'bottom)
-  (setq nano-modeline-prefix 'icon)
-  :commands (nano-modeline-mode)
-  :hook (elpaca-after-init . nano-modeline-mode))
+(use-package simple-modeline
+  :hook (elpaca-after-init . simple-modeline-mode))
 
 ;; This mode provides a function that enables a server running from emacs that
 ;; can edit text boxes in browsers using an appropriate extension (see Ghost Text)
