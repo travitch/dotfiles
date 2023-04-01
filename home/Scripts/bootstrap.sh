@@ -101,6 +101,7 @@ CARGO_PKGS=( du-dust
              difftastic
              jless
              zellij
+             swordfish-rs
              bottom
              mcfly
              procs
