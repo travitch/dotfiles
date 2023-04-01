@@ -3,6 +3,7 @@ format = """
 $username\
 $hostname\
 $directory\
+$aws\
 $git_branch\
 $git_state\
 $git_status\
@@ -16,3 +17,8 @@ $character
 ssh_only = false
 format = "[$ssh_symbol on ](bold blue)[$hostname](bold red) "
 disabled = false
+
+[aws]
+format = 'on [$symbol$profile]($style) '
+style = 'bold blue'
+symbol = '🅰 '
