@@ -125,8 +125,7 @@ source $HOME/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
 eval "$(starship init zsh)"
-export MCFLY_LIGHT=TRUE
-eval "$(mcfly init zsh)"
+eval "$(atuin init zsh --disable-up-arrow)"
 
 cds() {
   local dir

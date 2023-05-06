@@ -104,6 +104,7 @@ CARGO_PKGS=( du-dust
              swordfish-rs
              bottom
              mcfly
+             atuin
              procs
              tagref
              )
