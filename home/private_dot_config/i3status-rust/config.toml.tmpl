@@ -34,4 +34,6 @@ interval = 600
 [[block]]
 block = "time"
 interval = 1
-format = "%a %m/%d %R"
+[block.format]
+full = " $icon $timestamp.datetime(f:'%a %Y-%m-%d %R %Z', l:en_US) "
+short = " $icon $timestamp.datetime(f:%R) "
