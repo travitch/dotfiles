@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Environment settings shared across multiple machines
 
+# Select the most recent emacs
 EMACS=/usr/local/emacs/current/bin
-export PATH=$EMACS:$HOME/.local/bin:$HOME/.ghcup/bin:$HOME/.cargo/bin:$HOME/.cabal/bin:$HOME/.homebrew/bin:/usr/local/bin:/usr/bin:/bin
+
+export PATH=$EMACS:$HOME/.local/bin:$HOME/.ghcup/bin:$HOME/.cargo/bin:$HOME/.cabal/bin:$HOME/.homebrew/bin:/usr/local/bin:/usr/bin:/bin:$HOME/Scripts
 export EDITOR='emacs -nw'
 export CLICOLOR=1
 
