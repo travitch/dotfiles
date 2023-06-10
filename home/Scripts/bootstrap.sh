@@ -88,7 +88,6 @@ install_rustup() {
 CARGO_PKGS=( du-dust
              bat
              flamegraph
-             fselect
              ripgrep
              fd-find
              starship
@@ -107,6 +106,7 @@ CARGO_PKGS=( du-dust
              atuin
              procs
              tagref
+             sd
              )
 
 install_cargo_pkgs() {
