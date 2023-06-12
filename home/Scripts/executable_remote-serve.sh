@@ -10,6 +10,12 @@
 
 set -euf -o pipefail
 
+if [ $# -ne 2 ];
+then
+    echo "Usage: remote-serve.sh HOST REMOTE_PATH"
+    exit 1
+fi
+
 # The port to open on the remote server and to tunnel to this host
 #
 # 0xd0c = 3340
