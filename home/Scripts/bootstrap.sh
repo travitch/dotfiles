@@ -100,6 +100,7 @@ CARGO_PKGS=( du-dust
              difftastic
              jless
              zellij
+             zoxide
              spacer
              swordfish-rs
              bottom
