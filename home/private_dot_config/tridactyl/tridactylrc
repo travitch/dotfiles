@@ -1,0 +1,8 @@
+" Unbinds C-f so that the default firefox search window works everywhere
+unbind <C-f>
+
+" Always show the mode indicator
+set modeindicator true
+
+" A more minimal theme with the selections centered
+colors shydactyl
