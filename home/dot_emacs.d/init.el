@@ -272,8 +272,9 @@
                              (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
                              (modes quote (haskell-mode literate-haskell-mode)))))))
 
-(use-package cmake-mode
-  :mode ("CMakeLists.txt$" . cmake-mode))
+(use-package cmake-ts-mode
+  :elpaca nil
+  :mode ("CMakeLists.txt$" . cmake-ts-mode))
 
 (use-package csharp-mode
   :mode ("\\.cs$" . csharp-mode))
@@ -289,10 +290,9 @@
   :mode ("\\.html$" . web-mode))
 
 ;; The most reasonable mode for javascript
-(use-package js2-mode
-  :mode ("\\.js$" . js2-mode)
-  :init
-  (setq-default js2-basic-offset 2))
+(use-package javascript-ts--mode
+  :elpaca nil
+  :mode ("\\.js$" . javascript-ts-mode))
 
 (use-package rjsx-mode
   :mode ("\\.jsx$" . rjsx-mode))
@@ -306,8 +306,9 @@
 (use-package clojure-mode
   :mode ("\\.clj$" . clojure-mode))
 
-(use-package go-mode
-  :mode ("\\.go$" . go-mode))
+(use-package go-ts-mode
+  :elpaca nil
+  :mode ("\\.go$" . go-ts-mode))
 
 (use-package scala-mode
   :mode ("\\.sc$\\|\\.scala$" . scala-mode))
@@ -334,8 +335,9 @@
 (use-package idris-mode
   :mode ("\\.idr$" . idris-mode))
 
-(use-package rust-mode
-  :mode ("\\.rs$" . rust-mode))
+(use-package rust-ts-mode
+  :elpaca nil
+  :mode ("\\.rs$" . rust-ts-mode))
 
 (use-package fstar-mode
   :mode ("\\.fsi$" . fstar-mode))
@@ -343,13 +345,14 @@
 (use-package forth-mode
   :mode ("\\.fth$" . forth-mode))
 
-(use-package python
+(use-package python-ts-mode
+  :elpaca nil
   :init
   (setq python-shell-interpreter "ipython3")
   (setq python-shell-interpreter-args "--simple-prompt -i")
-  :mode (("\\.py$" . python-mode)
-         ("SConstruct$" . python-mode)
-         ("SConscript$" . python-mode)))
+  :mode (("\\.py$" . python-ts-mode)
+         ("SConstruct$" . python-ts-mode)
+         ("SConscript$" . python-ts-mode)))
 
 (use-package lean-mode
   :mode ("\\.lean$" . lean-mode))
@@ -987,114 +990,72 @@
   (unless (display-graphic-p)
     (corfu-terminal-mode +1)))
 
-(use-package shackle
-  :init
-  (setq-default shackle-rules '((compilation-mode :other t)))
-  (shackle-mode 1))
-
 (use-package ws-butler
   :diminish
+  :commands (ws-butler-mode)
   :init
   (add-hook 'prog-mode-hook #'ws-butler-mode))
 
 ;; * Tree sitter
 
-;; (when (and (fboundp 'treesit-available-p) (treesit-available-p))
-;;   (require 'treesit)
-;;   (setq treesit-language-source-alist
-;;         '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-;;           (c "https://github.com/tree-sitter/tree-sitter-c")
-;;           (cmake "https://github.com/uyha/tree-sitter-cmake")
-;;           (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-;;           (css "https://github.com/tree-sitter/tree-sitter-css")
-;;           (csharp "https://github.com/tree-sitter/tree-sitter-c-sharp")
-;;           (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-;;           (go "https://github.com/tree-sitter/tree-sitter-go")
-;;           (go-mod "https://github.com/camdencheek/tree-sitter-go-mod")
-;;           (html "https://github.com/tree-sitter/tree-sitter-html")
-;;           (js . ("https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
-;;           (json "https://github.com/tree-sitter/tree-sitter-json")
-;;           (lua "https://github.com/Azganoth/tree-sitter-lua")
-;;           (make "https://github.com/alemuller/tree-sitter-make")
-;;           (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-;;           (python "https://github.com/tree-sitter/tree-sitter-python")
-;;           (haskell "https://github.com/tree-sitter/tree-sitter-haskell")
-;;           (java "https://github.com/tree-sitter/tree-sitter-java")
-;;           (r "https://github.com/r-lib/tree-sitter-r")
-;;           (rust "https://github.com/tree-sitter/tree-sitter-rust")
-;;           (toml "https://github.com/tree-sitter/tree-sitter-toml")
-;;           (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
-;;           (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
-;;           (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+(setq treesit-language-source-alist
+  '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+    (c "https://github.com/tree-sitter/tree-sitter-c")
+    (cmake "https://github.com/uyha/tree-sitter-cmake")
+    (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+    (css "https://github.com/tree-sitter/tree-sitter-css")
+    (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+    (go "https://github.com/tree-sitter/tree-sitter-go")
+    (html "https://github.com/tree-sitter/tree-sitter-html")
+    (java "https://github.com/tree-sitter/tree-sitter-java" "master" "src")
+    (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
+    (json "https://github.com/tree-sitter/tree-sitter-json")
+    (lua "https://github.com/Azganoth/tree-sitter-lua")
+    (make "https://github.com/alemuller/tree-sitter-make")
+    (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+    (python "https://github.com/tree-sitter/tree-sitter-python")
+    (rust "https://github.com/tree-sitter/tree-sitter-rust")
+    (toml "https://github.com/tree-sitter/tree-sitter-toml")
+    (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
+    (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
+    (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
-;;   (defun tr/treesit-install-all-languages ()
-;;     "Install all languages specified by `treesit-language-source-alist'."
-;;     (interactive)
-;;     (let ((languages (mapcar 'car treesit-language-source-alist)))
-;;       (dolist (lang languages)
-;; 	      (treesit-install-language-grammar lang)
-;; 	      (message "`%s' parser was installed." lang)
-;; 	      (sit-for 0.75))))
+;; Install tree-sitter modes if needed
+(use-package treesit
+  :elpaca nil
+  :config
+  (dolist (lang treesit-language-source-alist)
+    (unless (treesit-language-available-p (car lang))
+      (treesit-install-language-grammar (car lang)))))
 
-;;   (defcustom treesit-auto-fallback-alist
-;;     (mapcar
-;;      (lambda (elt)
-;;        (cons (purecopy (car elt)) (cdr elt)))
-;;      `((toml-ts-mode . conf-toml-mode)
-;;        ;; TODO: I do not know if the future treesitter mode for HTML will be called html-ts-mode or mhtml-mode
-;;        (html-ts-mode . mhtml-mode)
-;;        ;; See deprecation note in their README: https://github.com/emacs-typescript/typescript.el#a-short-note-on-development-halt
-;;        (typescript-ts-mode . nil)
-;;        (tsx-ts-mode . nil)))
-;;     "Alist mapping treesitter modes to their respective fallback modes.
-;;   If the CDR of the association is nil, then no fallback will be
-;;   attempted when encountering a tree-sitter mode that is missing an
-;;   installation of its respecitve grammar.  If the CDR is non-nil,
-;;   then a fallback attempt is made to the specified mode.
-;;   If a treesitter mode is omitted from the keys of this alist
-;;   entirely, then a fallback is attempted by using the same name
-;;   prefix (e.g. `python-ts-mode' will attempt a fallback to
-;;   `python-mode').
-;;   In any case, if the fallback mode does not
-;;   exist (e.g. go-mod-mode is not installed but that would be the
-;;   automatic fallback for `go-mod-ts-mode'), then no fallback is
-;;   attempted."
-;;     :type '(alist (symbol) (function))
-;;     :group 'treesit)
+(defun tr/java-indent-style ()
+  "Override the built-in Java indentation rules."
+  `((java
+     ;; Avoid double-indenting the body of a lambda relative to the previous
+     ;; line. The second rule cleans up the closing brace.
+     ((match "block" "lambda_expression") parent-bol 0)
+     ((node-is "}") parent-bol 0)
+     ((parent-is "block") parent-bol 4)
+    ;; Place the base rules after the overrides
+   ,@(alist-get 'java java-ts-mode--indent-rules))))
 
-;;   (defun treesit-auto--remap-language-source (language-source)
-;;     "Determine mode for LANGUAGE-SOURCE.
-;;   If the grammar is installed, remap the base mode to its
-;;   tree-sitter variant in `major-mode-remap-alist'.  Otherwise,
-;;   remap the tree-sitter variant back to the default mode."
-;;     (let* ((name (car language-source))
-;;            (name-ts-mode (intern (concat (symbol-name name) "-ts-mode")))
-;;            (fallback-assoc (assq name-ts-mode treesit-auto-fallback-alist))
-;;            (fallback-name (cdr fallback-assoc))
-;;            (name-mode (or fallback-name
-;;                           (intern (concat (symbol-name name) "-mode"))))
-;;            (name-mode-bound-p (fboundp name-mode))
-;;            (skip-remap-p (and fallback-assoc
-;;                               (not (cdr fallback-assoc)))))
-;;       (and (not skip-remap-p)
-;;            (fboundp name-ts-mode)
-;;            (if (treesit-ready-p name t)
-;;                (add-to-list 'major-mode-remap-alist `(,name-mode . ,name-ts-mode))
-;;              (when name-mode-bound-p
-;;                (add-to-list 'major-mode-remap-alist `(,name-ts-mode . ,name-mode)))))))
+(defun tr/init-java-ts-mode ()
+  "This hook just sets up the java indent style."
+  (setq-local treesit-simple-indent-rules (tr/java-indent-style)))
 
-;;   (defun treesit-auto-apply-remap ()
-;;     "Adjust `major-mode-remap-alist' using installed tree-sitter grammars."
-;;     (mapcar 'treesit-auto--remap-language-source treesit-language-source-alist))
+;; Configure Java treesitter mode; this declaration tells elpaca to not install
+;; the mode, as tree-sitter is built-in.
+(use-package java-ts-mode
+  :elpaca nil
+  :mode ("\\.java$" . java-ts-mode)
+  :init (add-hook 'java-ts-mode-hook #'tr/init-java-ts-mode))
 
-;;   ;;(advice-add 'treesit-install-language-grammar :after (lambda (&rest _r) (treesit-auto-apply-remap)))
-;;   (treesit-auto-apply-remap)
+(use-package bash-ts-mode
+  :elpaca nil
+  :mode (("\\.bash$" . bash-ts-mode)
+         ("\\.sh$" . bash-ts-mode)))
 
 
-;;   )
-
-
-;; * Extra customization
 
 (defun selective-text-flyspell ()
   (interactive)
