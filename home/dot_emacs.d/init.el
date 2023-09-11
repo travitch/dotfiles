@@ -1026,7 +1026,13 @@
   :config
   (dolist (lang treesit-language-source-alist)
     (unless (treesit-language-available-p (car lang))
-      (treesit-install-language-grammar (car lang)))))
+      (treesit-install-language-grammar (car lang))))
+  (setq major-mode-remap-alist
+        '((yaml-mode . yaml-ts-mode)
+          (bash-mode . bash-ts-mode)
+          (sh-mode . bash-ts-mode)
+          (css-mode . css-ts-mode)
+          (python-mode . python-ts-mode))))
 
 (defun tr/java-indent-style ()
   "Override the built-in Java indentation rules."
@@ -1054,8 +1060,6 @@
   :elpaca nil
   :mode (("\\.bash$" . bash-ts-mode)
          ("\\.sh$" . bash-ts-mode)))
-
-
 
 (defun selective-text-flyspell ()
   (interactive)
