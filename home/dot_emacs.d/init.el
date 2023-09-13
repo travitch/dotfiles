@@ -55,7 +55,7 @@
 ;; Try to make auto-fill work a bit better in the context of bulleted lists.
 (setq paragraph-start "\f\\|>*[ \t]*$\\|>*[ \t]*[-+*] \\|>*[ \t]*[0-9#]+\\. ")
 (setq paragraph-separate "$")
-(setq-default fill-column 80)
+(setq-default fill-column 100)
 
 
 ;; ** Copy and paste
