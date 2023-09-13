@@ -155,11 +155,13 @@
 (use-package org
   :mode ("\\.org$" . org-mode)
   :init
-  (setq org-log-done t)
-  (add-hook 'org-mode-hook 'toc-org-enable)
-  (add-hook 'org-mode-hook 'visual-line-mode))
+  (add-hook 'org-mode-hook #'toc-org-enable)
+  (add-hook 'org-mode-hook #'visual-line-mode)
+  :config
+  (setq org-log-done t))
 
 (use-package org-modern
+  :commands (org-modern-mode org-modern-agenda)
   :init
   (add-hook 'org-mode-hook #'org-modern-mode)
   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
@@ -180,40 +182,41 @@
   :elpaca nil
   :preface (provide 'text-mode)
   :init
-  (add-hook 'text-mode-hook 'tr/show-trailing-whitespace))
+  (add-hook 'text-mode-hook #'tr/show-trailing-whitespace))
 
 (use-package prog-mode
   :elpaca nil
   :preface (provide 'prog-mode)
   :init
-  (add-hook 'prog-mode-hook 'tr/show-trailing-whitespace))
+  (add-hook 'prog-mode-hook #'tr/show-trailing-whitespace))
 
 (use-package conf-mode
   :elpaca nil
   :preface (provide 'conf-mode)
   :init
-  (add-hook 'conf-mode-hook 'tr/show-trailing-whitespace))
+  (add-hook 'conf-mode-hook #'tr/show-trailing-whitespace))
 
 ;; Set up some handling of mail mode (used through mutt).  mail-mode is provided
 ;; by the sendmail library built-in to emacs, but we want to add some hooks here.
 (use-package sendmail
   :elpaca nil
   :mode ("/tmp/mutt.*" . mail-mode)
-  :config
-  (add-hook 'mail-mode-hook 'turn-on-visual-line-mode)
-  (add-hook 'mail-mode-hook 'mail-text))
+  :init
+  (add-hook 'mail-mode-hook #'turn-on-visual-line-mode)
+  (add-hook 'mail-mode-hook #'mail-text))
 
 (use-package abbrev
   :diminish abbrev-mode
   :elpaca nil
   :config
-  (if (file-exists-p abbrev-file-name)
-      (quietly-read-abbrev-file)))
+  (when (file-exists-p abbrev-file-name)
+    (quietly-read-abbrev-file)))
 
 ;; Give unique tags to buffers that have the same name to distinguish them.
 (use-package uniquify
   :elpaca nil
-  :config (setq uniquify-buffer-name-style 'post-forward-angle-brackets))
+  :config
+  (setq uniquify-buffer-name-style #'post-forward-angle-brackets))
 
 ;; ** Themes
 
@@ -289,16 +292,13 @@
 (use-package web-mode
   :mode ("\\.html$" . web-mode))
 
-;; The most reasonable mode for javascript
-(use-package javascript-ts--mode
-  :elpaca nil
-  :mode ("\\.js$" . javascript-ts-mode))
-
 (use-package rjsx-mode
   :mode ("\\.jsx$" . rjsx-mode))
 
-(use-package typescript-mode
-  :mode ("\\.ts$" . typescript-mode))
+(use-package typescript-ts-mode
+  :elpaca nil
+  :mode (("\\.ts$" . typescript-ts-mode)
+         ("\\.js$" . typescript-ts-mode)))
 
 (use-package erlang
   :mode ("\\.erl$" . erlang-mode))
@@ -347,7 +347,7 @@
 
 (use-package python-ts-mode
   :elpaca nil
-  :init
+  :config
   (setq python-shell-interpreter "ipython3")
   (setq python-shell-interpreter-args "--simple-prompt -i")
   :mode (("\\.py$" . python-ts-mode)
@@ -384,87 +384,26 @@
   :mode ("\\.riscv$" . riscv-mode))
 
 (use-package lsp-mode
-  :init
+  :config
   (setq gc-cons-threshold 100000000)
   (setq read-process-output-max (* 1024 1024))
   (setq lsp-log-io nil)
   :config
-  (add-hook 'java-mode-hook #'(lambda () (when (eq major-mode 'java-mode) (lsp-deferred))))
-  :commands (lsp)
+  (add-hook 'java-mode-hook #'(lambda ()
+                                (when (or (eq major-mode 'java-mode) (eq major-mode 'java-ts-mode))
+                                  (lsp-deferred))))
+  :commands (lsp lsp-deferred)
   :hook ((lsp-mode . lsp-enable-which-key-integration)))
 
 (use-package lsp-ui
   :commands (lsp-ui-mode))
 
 (use-package lsp-java
-  :after lsp
-  :config
-  (add-hook 'java-mode-hook #'lsp))
+  :after lsp)
 
 (use-package groovy-mode
   :mode (("\\.gradle$" . groovy-mode)
          ("\\.groovy$" . groovy-mode)))
-
-;; *** C++
-(use-package modern-cpp-font-lock
-  :commands (modern-c++-font-lock-mode))
-
-;; Horrible C++ mode setup
-(use-package cc-mode
-  :elpaca nil
-  :mode ("\\.c$" . c-mode)
-  :mode ("\\.cpp$\\|\\.cc$\\|\\.C$\\|\\.cxx$\\|\\.hpp$\\|\\.h$" . c++-mode)
-  :config
-  (defconst tristan-c-style
-    '((c-tab-always-indent . t)
-      (c-echo-syntactic-information-p . t)
-      (tab-width . 4)
-      (c-basic-offset . 4)
-      (indent-tabs-mode . nil))
-    "My C Style")
-
-  (defun my-c-mode-font-lock-if0 (limit)
-    (cpp-highlight-buffer t)
-    nil)
-
-  (c-add-style "PERSONAL" tristan-c-style)
-
-  (defun c-doc-hook ()
-    "A hook to set up javadoc-style documentation highlighting in C and C++ modes"
-    (setq c-doc-comment-style
-          '((java-mode . javadoc)
-            (c-mode . javadoc)
-            (c++-mode . javadoc)))
-    (set-face-foreground 'font-lock-doc-face (face-foreground font-lock-comment-face)))
-  (add-hook 'c-initialization-hook 'c-doc-hook)
-
-  (defun my-c-mode-hook ()
-    (c-set-style "PERSONAL")
-    (local-set-key "\C-m" 'newline-and-indent)
-    (c-set-offset 'inline-open 0)
-    (c-set-offset 'member-init-intro 0)
-    (c-set-offset 'substatement-open 0)
-    (c-set-offset 'arglist-cont-nonempty '++)
-    (font-lock-add-keywords
-     nil
-     '((my-c-mode-font-lock-if0 (0 font-lock-comment-face prepend)))
-     'add-to-end))
-
-  (add-hook 'c-mode-common-hook 'my-c-mode-hook)
-  (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode))
-
-;; CPP is the sub-mode used to highlight C preprocessor directives.  It is
-;; actually separate from cc-mode, so we configure it here.
-(use-package cpp
-  :elpaca nil
-  :defer t
-  :config
-  (setq cpp-known-face 'default)
-  (setq cpp-unknown-face 'default)
-  (setq cpp-known-writable 't)
-  (setq cpp-unknown-writable 't)
-  (setq cpp-edit-list '(("0" font-lock-comment-face default both)
-                        ("1" default font-lock-comment-face both))))
 
 (use-package ninja-mode
   :mode ("\\.ninja$" . ninja-mode))
@@ -478,12 +417,12 @@
   :elpaca nil
   :mode ("\\.rst$" . rst-mode)
   :init
-  (add-hook 'rst-mode-hook 'visual-line-mode))
+  (add-hook 'rst-mode-hook #'visual-line-mode))
 
 (use-package markdown-mode
   :mode ("\\.markdown$\\|\\.md$" . markdown-mode)
   :init
-  (add-hook 'markdown-mode-hook 'visual-line-mode)
+  (add-hook 'markdown-mode-hook #'visual-line-mode)
   :config
   (setq markdown-command "pandoc"))
 
@@ -494,13 +433,15 @@
   :mode ("\\.adoc$" . adoc-mode))
 
 (use-package toc-org
-  :after org)
+  :after org
+  :commands (toc-org-enable))
 
 (use-package d2-mode
   :mode ("\\.d2$" . d2-mode))
 
 (use-package graphql-mode
-  :mode ("\\.graphql$" . graphql-mode)
+  :mode
+  ("\\.graphql$" . graphql-mode)
   ("\\.gql$" . graphql-mode))
 
 (use-package font-latex
@@ -513,7 +454,7 @@
 (use-package tex
   :elpaca nil
   :defer t
-  :init
+  :config
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
   (setq TeX-source-correlate-start-server t))
@@ -521,8 +462,8 @@
 (use-package auctex
   :mode ("\\.tex$" . latex-mode)
   :init
-  (add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
-  (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+  (add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
+  (add-hook 'LaTeX-mode-hook #'visual-line-mode)
   (add-hook 'LaTeX-mode-hook
             #'(lambda ()
                 (custom-set-faces '(font-latex-slide-title-face ((t (:inherit font-lock-type-face)))))
@@ -530,6 +471,7 @@
 
 ;; Highlighting for git commit messages
 (use-package git-commit
+  :commands (git-commit-turn-on-flyspell)
   :mode ("COMMIT_EDITMSG$" . git-commit-mode))
 
 ;; ** Configuration modes
@@ -556,20 +498,20 @@
 (use-package which-key
   :diminish
   :commands (which-key-mode)
-  :config (which-key-mode))
+  :hook (elpaca-after-init . which-key-mode))
 
 (use-package compile
   :elpaca nil
   :defer
-  :init
+  :config
   ;; Scroll the compilation window as output is generated
   (setq compilation-scroll-output t))
 
 (use-package cargo
   :commands (cargo-minor-mode)
   :init
-  (add-hook 'rust-mode-hook 'cargo-minor-mode)
-  (add-hook 'toml-mode-hook 'cargo-minor-mode))
+  (add-hook 'rust-mode-hook #'cargo-minor-mode)
+  (add-hook 'toml-mode-hook #'cargo-minor-mode))
 
 (use-package flycheck-rust
   :commands (flycheck-rust-setup)
@@ -580,13 +522,13 @@
   :elpaca nil
   :commands (browse-url-generic)
   :if window-system
-  :init
+  :config
   (setq browse-url-browser-function 'browse-url-generic)
   (setq browse-url-generic-program "xdg-open"))
 
 ;; The ultimate git interface
 (use-package magit
-  :init
+  :config
   ;; Disable vc-mode (using magit)
   (setq vc-handled-backends nil)
   (setq magit-auto-revert-mode nil)
@@ -596,9 +538,9 @@
   (setq git-commit-major-mode 'markdown-mode)
   (setq git-commit-summary-max-length 500)
   (setq ediff-window-setup-function #'ediff-setup-windows-plain)
-  :config
-  (add-hook 'git-commit-setup-hook 'git-commit-turn-on-flyspell)
-  (add-hook 'git-commit-mode-hook 'visual-line-mode)
+  :init
+  (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
+  (add-hook 'git-commit-mode-hook #'visual-line-mode)
   :bind ("C-x g" . magit-status))
 
 ;; Interaction with github (or other forge) repositories (e.g., for issues and PRs)
@@ -632,7 +574,8 @@
 
 (use-package ligature
   :init
-  (add-hook 'prog-mode-hook 'ligature-mode)
+  (add-hook 'prog-mode-hook #'ligature-mode)
+  :commands (ligature-mode)
   :config
   ;; Enable ligatures in programming modes
   (ligature-set-ligatures 'prog-mode '("<==>" "<!--"
@@ -652,33 +595,31 @@
 ;; checks text appearing in comments and string literals.
 (use-package jit-spell
   :commands (jit-spell-correct-word jit-spell-mode)
-  :init
+  :config
   (setq ispell-program-name (executable-find "hunspell")
         ispell-dictionary "en_US")
-  (add-hook 'text-mode-hook 'jit-spell-mode)
-  (add-hook 'rst-mode-hook 'jit-spell-mode)
-  (add-hook 'prog-mode-hook 'jit-spell-mode)
-  (add-hook 'mail-mode-hook 'jit-spell-mode))
-
-
-;; (use-package flyspell-correct
-;;   :commands (flyspell-correct-dummy)
-;;   :init
-;;   (setq flyspell-correct-interface #'flyspell-correct-dummy))
+  :init
+  (add-hook 'text-mode-hook #'jit-spell-mode)
+  (add-hook 'rst-mode-hook #'jit-spell-mode)
+  (add-hook 'prog-mode-hook #'jit-spell-mode)
+  (add-hook 'mail-mode-hook #'jit-spell-mode))
 
 ;; Do some on-the-fly linting using flycheck and various checkers.
 (use-package flycheck
   :commands (flycheck-mode)
   :init
-  (add-hook 'python-mode-hook 'flycheck-mode)
-  (add-hook 'rst-mode-hook 'flycheck-mode)
-  (add-hook 'rust-mode-hook 'flycheck-mode)
-  (add-hook 'emacs-lisp-mode-hook 'flycheck-mode)
-  (add-hook 'sql-mode-hook 'flycheck-mode)
-  (add-hook 'LaTeX-mode-hook 'flycheck-mode)
-  (add-hook 'yaml-mode-hook 'flycheck-mode)
-  (add-hook 'json-mode-hook 'flycheck-mode)
-  (add-hook 'sh-mode-hook 'flycheck-mode))
+  (add-hook 'python-mode-hook #'flycheck-mode)
+  (add-hook 'python-ts-mode-hook #'flycheck-mode)
+  (add-hook 'rst-mode-hook #'flycheck-mode)
+  (add-hook 'rust-mode-hook #'flycheck-mode)
+  (add-hook 'rust-ts-mode-hook #'flycheck-mode)
+  (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
+  (add-hook 'sql-mode-hook #'flycheck-mode)
+  (add-hook 'LaTeX-mode-hook #'flycheck-mode)
+  (add-hook 'yaml-mode-hook #'flycheck-mode)
+  (add-hook 'json-mode-hook #'flycheck-mode)
+  (add-hook 'bash-ts-mode-hook #'flycheck-mode)
+  (add-hook 'sh-mode-hook #'flycheck-mode))
 
 ;; Visual undo (requires emacs-28)
 (use-package vundo
@@ -695,37 +636,38 @@
 ;; A mode for profiling emacs startup times
 (use-package esup
   :commands (esup)
-  :init (setq esup-depth 0))
+  :config (setq esup-depth 0))
 
 ;; ** Helpful minor modes
 
 ;; Highlight 'TODO' and 'FIXME' notes in buffers (as a minor mode)
 (use-package hl-todo
-  :commands
-  (hl-todo-mode)
+  :commands (hl-todo-mode)
   :init
-  (add-hook 'prog-mode-hook 'hl-todo-mode)
-  (add-hook 'LaTeX-mode-hook 'hl-todo-mode))
+  (add-hook 'prog-mode-hook #'hl-todo-mode)
+  (add-hook 'LaTeX-mode-hook #'hl-todo-mode))
 
 ;; Fix pasting into terminal emacs (i.e., paste text as an atomic unit instead
 ;; of a character at a time)
 (use-package bracketed-paste
-  :init
-  (bracketed-paste-enable))
+  :commands (bracketed-paste-enable)
+  :hook (elpaca-after-init . bracketed-paste-enable))
+
 
 ;; Add support for fancy quotes and a few other typographical niceties in plain
 ;; text modes
 (use-package typo
   :diminish typo-mode
+  :commands (typo-mode)
   :init
-  (add-hook 'mail-mode-hook 'typo-mode))
+  (add-hook 'mail-mode-hook #'typo-mode))
 
 ;; ** Navigation
 
 ;; Enable vertico
 (use-package vertico
-  :init
-  (vertico-mode)
+  :commands (vertico-mode)
+  :hook (elpaca-after-init . vertico-mode)
 
   ;; Different scroll margin
   ;; (setq vertico-scroll-margin 0)
@@ -743,8 +685,8 @@
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
   :elpaca nil
-  :init
-  (savehist-mode))
+  :commands (savehist-mode)
+  :hook (elpaca-after-init . savehist-mode))
 
 (use-package emacs
   :elpaca nil
@@ -775,9 +717,6 @@
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
-(use-package crdt
-  :commands (crdt-share-buffer crdt-connect))
-
 (use-package consult
   ;; Replace bindings
   :bind (("C-c o" . consult-outline)
@@ -798,7 +737,7 @@
          ("M-g e" . consult-compile-error)
          ("<help> a" . consult-apropos))
   :commands (consult-annotate-mode consult-annotate-command consult-show-xrefs consult-ripgrep)
-  :init
+  :config
   ;; Replace functions (consult-multi-occur is a drop-in replacement)
   (fset 'multi-occur #'consult-multi-occur)
   (autoload 'projectile-project-root "projectile")
@@ -808,10 +747,8 @@
 
 (use-package marginalia
   ;; The :init configuration is always executed (Not lazy!)
-  :init
-  ;; Must be in the :init section of use-package such that the mode gets
-  ;; enabled right away. Note that this forces loading the package.
-  (marginalia-mode))
+  :commands (marginalia-mode)
+  :hook (elpaca-after-init . marginalia-mode))
 
 (use-package affe
   :after orderless
@@ -837,6 +774,7 @@
   :commands (dumb-jump-xref-activate)
   :init
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  :config
   (setq dumb-jump-force-searcher 'rg))
 
 (use-package resize-window
@@ -844,7 +782,7 @@
 
 (use-package dogears
   :commands (dogears-list dogears-mode)
-  :init (dogears-mode)
+  :hook (elpaca-after-init . dogears-mode)
   ;; These bindings are optional, of course:
   :bind (:map global-map
               ("M-g d" . dogears-go)
@@ -898,8 +836,9 @@
 (use-package projectile
   :diminish projectile-mode
   :bind (("C-c p p" . projectile-switch-project))
+  :commands (projectile-mode)
+  :hook (elpaca-after-init . projectile-mode)
   :config
-  (projectile-mode 1)
   (setq projectile-keymap-prefix  (kbd "C-c p"))
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p s r") 'consult-ripgrep)
@@ -971,24 +910,28 @@
   ;;        (shell-mode . corfu-mode)
   ;;        (eshell-mode . corfu-mode))
 
+  :commands (global-corfu-mode)
   ;; Recommended: Enable Corfu globally.
   ;; This is recommended since Dabbrev can be used globally (M-/).
   ;; See also `corfu-excluded-modes'.
-  :init
-  (global-corfu-mode))
+  :hook (elpaca-after-init . global-corfu-mode))
 
 (use-package cape
+  :commands (cape-dabbrev cape-file)
   :init
   ;; Add `completion-at-point-functions', used by `completion-at-point'.
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-)
+  (add-to-list 'completion-at-point-functions #'cape-file))
+
+(defun tr/enable-corfu-terminal ()
+  "Enable corfu-terminal if running outside the GUI context."
+  (unless (display-graphic-p)
+    (corfu-terminal-mode +1)))
 
 (use-package corfu-terminal
   :elpaca (corfu-terminal :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
-  :init
-  (unless (display-graphic-p)
-    (corfu-terminal-mode +1)))
+  :commands (corfu-terminal-mode)
+  :hook (elpaca-after-init . tr/enable-corfu-terminal))
 
 (use-package ws-butler
   :diminish
@@ -1020,13 +963,21 @@
     (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src"))
     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
+(defun tr/install-treesitter-grammars ()
+  "Install all of the defined tree-sitter grammars."
+  (dolist (lang treesit-language-source-alist)
+    (unless (treesit-language-available-p (car lang))
+      (treesit-install-language-grammar (car lang)))))
+
 ;; Install tree-sitter modes if needed
 (use-package treesit
   :elpaca nil
+  :hook (elpaca-after-init . tr/install-treesitter-grammars)
   :config
-  (dolist (lang treesit-language-source-alist)
-    (unless (treesit-language-available-p (car lang))
-      (treesit-install-language-grammar (car lang))))
+  ;; This special setting method is required for the font lock level
+  (customize-set-variable 'treesit-font-lock-level 4)
+  ;; Use the remap functionality for a few modes that are difficult to directly configure. The
+  ;; script-centric ones are especially tricky due to the interpreter mode hooks.
   (setq major-mode-remap-alist
         '((yaml-mode . yaml-ts-mode)
           (bash-mode . bash-ts-mode)
@@ -1039,15 +990,20 @@
   `((java
      ;; Avoid double-indenting the body of a lambda relative to the previous
      ;; line. The second rule cleans up the closing brace.
-     ((match "block" "lambda_expression") parent-bol 0)
+     ((match "block$" "lambda_expression") parent-bol 0)
      ((node-is "}") parent-bol 0)
-     ((parent-is "block") parent-bol 4)
+     ((parent-is "block$") parent-bol 4)
+
     ;; Place the base rules after the overrides
    ,@(alist-get 'java java-ts-mode--indent-rules))))
 
 (defun tr/init-java-ts-mode ()
   "This hook just sets up the java indent style."
   (setq-local treesit-simple-indent-rules (tr/java-indent-style)))
+
+(use-package c-ts-mode
+  :elpaca nil
+  :mode ("\\.c$" . c-ts-mode))
 
 ;; Configure Java treesitter mode; this declaration tells elpaca to not install
 ;; the mode, as tree-sitter is built-in.
