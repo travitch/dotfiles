@@ -1010,7 +1010,19 @@
 (use-package java-ts-mode
   :elpaca nil
   :mode ("\\.java$" . java-ts-mode)
-  :init (add-hook 'java-ts-mode-hook #'tr/init-java-ts-mode))
+  :bind (:map java-ts-mode-map
+              ("C-c i" . java-imports-add-import-dwim))
+  :init
+  (add-hook 'java-ts-mode-hook #'tr/init-java-ts-mode)
+  (add-hook 'java-ts-mode-hook #'java-imports-scan-file))
+
+;; A utility for adding and sorting Java imports, with a local cache
+;; of class names to packages
+(use-package java-imports
+  :commands (java-imports-add-import-dwim java-imports-scan-file)
+  :config
+  (setq java-imports-save-buffer-after-import-added nil)
+  (setq java-imports-find-block-function #'java-imports-find-place-sorted-block))
 
 (use-package bash-ts-mode
   :elpaca nil
