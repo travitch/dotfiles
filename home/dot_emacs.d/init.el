@@ -992,9 +992,9 @@
   `((java
      ;; Avoid double-indenting the body of a lambda relative to the previous
      ;; line. The second rule cleans up the closing brace.
-     ((match "block$" "lambda_expression") parent-bol 0)
-     ((node-is "}") parent-bol 0)
-     ((parent-is "block$") parent-bol 4)
+     ((match "block$" "lambda_expression") standalone-parent 0)
+     ((node-is "}") standalone-parent 0)
+     ((parent-is "block$") standalone-parent 4)
 
     ;; Place the base rules after the overrides
    ,@(alist-get 'java java-ts-mode--indent-rules))))
