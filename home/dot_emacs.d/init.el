@@ -669,6 +669,10 @@
 
 ;; ** Navigation
 
+(use-package bufler
+  :commands (bufler bufler-mode bufler-switch-buffer)
+  :hook (elpaca-after-init . bufler-mode))
+
 ;; Enable vertico
 (use-package vertico
   :commands (vertico-mode)
