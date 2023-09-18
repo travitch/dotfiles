@@ -10,9 +10,6 @@
 
 (menu-bar-mode -1)
 
-;; Be a bit less noisy with async native compilation warnings
-(setq comp-async-report-warnings-errors nil)
-
 ;; ** Core Behavior
 
 ;; Suppress annoying backup files
@@ -173,6 +170,12 @@
 ;; This section contains customizations of built-in modes that don't actually
 ;; need to be installed.  It is set up through use-package so that
 ;; customizations are grouped by the relevant modes.
+
+(use-package comp
+  :elpaca nil
+  :config
+  ;; Be a bit less noisy with async native compilation warnings
+  (setq native-comp-async-report-warnings-errors nil))
 
 (defun tr/show-trailing-whitespace ()
   "This is a trivial wrapper function around setting a value that can be used in a hook."
