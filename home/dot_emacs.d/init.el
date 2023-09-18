@@ -432,7 +432,7 @@
   (setq markdown-command "pandoc"))
 
 (use-package yaml-mode
-  :mode ("\\.yaml$" . yaml-mode))
+  :mode (("\\.ya?ml$" . yaml-mode)))
 
 (use-package adoc-mode
   :mode ("\\.adoc$" . adoc-mode))
