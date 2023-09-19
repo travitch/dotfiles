@@ -671,6 +671,7 @@
 
 (use-package bufler
   :commands (bufler bufler-mode bufler-switch-buffer)
+  :bind (("C-x b" . bufler-switch-buffer))
   :hook (elpaca-after-init . bufler-mode))
 
 ;; Enable vertico
