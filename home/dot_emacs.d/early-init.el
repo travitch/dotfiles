@@ -9,6 +9,9 @@
 (setq initial-major-mode 'fundamental-mode)
 (setq inhibit-startup-message t)
 (setq inhibit-startup-buffer-menu t)
+(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
 
 ;; Convince emacs that alacrity is fine
 (add-to-list 'term-file-aliases '("alacritty" . "xterm"))
