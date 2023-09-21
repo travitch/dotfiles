@@ -225,13 +225,14 @@
 
 ;; Use solarized light, and turn down some of the more aggressive font choices
 ;; that (especially a few that are proportional).
-(use-package solarized-theme
-  :hook (elpaca-after-init . (lambda () (load-theme 'solarized-light t)))
-  :config
-  (setq solarized-use-variable-pitch nil)
-  (setq solarized-scale-org-headlines nil))
+;; (use-package solarized-theme
+;;   :hook (elpaca-after-init . (lambda () (load-theme 'solarized-light t)))
+;;   :config
+;;   (setq solarized-use-variable-pitch nil)
+;;   (setq solarized-scale-org-headlines nil))
 
-;  (load-theme 'solarized-light t))
+(use-package modus-themes
+  :hook (elpaca-after-init . (lambda () (load-theme 'modus-operandi-tinted))))
 
 ;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
 (use-package simple-modeline
