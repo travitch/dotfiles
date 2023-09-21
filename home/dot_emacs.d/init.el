@@ -668,7 +668,6 @@
 
 (use-package bufler
   :commands (bufler bufler-mode bufler-switch-buffer)
-  :bind (("C-x b" . bufler-switch-buffer))
   :hook (elpaca-after-init . bufler-mode))
 
 ;; Enable vertico
@@ -726,31 +725,70 @@
 
 (use-package consult
   ;; Replace bindings
-  :bind (("C-c o" . consult-outline)
-         ("C-x b" . consult-buffer)
-         ("C-x 4 b" . consult-buffer-other-window)
-         ("C-x 5 b" . consult-buffer-other-frame)
-         ("C-x r x" . consult-register)
-         ("C-x r h" . consult-register-store) ; mnemonic: register "here"
-         ("C-x r b" . consult-bookmark)
-         ("M-g o" . consult-outline) ;; "M-s o" is a good alternative
-         ("M-g m" . consult-mark)    ;; "M-s m" is a good alternative
+  :bind (;; C-c bindings in `mode-specific-map'
+         ("C-c M-x" . consult-mode-command)
+         ("C-c h" . consult-history)
+         ("C-c k" . consult-kmacro)
+         ("C-c m" . consult-man)
+         ("C-c i" . consult-info)
+         ([remap Info-search] . consult-info)
+         ;; C-x bindings in `ctl-x-map'
+         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ;; M-g bindings in `goto-map'
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ;; M-s bindings in `search-map'
+         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ("M-s D" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
          ("C-s" . consult-line)
          ("C-r" . consult-line)
-         ("M-s m" . consult-multi-occur)
-         ("M-y" . consult-yank-pop)
-         ("M-g g" . consult-goto-line)
-         ("M-g M-g" . consult-goto-line)
-         ("M-g e" . consult-compile-error)
-         ("<help> a" . consult-apropos))
-  :commands (consult-annotate-mode consult-annotate-command consult-show-xrefs consult-ripgrep)
+         ("M-s L" . consult-line-multi)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch-history)
+         :map isearch-mode-map
+         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Minibuffer history
+         :map minibuffer-local-map
+         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+  :commands (consult-annotate-mode consult-annotate-command consult-show-xrefs consult-ripgrep consult-xref consult-multi-occur)
+
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+
   :config
   ;; Replace functions (consult-multi-occur is a drop-in replacement)
   (fset 'multi-occur #'consult-multi-occur)
-  (autoload 'projectile-project-root "projectile")
-  (setq xref-show-definitions-function 'consult-xref)
-  (setq xref-show-xrefs-function 'consult-xref)
-  (setq consult-project-root-function #'projectile-project-root))
+  (setq xref-show-definitions-function #'consult-xref)
+  (setq xref-show-xrefs-function #'consult-xref)
+  (setq consult-project-function #'projectile-project-root))
 
 (use-package marginalia
   ;; The :init configuration is always executed (Not lazy!)
@@ -843,7 +881,7 @@
 (use-package projectile
   :diminish projectile-mode
   :bind (("C-c p p" . projectile-switch-project))
-  :commands (projectile-mode)
+  :commands (projectile-mode projectile-project-root)
   :hook (elpaca-after-init . projectile-mode)
   :config
   (setq projectile-keymap-prefix  (kbd "C-c p"))
