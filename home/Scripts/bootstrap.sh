@@ -109,6 +109,7 @@ CARGO_PKGS=( du-dust
              procs
              tagref
              sd
+             ouch
              )
 
 install_cargo_pkgs() {
