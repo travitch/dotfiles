@@ -7,8 +7,9 @@
 # is also set here.
 
 [flags]
+unnormalized_cpu = true
 # Whether to hide the average cpu entry.
-#hide_avg_cpu = false
+# hide_avg_cpu = false
 # Whether to use dot markers rather than braille.
 #dot_marker = false
 # The update rate of the application.
@@ -48,9 +49,9 @@ left_legend = false
 # Disable mouse clicks
 #disable_click = false
 # Built-in themes.  Valid values are "default", "default-light", "gruvbox", "gruvbox-light"
-#color = "default"
+color = "default-light"
 # Show memory values in the processes widget as values by default
-#mem_as_value = false
+mem_as_value = true
 # Show tree mode by default in the processes widget.
 #tree = false
 
