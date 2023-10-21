@@ -385,23 +385,8 @@
 (use-package riscv-mode
   :mode ("\\.riscv$" . riscv-mode))
 
-(use-package lsp-mode
-  :config
-  (setq gc-cons-threshold 100000000)
-  (setq read-process-output-max (* 1024 1024))
-  (setq lsp-log-io nil)
-  :config
-  (add-hook 'java-mode-hook #'(lambda ()
-                                (when (or (eq major-mode 'java-mode) (eq major-mode 'java-ts-mode))
-                                  (lsp-deferred))))
-  :commands (lsp lsp-deferred)
-  :hook ((lsp-mode . lsp-enable-which-key-integration)))
-
-(use-package lsp-ui
-  :commands (lsp-ui-mode))
-
-(use-package lsp-java
-  :after lsp)
+(use-package eglot
+  :commands (eglot eglot-format eglot-shutdown))
 
 (use-package groovy-mode
   :mode (("\\.gradle$" . groovy-mode)

@@ -5,7 +5,7 @@
 EMACS=/usr/local/emacs/current/bin
 HOMEBREW=$HOME/.homebrew/bin:/opt/homebrew/bin
 
-export PATH=$EMACS:$HOME/.local/bin:$HOME/.ghcup/bin:$HOME/.cargo/bin:$HOMEBREW:$HOME/.cabal/bin:/usr/local/bin:/usr/bin:/bin:$HOME/Scripts
+export PATH=$EMACS:$HOME/.local/bin:$HOME/.ghcup/bin:$HOME/.cargo/bin:$HOMEBREW:$HOME/.cabal/bin:/usr/local/bin:/usr/bin:/bin:$HOME/Scripts:$HOME/.emacs.d/language-servers/bin
 export EDITOR='emacs -nw'
 export CLICOLOR=1
 

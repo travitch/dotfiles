@@ -105,7 +105,6 @@ CARGO_PKGS=( du-dust
              spacer
              swordfish-rs
              bottom
-             mcfly
              atuin
              procs
              tagref
@@ -210,13 +209,6 @@ install_yices() {
     fi
 }
 
-install_solvers() {
-    # install_z3
-    # install_yices
-    # install_cvc4
-    echo "solvers"
-}
-
 GIT_MACHETE_VERSION=3.12.0
 GIT_MACHETE_URL="https://github.com/VirtusLab/git-machete/releases/download/v${GIT_MACHETE_VERSION}/git-machete-${GIT_MACHETE_VERSION}-1.noarch.rpm"
 install_git_machete() {
@@ -240,6 +232,46 @@ REMOVED_PKGS=( chromium-browser
 remove_obsolete() {
     # sudo apt-mark auto "${REMOVED_PKGS[@]}"
     echo "Remove obsolete"
+}
+
+LANGUAGE_SERVER_ROOT=$HOME/.emacs.d/language-servers
+
+install_bash_language_server() {
+    if [ ! -d "${LANGUAGE_SERVER_ROOT}/bash-language-server" ]
+    then
+        pushd "${LANGUAGE_SERVER_ROOT}"
+        git clone git@github.com:bash-lsp/bash-language-server.git
+        cd bash-language-server
+        # Haven't figured this out yet - it doesn't seem amenable to local installation
+        npm i bash-language-server
+        popd
+    fi
+}
+
+JDTLS_TARBALL=jdt-language-server-1.28.0-202309281329.tar.gz
+JDTLS_URL="https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.28.0/$JDTLS_TARBALL"
+
+install_java_language_server() {
+    if [ ! -d "${LANGUAGE_SERVER_ROOT}/java-language-server" ]
+    then
+        pushd "${LANGUAGE_SERVER_ROOT}"
+        wget -O "/tmp/${JDTLS_TARBALL}" "${JDTLS_URL}"
+        mkdir -p java-language-server
+        pushd java-language-server
+        tar xf "/tmp/${JDTLS_TARBALL}"
+        popd
+        ln -sf "$(pwd)/java-language-server/bin/jdtls" "$(pwd)/bin/"
+        rm "/tmp/${JDTLS_TARBALL}"
+        popd
+    fi
+}
+
+install_language_servers() {
+    mkdir -p "${LANGUAGE_SERVER_ROOT}"/bin
+    # install_bash_language_server
+    install_java_language_server
+    # No need to install rust-analyzer; already installed and in PATH via rustup
+    pip3 install python-lsp-server
 }
 
 install_packages() {
@@ -276,9 +308,6 @@ bootstrap_gui() {
 
     local pkgs=( ${core_packages[@]} ${gui_packages[@]} )
     install_packages ${pkgs[@]}
-
-
-    # install_snaps
 }
 
 basic_setup() {
@@ -287,8 +316,7 @@ basic_setup() {
 
 install_common() {
     basic_setup
-    # setup_haskell
     install_rustup
     install_cargo_pkgs
-    # install_solvers
+    install_language_servers
 }
