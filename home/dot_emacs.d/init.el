@@ -360,10 +360,6 @@
   :mode ("\\.lean$" . lean-mode))
 
 (use-package boogie-friends
-  :elpaca (boogie-friends :host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
-  :config
-  (setq lsp-dafny-preferred-version "4.0.0")
-  (add-hook 'dafny-mode-hook 'lsp)
   :mode (("\\.bpl$" . boogie-mode)
          ("\\.dfy$" . dafny-mode)))
 
@@ -382,11 +378,11 @@
 (use-package protobuf-mode
   :mode ("\\.proto$" . protobuf-mode))
 
-(use-package riscv-mode
-  :mode ("\\.riscv$" . riscv-mode))
-
 (use-package eglot
-  :commands (eglot eglot-format eglot-shutdown))
+  :commands (eglot eglot-format eglot-shutdown)
+  :config
+  (add-to-list 'eglot-server-programs
+               '(dafny-mode . ("DafnyLanguageServer" "--verifier:timelimit=30" "--documents:verify=onsave"))))
 
 (use-package groovy-mode
   :mode (("\\.gradle$" . groovy-mode)
