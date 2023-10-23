@@ -380,6 +380,9 @@
 
 (use-package eglot
   :commands (eglot eglot-format eglot-shutdown)
+  :init
+  (setq-default eglot-workspace-configuration
+                '(:jdtls (:java (:jdt (:ls (:lombokSupport (:enabled t)))))))
   :config
   (add-to-list 'eglot-server-programs
                '(dafny-mode . ("DafnyLanguageServer" "--verifier:timelimit=30" "--documents:verify=onsave"))))
