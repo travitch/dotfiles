@@ -378,14 +378,52 @@
 (use-package protobuf-mode
   :mode ("\\.proto$" . protobuf-mode))
 
-(use-package eglot
-  :commands (eglot eglot-format eglot-shutdown)
+(use-package lsp-mode
+  :hook ((lsp-mode . lsp-enable-which-key-integration))
   :init
-  (setq-default eglot-workspace-configuration
-                '(:jdtls (:java (:jdt (:ls (:lombokSupport (:enabled t)))))))
+  (setq read-process-output-max (* 1024 1024))
+  ;; Hack around some builds of emacs not having these (especially console only builds), which
+  ;; causes lsp to just not start
+  (add-to-list 'image-types 'gif)
+  (add-to-list 'image-types 'svg)
   :config
-  (add-to-list 'eglot-server-programs
-               '(dafny-mode . ("DafnyLanguageServer" "--verifier:timelimit=30" "--documents:verify=onsave"))))
+  (setq lsp-lens-enable nil)
+  (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-modeline-code-actions-enable nil)
+  (setq lsp-eldoc-render-all t)
+  (setq lsp-eldoc-enable-hover t)
+  (setq lsp-enable-file-watchers nil)
+  (setq lsp-inlay-hint-enable nil)
+  (setq lsp-signature-render-documentation t)
+  ;; Disable the completion; it is too aggressive
+  (setq lsp-completion-provider :none)
+
+
+(defun lsp-describe-thing-at-point ()
+  "Display the full documentation of the thing at point."
+  (interactive)
+  (let ((contents (->> (lsp--text-document-position-params)
+                       (lsp--make-request "textDocument/hover")
+                       (lsp--send-request)
+                       (gethash "contents"))))
+    (eldoc-minibuffer-message "%s" (lsp--render-on-hover-content contents t))))
+
+  :commands (lsp))
+
+(use-package dap-mode
+  :after lsp-mode
+  :commands (dap-hydra dap-auto-configure-mode)
+  :init
+  (add-hook 'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
+  :config
+  (dap-auto-configure-mode))
+
+(use-package lsp-java
+  :commands (dap-java-debug lsp-java-organize-inputs)
+  :config
+  (setq lsp-java-vmargs (append lsp-java-vmargs
+                                `(,(format "-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")))))
+  (setq lsp-java-signature-help-enabled t))
 
 (use-package groovy-mode
   :mode (("\\.gradle$" . groovy-mode)
@@ -474,7 +512,9 @@
 
 (use-package eldoc
   :elpaca nil
-  :diminish eldoc-mode)
+  :diminish eldoc-mode
+  :commands (turn-on-eldoc-mode)
+  :hook (elpaca-after-init . turn-on-eldoc-mode))
 
 ;; ** Major tools
 
