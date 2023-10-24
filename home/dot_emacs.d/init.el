@@ -360,6 +360,9 @@
   :mode ("\\.lean$" . lean-mode))
 
 (use-package boogie-friends
+  :elpaca (boogie-friends :host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
+  :config
+  (setq lsp-dafny-preferred-version "4.3.0")
   :mode (("\\.bpl$" . boogie-mode)
          ("\\.dfy$" . dafny-mode)))
 
