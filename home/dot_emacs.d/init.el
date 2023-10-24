@@ -385,10 +385,10 @@
   :hook ((lsp-mode . lsp-enable-which-key-integration))
   :init
   (setq read-process-output-max (* 1024 1024))
-  ;; Hack around some builds of emacs not having these (especially console only builds), which
-  ;; causes lsp to just not start
-  (add-to-list 'image-types 'gif)
-  (add-to-list 'image-types 'svg)
+  ;; Hack around some builds of emacs not having all image formats
+  (when (boundp 'image-types)
+    (add-to-list 'image-types 'gif)
+    (add-to-list 'image-types 'svg))
   :config
   (setq lsp-lens-enable nil)
   (setq lsp-headerline-breadcrumb-enable nil)
@@ -402,14 +402,16 @@
   (setq lsp-completion-provider :none)
 
 
-(defun lsp-describe-thing-at-point ()
-  "Display the full documentation of the thing at point."
-  (interactive)
-  (let ((contents (->> (lsp--text-document-position-params)
-                       (lsp--make-request "textDocument/hover")
-                       (lsp--send-request)
-                       (gethash "contents"))))
-    (eldoc-minibuffer-message "%s" (lsp--render-on-hover-content contents t))))
+  ;; Override the default version of this to display in the echo area instead of an annoying view
+  ;; buffer
+  (defun lsp-describe-thing-at-point ()
+    "Display the full documentation of the thing at point."
+    (interactive)
+    (let ((contents (->> (lsp--text-document-position-params)
+                         (lsp--make-request "textDocument/hover")
+                         (lsp--send-request)
+                         (gethash "contents"))))
+      (eldoc-minibuffer-message "%s" (lsp--render-on-hover-content contents t))))
 
   :commands (lsp))
 
