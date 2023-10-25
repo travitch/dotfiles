@@ -390,16 +390,6 @@
     (add-to-list 'image-types 'gif)
     (add-to-list 'image-types 'svg))
   :config
-  (setq lsp-lens-enable nil)
-  (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-modeline-code-actions-enable nil)
-  (setq lsp-eldoc-render-all t)
-  (setq lsp-eldoc-enable-hover t)
-  (setq lsp-enable-file-watchers nil)
-  (setq lsp-inlay-hint-enable nil)
-  (setq lsp-signature-render-documentation t)
-  ;; Disable the completion; it is too aggressive
-  (setq lsp-completion-provider :none)
 
 
   ;; Override the default version of this to display in the echo area instead of an annoying view
@@ -412,6 +402,22 @@
                          (lsp--send-request)
                          (gethash "contents"))))
       (eldoc-minibuffer-message "%s" (lsp--render-on-hover-content contents t))))
+
+  (setq lsp-lens-enable nil)
+  (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-modeline-code-actions-enable nil)
+  (setq lsp-eldoc-render-all t)
+  (setq lsp-eldoc-enable-hover t)
+  (setq lsp-enable-file-watchers nil)
+  (setq lsp-inlay-hint-enable nil)
+  (setq lsp-signature-render-documentation t)
+  (setq lsp-enable-indentation nil)
+  (setq lsp-enable-on-type-formatting nil)
+  (setq lsp-idle-delay 2)
+  (add-hook 'lsp-on-idle-hook #'lsp-describe-thing-at-point)
+  ;; Disable the completion; it is too aggressive
+  (setq lsp-completion-provider :none)
+
 
   :commands (lsp))
 
