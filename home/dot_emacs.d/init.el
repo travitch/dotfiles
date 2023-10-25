@@ -414,7 +414,6 @@
   (setq lsp-enable-indentation nil)
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-idle-delay 2)
-  (add-hook 'lsp-on-idle-hook #'lsp-describe-thing-at-point)
   ;; Disable the completion; it is too aggressive
   (setq lsp-completion-provider :none)
 
