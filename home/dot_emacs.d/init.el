@@ -47,7 +47,8 @@
 
 ;; Try to make auto-fill work a bit better in the context of bulleted lists.
 (setq paragraph-start "\f\\|>*[ \t]*$\\|>*[ \t]*[-+*] \\|>*[ \t]*[0-9#]+\\. ")
-(setq paragraph-separate "$")
+(setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f")
+
 (setq-default fill-column 100)
 
 
@@ -403,12 +404,14 @@
                          (gethash "contents"))))
       (eldoc-minibuffer-message "%s" (lsp--render-on-hover-content contents t))))
 
+  (setq lsp-log-io nil)
   (setq lsp-lens-enable nil)
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-modeline-code-actions-enable nil)
   (setq lsp-eldoc-render-all t)
   (setq lsp-eldoc-enable-hover t)
-  (setq lsp-enable-file-watchers nil)
+  (setq lsp-enable-file-watchers t)
+  (add-to-list 'lsp-file-watch-ignored-directories "build$")
   (setq lsp-inlay-hint-enable nil)
   (setq lsp-signature-render-documentation t)
   (setq lsp-enable-indentation nil)
