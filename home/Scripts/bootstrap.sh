@@ -94,6 +94,7 @@ CARGO_PKGS=( du-dust
              starship
              exa
              lsd
+             tailspin
              skim
              tokei
              jql
