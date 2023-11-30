@@ -107,6 +107,7 @@ CARGO_PKGS=( du-dust
              spacer
              swordfish-rs
              bottom
+             jaq
              atuin
              procs
              tagref
