@@ -14,9 +14,11 @@ $character
 """
 
 [hostname]
+ssh_symbol = ""
 ssh_only = false
 format = "[$ssh_symbol on ](bold blue)[$hostname](bold red) "
 disabled = false
+
 
 [aws]
 format = 'on [$symbol$profile]($style) '
