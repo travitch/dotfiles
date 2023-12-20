@@ -97,10 +97,14 @@ font:
     #   - (macOS) Menlo
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
-    family: Cartograph CF # monospace
+    family: Cartograph CF
 
     # The `style` can be specified to pick a specific face.
+{{ if eq .chezmoi.os "darwin" }}
+    style: Light
+{{ else }}
     style: Regular
+{{ end }}
   # Point size
   size: 10.0
 
