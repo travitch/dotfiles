@@ -1269,7 +1269,7 @@ If I let Windows handle DPI everything looks blurry."
     (cond ((eq width-px 1920) (setq size 10))
           ((eq width-px 2560) (setq size 14))
           (t (setq size 14)))
-    (set-frame-font (font-spec :family "Cartograph CF" :size size ))))
+    (set-frame-font (font-spec :family "MonoLisa" :size size ))))
     ;; (set-frame-font (format "MonoLisa CF %s" size))))
 
 (when (display-graphic-p)
