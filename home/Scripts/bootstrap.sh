@@ -113,6 +113,7 @@ CARGO_PKGS=( du-dust
              tagref
              sd
              ouch
+             mdcat
              )
 
 install_cargo_pkgs() {
