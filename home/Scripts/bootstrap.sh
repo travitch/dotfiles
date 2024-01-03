@@ -114,6 +114,7 @@ CARGO_PKGS=( du-dust
              sd
              ouch
              mdcat
+             datavzrd
              )
 
 install_cargo_pkgs() {
