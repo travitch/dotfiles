@@ -7,7 +7,7 @@ set -gx Z3 $HOME/Tools/Z3/current/bin
 set -gx CVC5 $HOME/Tools/CVC5/current/bin
 
 set -gx EDITOR 'emacs -nw'
-set -gx PATH $EMACS:$HOME/Scripts:$CARGO:$HOME/.local/bin:$Z3:$CVC5:$HOMEBREW:$GHC:$CABAL:/bin:/usr/local/bin:/usr/bin
+set -gx PATH $EMACS:$HOME/Scripts:$CARGO:$HOME/.local/bin:$Z3:$CVC5:$HOMEBREW:$GHC:$CABAL:/bin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin
 set -gx CLICOLOR 1
 
 alias e 'emacs -nw'
