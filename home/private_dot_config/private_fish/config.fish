@@ -5,4 +5,7 @@ if status is-interactive
     set -U fish_greeting
 
     starship init fish | source
+
+    # Disable the variables binding, which is Ctrl+V, which interferes with copy/paste
+    fzf_configure_bindings --variables=
 end
