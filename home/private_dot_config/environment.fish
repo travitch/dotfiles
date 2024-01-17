@@ -10,6 +10,8 @@ set -gx EDITOR 'emacs -nw'
 set -gx PATH $EMACS:$HOME/Scripts:$CARGO:$HOME/.local/bin:$Z3:$CVC5:$HOMEBREW:$GHC:$CABAL:/usr/local/bin:/usr/bin
 set -gx CLICOLOR 1
 
+alias e 'emacs -nw'
+
 set LOCAL_ENV $HOME/.config/local-environment.fish
 
 if test -f $LOCAL_ENV
