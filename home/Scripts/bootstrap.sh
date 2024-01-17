@@ -8,6 +8,7 @@ core_packages=(
     emacs-nox
     tmux
     zsh
+    fish
     htop
     powertop
     hunspell
