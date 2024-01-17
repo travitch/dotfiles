@@ -357,6 +357,9 @@
          ("SConstruct$" . python-ts-mode)
          ("SConscript$" . python-ts-mode)))
 
+(use-package fish-mode
+  :mode ("\\.fish$" . fish-mode))
+
 (use-package lean-mode
   :mode ("\\.lean$" . lean-mode))
 
