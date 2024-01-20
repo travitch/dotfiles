@@ -22,6 +22,7 @@ core_packages=(
     rdiff-backup
     openssh
     gnupg2
+    fzf
     # Dev things
     ShellCheck
     clang
