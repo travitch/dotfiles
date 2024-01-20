@@ -342,9 +342,6 @@
   :elpaca nil
   :mode ("\\.rs$" . rust-ts-mode))
 
-(use-package fstar-mode
-  :mode ("\\.fsi$" . fstar-mode))
-
 (use-package forth-mode
   :mode ("\\.fth$" . forth-mode))
 
@@ -499,15 +496,20 @@
   (setq TeX-parse-self t)
   (setq TeX-source-correlate-start-server t))
 
-(use-package auctex
-  :mode ("\\.tex$" . latex-mode)
-  :init
-  (add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
-  (add-hook 'LaTeX-mode-hook #'visual-line-mode)
-  (add-hook 'LaTeX-mode-hook
-            #'(lambda ()
-                (custom-set-faces '(font-latex-slide-title-face ((t (:inherit font-lock-type-face)))))
-                (font-latex-update-sectioning-faces))))
+;; (use-package auctex
+;;   :elpaca  (auctex :pre-build (("./autogen.sh")
+;;                                ("./configure"
+;;                                 "--without-texmf-dir"
+;;                                 "--with-lispdir=.")
+;;                                ("make")))
+;;   :init
+;;   (add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
+;;   (add-hook 'LaTeX-mode-hook #'visual-line-mode)
+;;   (add-hook 'LaTeX-mode-hook
+;;             #'(lambda ()
+;;                 (custom-set-faces '(font-latex-slide-title-face ((t (:inherit font-lock-type-face)))))
+;;                 (font-latex-update-sectioning-faces))))
+
 
 ;; Highlighting for git commit messages
 (use-package git-commit
@@ -585,14 +587,6 @@
   (add-hook 'git-commit-mode-hook #'visual-line-mode)
   :bind ("C-x g" . magit-status))
 
-;; Interaction with github (or other forge) repositories (e.g., for issues and PRs)
-(use-package forge
-  :after magit
-  :commands (forge-pull forge-list-issues forge-list-pullreqs))
-
-;; An emacs interface for doing github code review
-(use-package code-review
-  :commands (code-review-start code-review-forge-pr-at-point))
 
 ;; This package (and keybinding) generates a link to the current point in the
 ;; buffer (or selected range) on github
