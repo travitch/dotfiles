@@ -93,7 +93,6 @@ CARGO_PKGS=( du-dust
              ripgrep
              fd-find
              starship
-             exa
              lsd
              tailspin
              skim
@@ -103,13 +102,10 @@ CARGO_PKGS=( du-dust
              difftastic
              jless
              zellij
-             broot
-             zoxide
              spacer
              swordfish-rs
              bottom
              jaq
-             atuin
              procs
              tagref
              sd
