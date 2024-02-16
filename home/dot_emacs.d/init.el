@@ -141,7 +141,7 @@
   ;; Enable :elpaca use-package keyword.
   (elpaca-use-package-mode)
   ;; Assume :elpaca t unless otherwise specified.
-  (setq elpaca-use-package-by-default t))
+  (setq use-package-always-ensure t))
 
 ;; Block until current queue processed.
 (elpaca-wait)
@@ -169,7 +169,7 @@
 ;; customizations are grouped by the relevant modes.
 
 (use-package comp
-  :elpaca nil
+  :ensure nil
   :config
   ;; Be a bit less noisy with async native compilation warnings
   (setq native-comp-async-report-warnings-errors nil))
@@ -179,19 +179,19 @@
   (setq show-trailing-whitespace t))
 
 (use-package text-mode
-  :elpaca nil
+  :ensure nil
   :preface (provide 'text-mode)
   :init
   (add-hook 'text-mode-hook #'tr/show-trailing-whitespace))
 
 (use-package prog-mode
-  :elpaca nil
+  :ensure nil
   :preface (provide 'prog-mode)
   :init
   (add-hook 'prog-mode-hook #'tr/show-trailing-whitespace))
 
 (use-package conf-mode
-  :elpaca nil
+  :ensure nil
   :preface (provide 'conf-mode)
   :init
   (add-hook 'conf-mode-hook #'tr/show-trailing-whitespace))
@@ -199,7 +199,7 @@
 ;; Set up some handling of mail mode (used through mutt).  mail-mode is provided
 ;; by the sendmail library built-in to emacs, but we want to add some hooks here.
 (use-package sendmail
-  :elpaca nil
+  :ensure nil
   :mode ("/tmp/mutt.*" . mail-mode)
   :init
   (add-hook 'mail-mode-hook #'turn-on-visual-line-mode)
@@ -207,14 +207,14 @@
 
 (use-package abbrev
   :diminish abbrev-mode
-  :elpaca nil
+  :ensure nil
   :config
   (when (file-exists-p abbrev-file-name)
     (quietly-read-abbrev-file)))
 
 ;; Give unique tags to buffers that have the same name to distinguish them.
 (use-package uniquify
-  :elpaca nil
+  :ensure nil
   :config
   (setq uniquify-buffer-name-style #'post-forward-angle-brackets))
 
@@ -279,7 +279,7 @@
                              (modes quote (haskell-mode literate-haskell-mode)))))))
 
 (use-package cmake-ts-mode
-  :elpaca nil
+  :ensure nil
   :mode ("CMakeLists.txt$" . cmake-ts-mode))
 
 (use-package csharp-mode
@@ -299,7 +299,7 @@
   :mode ("\\.jsx$" . rjsx-mode))
 
 (use-package typescript-ts-mode
-  :elpaca nil
+  :ensure nil
   :mode (("\\.ts$" . typescript-ts-mode)
          ("\\.js$" . typescript-ts-mode)))
 
@@ -310,7 +310,7 @@
   :mode ("\\.clj$" . clojure-mode))
 
 (use-package go-ts-mode
-  :elpaca nil
+  :ensure nil
   :mode ("\\.go$" . go-ts-mode))
 
 (use-package scala-mode
@@ -339,14 +339,14 @@
   :mode ("\\.idr$" . idris-mode))
 
 (use-package rust-ts-mode
-  :elpaca nil
+  :ensure nil
   :mode ("\\.rs$" . rust-ts-mode))
 
 (use-package forth-mode
   :mode ("\\.fth$" . forth-mode))
 
 (use-package python-ts-mode
-  :elpaca nil
+  :ensure nil
   :config
   (setq python-shell-interpreter "ipython3")
   (setq python-shell-interpreter-args "--simple-prompt -i")
@@ -361,7 +361,7 @@
   :mode ("\\.lean$" . lean-mode))
 
 (use-package boogie-friends
-  :elpaca (boogie-friends :host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
+  :ensure (boogie-friends :host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
   :config
   (setq lsp-dafny-preferred-version "4.3.0")
   :mode (("\\.bpl$" . boogie-mode)
@@ -451,7 +451,7 @@
   :mode ("\\.plantuml$" . plantuml-mode))
 
 (use-package rst
-  :elpaca nil
+  :ensure nil
   :mode ("\\.rst$" . rst-mode)
   :init
   (add-hook 'rst-mode-hook #'visual-line-mode))
@@ -482,14 +482,14 @@
   ("\\.gql$" . graphql-mode))
 
 (use-package font-latex
-  :elpaca nil
+  :ensure nil
   :defer t
   :config
   (setq font-latex-fontify-script nil)
   (setq font-latex-fontify-sectioning 'color))
 
 (use-package tex
-  :elpaca nil
+  :ensure nil
   :defer t
   :config
   (setq TeX-auto-save t)
@@ -497,7 +497,7 @@
   (setq TeX-source-correlate-start-server t))
 
 ;; (use-package auctex
-;;   :elpaca  (auctex :pre-build (("./autogen.sh")
+;;   :ensure  (auctex :pre-build (("./autogen.sh")
 ;;                                ("./configure"
 ;;                                 "--without-texmf-dir"
 ;;                                 "--with-lispdir=.")
@@ -529,7 +529,7 @@
   :mode ("Dockerfile$" . dockerfile-mode))
 
 (use-package eldoc
-  :elpaca nil
+  :ensure nil
   :diminish eldoc-mode
   :commands (turn-on-eldoc-mode)
   :hook (elpaca-after-init . turn-on-eldoc-mode))
@@ -545,7 +545,7 @@
   :hook (elpaca-after-init . which-key-mode))
 
 (use-package compile
-  :elpaca nil
+  :ensure nil
   :defer
   :config
   ;; Scroll the compilation window as output is generated
@@ -563,7 +563,7 @@
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 (use-package browse-url
-  :elpaca nil
+  :ensure nil
   :commands (browse-url-generic)
   :if window-system
   :config
@@ -724,12 +724,12 @@
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
-  :elpaca nil
+  :ensure nil
   :commands (savehist-mode)
   :hook (elpaca-after-init . savehist-mode))
 
 (use-package emacs
-  :elpaca nil
+  :ensure nil
   :init
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
@@ -1008,7 +1008,7 @@
     (corfu-terminal-mode +1)))
 
 (use-package corfu-terminal
-  :elpaca (corfu-terminal :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :ensure (corfu-terminal :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :commands (corfu-terminal-mode)
   :hook (elpaca-after-init . tr/enable-corfu-terminal))
 
@@ -1050,7 +1050,7 @@
 
 ;; Install tree-sitter modes if needed
 (use-package treesit
-  :elpaca nil
+  :ensure nil
   :hook (elpaca-after-init . tr/install-treesitter-grammars)
   :config
   ;; This special setting method is required for the font lock level
@@ -1081,13 +1081,13 @@
   (setq-local treesit-simple-indent-rules (tr/java-indent-style)))
 
 (use-package c-ts-mode
-  :elpaca nil
+  :ensure nil
   :mode ("\\.c$" . c-ts-mode))
 
 ;; Configure Java treesitter mode; this declaration tells elpaca to not install
 ;; the mode, as tree-sitter is built-in.
 (use-package java-ts-mode
-  :elpaca nil
+  :ensure nil
   :mode ("\\.java$" . java-ts-mode)
   :bind (:map java-ts-mode-map
               ("C-c i" . java-imports-add-import-dwim))
@@ -1105,7 +1105,7 @@
   (setq java-imports-find-block-function #'java-imports-find-place-sorted-block))
 
 (use-package bash-ts-mode
-  :elpaca nil
+  :ensure nil
   :mode (("\\.bash$" . bash-ts-mode)
          ("\\.sh$" . bash-ts-mode)))
 
@@ -1184,11 +1184,11 @@ narrowed."
           (forward-line ))))))
 
 (use-package haskell-pragma
-  :elpaca (haskell-pragma :host github :repo "travitch/haskell-pragma.el")
+  :ensure (haskell-pragma :host github :repo "travitch/haskell-pragma.el")
   :commands (hydra-haskell-pragma/body))
 
 (use-package haskell-interactive-import
-  :elpaca (haskell-interactive-import :host github :repo "travitch/haskell-interactive-import.el")
+  :ensure (haskell-interactive-import :host github :repo "travitch/haskell-interactive-import.el")
   :commands (haskell-interactive-import-begin))
 
 ;; * Keybindings
