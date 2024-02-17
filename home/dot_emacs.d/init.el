@@ -382,6 +382,22 @@
 (use-package protobuf-mode
   :mode ("\\.proto$" . protobuf-mode))
 
+;; A newer jsonrpc is required for dape
+(use-package jsonrpc)
+
+;; Use the built-in eglot (upgrading is kind of challenging)
+(use-package eglot
+  :ensure nil
+  :commands (eglot))
+
+(use-package eglot-java
+  :config
+  (setq eglot-java-eclipse-jdt-args (cons (format "-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")) eglot-java-eclipse-jdt-args))
+  :commands (eglot-java-mode))
+
+(use-package dape
+  :commands (dape))
+
 (use-package lsp-mode
   :hook ((lsp-mode . lsp-enable-which-key-integration))
   :init
