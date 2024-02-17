@@ -390,6 +390,9 @@
   :ensure nil
   :commands (eglot))
 
+(use-package consult-eglot
+  :commands (consult-eglot-symbols))
+
 (use-package eglot-java
   :config
   (setq eglot-java-eclipse-jdt-args (cons (format "-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")) eglot-java-eclipse-jdt-args))
