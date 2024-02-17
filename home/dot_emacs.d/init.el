@@ -388,6 +388,8 @@
 ;; Use the built-in eglot (upgrading is kind of challenging)
 (use-package eglot
   :ensure nil
+  :init
+  (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
   :commands (eglot))
 
 (use-package consult-eglot
