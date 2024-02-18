@@ -391,9 +391,12 @@
   :init
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
   (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
-  :commands (eglot eglot-inlay-hints-mode))
+  :commands (eglot eglot-inlay-hints-mode eglot-code-actions eglot-rename)
+  :bind (("C-c e a" . eglot-code-actions)
+         ("C-c e r" . eglot-rename)))
 
 (use-package consult-eglot
+  :bind ("C-c e s" . consult-eglot-symbols)
   :commands (consult-eglot-symbols))
 
 (use-package eglot-java
