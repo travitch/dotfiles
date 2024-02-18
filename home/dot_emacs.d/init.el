@@ -389,8 +389,9 @@
 (use-package eglot
   :ensure nil
   :init
+  (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
   (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
-  :commands (eglot))
+  :commands (eglot eglot-inlay-hints-mode))
 
 (use-package consult-eglot
   :commands (consult-eglot-symbols))
