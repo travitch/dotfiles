@@ -37,3 +37,10 @@ tokenize
 mitigations
 allowlist
 CDK
+callsite
+Bool
+Bitvector
+Concat
+representable
+orchestrator
+verifier
