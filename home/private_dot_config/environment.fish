@@ -5,9 +5,10 @@ set -l CABAL $HOME/.cabal/bin
 set -l CARGO $HOME/.cargo/bin
 set -l Z3 $HOME/Tools/Z3/current/bin
 set -l CVC5 $HOME/Tools/CVC5/current/bin
+set -l DAFNY $HOME/Tools/Dafny/4.4.0
 
 set -gx EDITOR 'emacs -nw'
-set -gx PATH $EMACS:$HOME/Scripts:$CARGO:$HOME/.local/bin:$Z3:$CVC5:$HOMEBREW:$GHC:$CABAL:/bin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin
+set -gx PATH $EMACS:$HOME/Scripts:$CARGO:$HOME/.local/bin:$Z3:$CVC5:$HOMEBREW:$GHC:$CABAL:$DAFNY:/bin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin
 set -gx CLICOLOR 1
 
 alias e 'emacs -nw'
