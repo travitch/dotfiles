@@ -614,11 +614,6 @@
   (add-hook 'git-commit-mode-hook #'visual-line-mode)
   :bind ("C-x g" . magit-status))
 
-(use-package magit-todos
-  :ensure (magit-todos :main nil)
-  :after magit
-  :hook (elpaca-after-init . magit-todos-mode))
-
 ;; This package (and keybinding) generates a link to the current point in the
 ;; buffer (or selected range) on github
 (use-package git-link
