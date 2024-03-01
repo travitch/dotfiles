@@ -392,6 +392,7 @@
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
   (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
   :config
+  (fset #'jsonrpc--log-event #'ignore)
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
   :commands (eglot eglot-inlay-hints-mode eglot-code-actions eglot-rename)
   :bind (("C-c e a" . eglot-code-actions)
