@@ -10,6 +10,7 @@ set -l DAFNY $HOME/Tools/Dafny/4.4.0
 set -gx EDITOR 'emacs -nw'
 set -gx PATH $EMACS:$HOME/Scripts:$CARGO:$HOME/.local/bin:$Z3:$CVC5:$HOMEBREW:$GHC:$CABAL:$DAFNY:/bin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin
 set -gx CLICOLOR 1
+set -gx COLORTERM truecolor
 
 alias e 'emacs -nw'
 
