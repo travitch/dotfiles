@@ -116,6 +116,9 @@ install_mise_pkgs() {
 
     mise plugin install -y yq
     mise use -g yq
+
+    mise plugin install -y zola
+    mise use -g zola
 }
 
 CARGO_PKGS=( du-dust
