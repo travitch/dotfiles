@@ -94,7 +94,6 @@ install_mise_pkgs() {
     mise use -g go@1.22
     mise use -g java@openjdk-17
     mise use -g java@openjdk-21
-    mise use -g node@21
 
     mise plugin install -y chezmoi
     mise use -g chezmoi
