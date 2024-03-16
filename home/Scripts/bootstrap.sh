@@ -93,7 +93,29 @@ install_mise_pkgs() {
     mise use -g python@3.12
     mise use -g go@1.22
     mise use -g java@openjdk-17
+    mise use -g java@openjdk-21
     mise use -g node@21
+
+    mise plugin install -y chezmoi
+    mise use -g chezmoi
+
+    mise plugin install cmake https://github.com/asdf-community/asdf-cmake.git
+    mise use -g cmake
+
+    mise plugin install -y fzf
+    mise use -g fzf
+
+    mise plugin install -y jq
+    mise use -g jq
+
+    mise plugin install -y maven
+    mise use -g maven
+
+    mise plugin install -y pandoc
+    mise use -g pandoc
+
+    mise plugin install -y yq
+    mise use -g yq
 }
 
 CARGO_PKGS=( du-dust
