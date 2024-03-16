@@ -144,7 +144,6 @@ CARGO_PKGS=( du-dust
              mdcat
              hyperfine
              xh
-             mise
              )
 
 
@@ -327,6 +326,11 @@ basic_setup() {
 install_common() {
     basic_setup
     install_rustup
-    install_cargo_pkgs
+
+    # This needs cargo to be installed, but we also need the mise packages to be installed
+    # (specifically, cmake) before the rest of the cargo packages can be installed
+    cargo install mise
     install_mise_pkgs
+
+    install_cargo_pkgs
 }
