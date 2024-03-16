@@ -88,6 +88,13 @@ install_rustup() {
     fi
 }
 
+
+install_mise_pkgs() {
+    mise use -g python@3.12
+    mise use -g go@1.22
+    mise use -g java@openjdk-17
+}
+
 CARGO_PKGS=( du-dust
              bat
              flamegraph
@@ -114,7 +121,9 @@ CARGO_PKGS=( du-dust
              mdcat
              hyperfine
              xh
+             mise
              )
+
 
 install_cargo_pkgs() {
     . $HOME/.cargo/env
@@ -296,4 +305,5 @@ install_common() {
     basic_setup
     install_rustup
     install_cargo_pkgs
+    install_mise_pkgs
 }
