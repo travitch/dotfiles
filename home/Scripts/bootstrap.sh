@@ -93,6 +93,7 @@ install_mise_pkgs() {
     mise use -g python@3.12
     mise use -g go@1.22
     mise use -g java@openjdk-17
+    mise use -g node@21
 }
 
 CARGO_PKGS=( du-dust
