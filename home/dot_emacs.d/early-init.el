@@ -24,5 +24,10 @@
 
 (setq package-enable-at-startup nil)
 
+;; Work around an issue with updating built-in packages (especially eldoc)
+;;
+;; https://github.com/progfolio/elpaca/issues/236
+(setq elpaca-menu-functions '(elpaca-menu-gnu-devel-elpa))
+
 (provide 'early-init)
 ;;; early-init.el ends here

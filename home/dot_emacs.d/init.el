@@ -95,11 +95,18 @@
 (setq-default truncate-lines t)
 (setq-default require-final-newline t)
 
+;; Work around an issue with updating built-in packages (especially eldoc)
+;;
+;; https://github.com/progfolio/elpaca/issues/236xs
+(unload-feature 'eldoc t)
+(setq custom-delayed-init-variables '())
+(defvar global-eldoc-mode nil)
+
 ;; * Package system setup
 ;;
 ;; Currently using elpaca
 
-(defvar elpaca-installer-version 0.6)
+(defvar elpaca-installer-version 0.7)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -141,10 +148,23 @@
   ;; Enable :elpaca use-package keyword.
   (elpaca-use-package-mode)
   ;; Assume :elpaca t unless otherwise specified.
-  (setq use-package-always-ensure t))
+  (setq elpaca-use-package-by-default t))
+
 
 ;; Block until current queue processed.
 (elpaca-wait)
+
+;; A newer jsonrpc is required for dape
+(use-package jsonrpc :ensure (:depth nil))
+
+;; A newer eldoc is required for an updated eglot
+(use-package eldoc
+  :ensure (:depth nil)
+  :config
+  ;; Work around an issue with updating built-in packages (especially eldoc)
+  ;;
+  ;; https://github.com/progfolio/elpaca/issues/236
+  (global-eldoc-mode))
 
 (use-package org
   :mode ("\\.org$" . org-mode)
@@ -382,12 +402,8 @@
 (use-package protobuf-mode
   :mode ("\\.proto$" . protobuf-mode))
 
-;; A newer jsonrpc is required for dape
-(use-package jsonrpc)
-
-;; Use the built-in eglot (upgrading is kind of challenging)
 (use-package eglot
-  :ensure nil
+  :ensure (:depth nil)
   :init
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
   (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
@@ -410,61 +426,47 @@
 (use-package dape
   :commands (dape))
 
-(use-package lsp-mode
-  :hook ((lsp-mode . lsp-enable-which-key-integration))
+(use-package corfu
+  ;; Optional customizations
+  :custom
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto nil)                 ;; Enable auto completion
+  ;; (corfu-separator ?\s)          ;; Orderless field separator
+  (corfu-quit-at-boundary t)   ;; Never quit at completion boundary
+  (corfu-quit-no-match t)      ;; Never quit, even if there is no match
+  (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect-first nil)    ;; Disable candidate preselection
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  :commands (global-corfu-mode)
+  ;; Recommended: Enable Corfu globally.
+  ;; This is recommended since Dabbrev can be used globally (M-/).
+  ;; See also `corfu-excluded-modes'.
+  :hook (elpaca-after-init . global-corfu-mode))
+
+(use-package cape
+  :commands (cape-dabbrev cape-file)
   :init
-  (setq read-process-output-max (* 1024 1024))
-  ;; Hack around some builds of emacs not having all image formats
-  (when (boundp 'image-types)
-    (add-to-list 'image-types 'gif)
-    (add-to-list 'image-types 'svg))
-  :config
+  ;; Add `completion-at-point-functions', used by `completion-at-point'.
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file))
 
+(defun tr/enable-corfu-terminal ()
+  "Enable corfu-terminal if running outside the GUI context."
+  (unless (display-graphic-p)
+    (corfu-terminal-mode +1)))
 
-  ;; Override the default version of this to display in the echo area instead of an annoying view
-  ;; buffer
-  (defun lsp-describe-thing-at-point ()
-    "Display the full documentation of the thing at point."
-    (interactive)
-    (let ((contents (->> (lsp--text-document-position-params)
-                         (lsp--make-request "textDocument/hover")
-                         (lsp--send-request)
-                         (gethash "contents"))))
-      (eldoc-minibuffer-message "%s" (lsp--render-on-hover-content contents t))))
+(use-package corfu-terminal
+  :ensure (corfu-terminal :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :commands (corfu-terminal-mode)
+  :hook (elpaca-after-init . tr/enable-corfu-terminal))
 
-  (setq lsp-log-io nil)
-  (setq lsp-lens-enable nil)
-  (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-modeline-code-actions-enable nil)
-  (setq lsp-eldoc-render-all t)
-  (setq lsp-eldoc-enable-hover t)
-  (setq lsp-enable-file-watchers t)
-  (add-to-list 'lsp-file-watch-ignored-directories "build$")
-  (setq lsp-inlay-hint-enable nil)
-  (setq lsp-signature-render-documentation t)
-  (setq lsp-enable-indentation nil)
-  (setq lsp-enable-on-type-formatting nil)
-  (setq lsp-idle-delay 2)
-  ;; Disable the completion; it is too aggressive
-  (setq lsp-completion-provider :none)
-
-
-  :commands (lsp))
-
-(use-package dap-mode
-  :after lsp-mode
-  :commands (dap-hydra dap-auto-configure-mode)
-  :init
-  (add-hook 'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
-  :config
-  (dap-auto-configure-mode))
-
-(use-package lsp-java
-  :commands (dap-java-debug lsp-java-organize-inputs)
-  :config
-  (setq lsp-java-vmargs (append lsp-java-vmargs
-                                `(,(format "-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")))))
-  (setq lsp-java-signature-help-enabled t))
 
 (use-package groovy-mode
   :mode (("\\.gradle$" . groovy-mode)
@@ -597,6 +599,8 @@
   :config
   (setq browse-url-browser-function 'browse-url-generic)
   (setq browse-url-generic-program "xdg-open"))
+
+(use-package transient :ensure (:depth nil))
 
 ;; The ultimate git interface
 (use-package magit
@@ -997,47 +1001,6 @@
 
 ;; ** Completion
 
-(use-package corfu
-  ;; Optional customizations
-  :custom
-  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto nil)                 ;; Enable auto completion
-  ;; (corfu-separator ?\s)          ;; Orderless field separator
-  (corfu-quit-at-boundary t)   ;; Never quit at completion boundary
-  (corfu-quit-no-match t)      ;; Never quit, even if there is no match
-  (corfu-preview-current nil)    ;; Disable current candidate preview
-  ;; (corfu-preselect-first nil)    ;; Disable candidate preselection
-  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  ;; (corfu-echo-documentation nil) ;; Disable documentation in the echo area
-  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
-
-  ;; Enable Corfu only for certain modes.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
-
-  :commands (global-corfu-mode)
-  ;; Recommended: Enable Corfu globally.
-  ;; This is recommended since Dabbrev can be used globally (M-/).
-  ;; See also `corfu-excluded-modes'.
-  :hook (elpaca-after-init . global-corfu-mode))
-
-(use-package cape
-  :commands (cape-dabbrev cape-file)
-  :init
-  ;; Add `completion-at-point-functions', used by `completion-at-point'.
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file))
-
-(defun tr/enable-corfu-terminal ()
-  "Enable corfu-terminal if running outside the GUI context."
-  (unless (display-graphic-p)
-    (corfu-terminal-mode +1)))
-
-(use-package corfu-terminal
-  :ensure (corfu-terminal :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
-  :commands (corfu-terminal-mode)
-  :hook (elpaca-after-init . tr/enable-corfu-terminal))
 
 (use-package ws-butler
   :diminish
