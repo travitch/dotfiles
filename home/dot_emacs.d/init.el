@@ -631,6 +631,9 @@
 (use-package vlf
   :commands (vlf))
 
+(use-package devdocs
+  :commands (devdocs-lookup devdocs-peruse))
+
 ;; Improve clipboard interaction, especially in terminals.
 ;;
 ;; This uses the OSC 52 escape sequence to tell the terminal to sync the clipboard if running in a terminal
