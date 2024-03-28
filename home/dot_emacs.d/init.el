@@ -260,7 +260,9 @@
 ;; This mode provides a function that enables a server running from emacs that
 ;; can edit text boxes in browsers using an appropriate extension (see Ghost Text)
 (use-package atomic-chrome
-  :commands (atomic-chrome-start-server))
+  :commands (atomic-chrome-start-server)
+  :config
+  (setq atomic-chrome-default-major-mode 'markdown-mode))
 
 ;; ** Programming modes
 
