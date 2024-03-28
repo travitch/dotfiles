@@ -495,7 +495,8 @@
   :init
   (add-hook 'markdown-mode-hook #'visual-line-mode)
   :config
-  (setq markdown-command "pandoc"))
+  (setq markdown-fontify-code-blocks-natively t)
+  (setq markdown-command "comrak"))
 
 (use-package yaml-mode
   :mode (("\\.ya?ml$" . yaml-mode)))

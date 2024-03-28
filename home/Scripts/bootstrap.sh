@@ -146,6 +146,7 @@ CARGO_PKGS=( du-dust
              mdcat
              hyperfine
              xh
+             comrak
              )
 
 
