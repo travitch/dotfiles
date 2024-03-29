@@ -579,6 +579,9 @@
   :ensure t
   :hook (elpaca-after-init . global-clipetty-mode))
 
+(use-package edit-indirect
+  :commands (edit-indirect-region))
+
 (use-package ligature
   :init
   (add-hook 'prog-mode-hook #'ligature-mode)
