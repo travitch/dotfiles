@@ -1,77 +1,19 @@
+;; Work around an issue with updating built-in packages (especially eldoc)
+;;
+;; https://github.com/progfolio/elpaca/issues/236xs
+(unload-feature 'eldoc t)
+(setq custom-delayed-init-variables '())
+(defvar global-eldoc-mode nil)
+
 ;; * Configuration
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 
+;; ** Customization requiring function calls
+
 ;; Disable some unneeded UI elements
 (when (display-graphic-p)
   (tooltip-mode -1))
-
-;; ** Core Behavior
-
-;; Suppress annoying backup files
-(setq make-backup-files nil)
-
-;; Set up authentication sources (used for forge)
-(setq auth-sources '((:source "~/.emacs.d/authinfo.gpg")))
-(setq auth-source-debug t)
-
-
-;; ** GUI Control
-
-;; Maximize font locking
-(setq font-lock-maximum-decoration t)
-;; Flash the screen instead of generating an audible bell
-(setq visible-bell t)
-;; Show column numbers next to line numbers
-(setq column-number-mode t)
-;; Highlight marked regions (default is invisible)
-(setq transient-mark-mode t)
-(setq mark-even-if-inactive nil)
-;; Don't let the cursor hit the bottom line
-(setq scroll-margin 3)
-
-
-;; ** Window control
-
-;; Only split a window vertically if it has at least this many lines; prevents a
-;; preponderance of tiny windows
-(setq split-height-threshold 50)
-;; Keep the compilation window small
-(setq compilation-window-height 8)
-;; Make font locking quiet
-(setq font-lock-verbose nil)
-
-;; ** Filling parameters
-;;
-;; Set up some bits to try to make paragraph filling  behave a bit better.
-
-;; Try to make auto-fill work a bit better in the context of bulleted lists.
-(setq paragraph-start "\f\\|>*[ \t]*$\\|>*[ \t]*[-+*] \\|>*[ \t]*[0-9#]+\\. ")
-(setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f")
-
-(setq-default fill-column 100)
-
-
-;; ** Copy and paste
-;;
-;; Attempt to tame the various clipboards and make interaction with the system
-;; clipboard a bit smoother.
-
-(setq select-enable-clipboard t)
-(setq select-enable-primary t)
-(setq save-interprogram-paste-before-kill t)
-
-;; ** Interaction
-;;
-;; Make interactive prompts a bit less annoying
-
-;; Let me use just y or n to answer prompts
-(fset 'yes-or-no-p 'y-or-n-p)
-;; Do not enter the interactive debugger when encountering elisp errors.  Set to
-;; t when debugging
-(setq debug-on-error nil)
-
-;; ** Customization requiring function calls
 
 ;; Have delete and backspace delete the entire marked region, if any
 (delete-selection-mode t)
@@ -84,23 +26,6 @@
 ;; Indicate file size in the modeline
 (size-indication-mode 1)
 
-;; ** Buffer-local variables
-;;
-;; Set up defaults for values that are buffer local (using setq-default instead
-;; of just setq)
-
-;;; Set some buffer-local variables to sensible defaults
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 2)
-(setq-default truncate-lines t)
-(setq-default require-final-newline t)
-
-;; Work around an issue with updating built-in packages (especially eldoc)
-;;
-;; https://github.com/progfolio/elpaca/issues/236xs
-(unload-feature 'eldoc t)
-(setq custom-delayed-init-variables '())
-(defvar global-eldoc-mode nil)
 
 ;; * Package system setup
 ;;
@@ -152,20 +77,25 @@
   ;; Assume :elpaca t unless otherwise specified.
   (setq elpaca-use-package-by-default t))
 
-
 ;; Block until current queue processed.
 (elpaca-wait)
 
-;; A newer jsonrpc is required for dape
-(use-package jsonrpc :ensure (:depth nil))
+;; Hide some minor mode indicators in the modeline
+(use-package diminish)
 
-;; A newer eldoc is required for an updated eglot
-(use-package eldoc
-  :ensure (:depth nil)
-  :config
-  ;; Work around an issue with updating built-in packages (especially eldoc)
-  ;;
-  ;; https://github.com/progfolio/elpaca/issues/236
+(elpaca-wait)
+
+;; While this package is included with emacs now, a newer version is required for dape
+(use-package jsonrpc
+  :ensure (:depth nil))
+
+;; Work around an issue with updating built-in packages (especially eldoc)
+;;
+;; https://github.com/progfolio/elpaca/issues/236
+;;
+;; A newer eldoc is required in order to update eglot from [M]ELPA
+(elpaca eldoc
+  (require 'eldoc)
   (global-eldoc-mode))
 
 (use-package org
@@ -197,7 +127,7 @@
   (setq native-comp-async-report-warnings-errors nil))
 
 (defun tr/show-trailing-whitespace ()
-  "This is a trivial wrapper function around setting a value that can be used in a hook."
+  "A trivial wrapper function around setting a value that can be used in a hook."
   (setq show-trailing-whitespace t))
 
 (use-package text-mode
@@ -253,12 +183,16 @@
 (use-package modus-themes
   :hook (elpaca-after-init . (lambda () (load-theme 'modus-operandi-tinted))))
 
+(add-hook 'elpaca-after-init-hook (lambda () (load-theme 'modus-operandi-tinted)))
+
 ;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
 (use-package simple-modeline
   :hook (elpaca-after-init . simple-modeline-mode))
 
 ;; This mode provides a function that enables a server running from emacs that
-;; can edit text boxes in browsers using an appropriate extension (see Ghost Text)
+;; can edit text boxes in browsers using an appropriate extension.
+;;
+;; See Ghost Text: https://github.com/fregante/GhostText
 (use-package atomic-chrome
   :commands (atomic-chrome-start-server)
   :config
@@ -397,6 +331,7 @@
 (use-package matlab-mode
   :mode ("\\.m$" . matlab-mode))
 
+;; This is a JSON mode that is optimized to handle larger files well
 (use-package jsonian
   :mode ("\\.json$" . jsonian-mode))
 
@@ -406,13 +341,19 @@
 (use-package protobuf-mode
   :mode ("\\.proto$" . protobuf-mode))
 
+;; Update the built-in eglot with the latest from [M]ELPA
 (use-package eglot
   :ensure (:depth nil)
   :init
+  ;; Prevent the server from auto-updating buffer contents while typing
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
+  ;; Hide inlays, but in a way that they can be re-enabled more easily than ignoring the server
+  ;; capability
   (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
   :config
+  ;; This is a suggestion floating around that ignores some JSON-RPC messages to improve efficiency
   (fset #'jsonrpc--log-event #'ignore)
+  ;; Add a custom handler for Dafny programs to start up Dafny's built-in LSP server
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
   :commands (eglot eglot-inlay-hints-mode eglot-code-actions eglot-rename)
   :bind (("C-c e a" . eglot-code-actions)
@@ -422,16 +363,19 @@
   :bind ("C-c e s" . consult-eglot-symbols)
   :commands (consult-eglot-symbols))
 
+;; This mode adds easy (and automated) installation of the Java language server
 (use-package eglot-java
   :config
   (setq eglot-java-eclipse-jdt-args (cons (format "-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")) eglot-java-eclipse-jdt-args))
   :commands (eglot-java-mode))
 
+;; A debug adapter protocol implementation that works with eglot
+;;
+;; Note: This needs some extra configuration that isn't done yet
 (use-package dape
   :commands (dape))
 
 (use-package corfu
-  ;; Optional customizations
   :custom
   ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto nil)                 ;; Enable auto completion
@@ -443,15 +387,7 @@
   ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
   ;; (corfu-scroll-margin 5)        ;; Use scroll margin
 
-  ;; Enable Corfu only for certain modes.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
-
   :commands (global-corfu-mode)
-  ;; Recommended: Enable Corfu globally.
-  ;; This is recommended since Dabbrev can be used globally (M-/).
-  ;; See also `corfu-excluded-modes'.
   :hook (elpaca-after-init . global-corfu-mode))
 
 (use-package cape
@@ -508,6 +444,9 @@
   :after org
   :commands (toc-org-enable))
 
+;; This is for the D2 declarative diagramming language
+;;
+;; See https://d2lang.com/
 (use-package d2-mode
   :mode ("\\.d2$" . d2-mode))
 
@@ -563,12 +502,6 @@
 (use-package dockerfile-mode
   :mode ("Dockerfile$" . dockerfile-mode))
 
-(use-package eldoc
-  :ensure nil
-  :diminish eldoc-mode
-  :commands (turn-on-eldoc-mode)
-  :hook (elpaca-after-init . turn-on-eldoc-mode))
-
 ;; ** Major tools
 
 ;; Show the next possible keys in a key chord, after a key chord has been
@@ -592,10 +525,12 @@
   (add-hook 'rust-mode-hook #'cargo-minor-mode)
   (add-hook 'toml-mode-hook #'cargo-minor-mode))
 
-(use-package flycheck-rust
-  :commands (flycheck-rust-setup)
-  :init
-  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+;; This is disabled for now; Eglot is better in general
+;;
+;; (use-package flycheck-rust
+;;   :commands (flycheck-rust-setup)
+;;   :init
+;;   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 (use-package browse-url
   :ensure nil
@@ -644,9 +579,6 @@
   :ensure t
   :hook (elpaca-after-init . global-clipetty-mode))
 
-;; Hide some minor mode indicators in the modeline
-(use-package diminish)
-
 (use-package ligature
   :init
   (add-hook 'prog-mode-hook #'ligature-mode)
@@ -686,8 +618,6 @@
   (add-hook 'python-mode-hook #'flycheck-mode)
   (add-hook 'python-ts-mode-hook #'flycheck-mode)
   (add-hook 'rst-mode-hook #'flycheck-mode)
-  (add-hook 'rust-mode-hook #'flycheck-mode)
-  (add-hook 'rust-ts-mode-hook #'flycheck-mode)
   (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
   (add-hook 'sql-mode-hook #'flycheck-mode)
   (add-hook 'LaTeX-mode-hook #'flycheck-mode)
@@ -767,9 +697,79 @@
   :commands (savehist-mode)
   :hook (elpaca-after-init . savehist-mode))
 
+;; Configuration for builtins
 (use-package emacs
   :ensure nil
   :init
+  ;; ** Filling parameters
+  ;;
+  ;; Set up some bits to try to make paragraph filling  behave a bit better.
+
+  ;; Try to make auto-fill work a bit better in the context of bulleted lists.
+  (setq paragraph-start "\f\\|>*[ \t]*$\\|>*[ \t]*[-+*] \\|>*[ \t]*[0-9#]+\\. ")
+  (setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f")
+  (setq-default fill-column 100)
+
+  ;; ** Core Behavior
+
+  ;; Suppress annoying backup files
+  (setq make-backup-files nil)
+
+  ;; ** GUI Control
+
+  ;; Maximize font locking
+  (setq font-lock-maximum-decoration t)
+  ;; Flash the screen instead of generating an audible bell
+  (setq visible-bell t)
+  ;; Show column numbers next to line numbers
+  (setq column-number-mode t)
+  ;; Highlight marked regions (default is invisible)
+  (setq transient-mark-mode t)
+  (setq mark-even-if-inactive nil)
+  ;; Don't let the cursor hit the bottom line
+  (setq scroll-margin 3)
+
+
+  ;; ** Window control
+
+  ;; Only split a window vertically if it has at least this many lines; prevents a
+  ;; preponderance of tiny windows
+  (setq split-height-threshold 50)
+  ;; Keep the compilation window small
+  (setq compilation-window-height 8)
+  ;; Make font locking quiet
+  (setq font-lock-verbose nil)
+
+
+  ;; ** Copy and paste
+  ;;
+  ;; Attempt to tame the various clipboards and make interaction with the system
+  ;; clipboard a bit smoother.
+  (setq select-enable-clipboard t)
+  (setq select-enable-primary t)
+  (setq save-interprogram-paste-before-kill t)
+
+  ;; ** Interaction
+  ;;
+  ;; Make interactive prompts a bit less annoying
+
+  ;; Let me use just y or n to answer prompts
+  (fset 'yes-or-no-p 'y-or-n-p)
+  ;; Do not enter the interactive debugger when encountering elisp errors.  Set to
+  ;; t when debugging
+  (setq debug-on-error nil)
+
+  ;; ** Buffer-local variables
+  ;;
+  ;; Set up defaults for values that are buffer local (using setq-default instead
+  ;; of just setq)
+
+  ;;; Set some buffer-local variables to sensible defaults
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 2)
+  (setq-default truncate-lines t)
+  (setq-default require-final-newline t)
+
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
   (defun crm-indicator (args)
@@ -1007,9 +1007,7 @@
   :bind
   (("C-x l" . ialign)))
 
-;; ** Completion
-
-
+;; Only clean up whitespace of changed lines
 (use-package ws-butler
   :diminish
   :commands (ws-butler-mode)
@@ -1093,14 +1091,6 @@
   (add-hook 'java-ts-mode-hook #'tr/init-java-ts-mode)
   (add-hook 'java-ts-mode-hook #'(lambda () (setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f")))
   (add-hook 'java-ts-mode-hook #'java-imports-scan-file))
-
-;; A utility for adding and sorting Java imports, with a local cache
-;; of class names to packages
-(use-package java-imports
-  :commands (java-imports-add-import-dwim java-imports-scan-file)
-  :config
-  (setq java-imports-save-buffer-after-import-added nil)
-  (setq java-imports-find-block-function #'java-imports-find-place-sorted-block))
 
 (use-package bash-ts-mode
   :ensure nil
