@@ -579,8 +579,11 @@
   :ensure t
   :hook (elpaca-after-init . global-clipetty-mode))
 
-(use-package edit-indirect
-  :commands (edit-indirect-region))
+(use-package separedit
+  :bind ("C-c '" . separedit)
+  :commands (separedit)
+  :config
+  (setq separedit-default-mode 'markdown-mode))
 
 (use-package ligature
   :init
@@ -883,11 +886,6 @@
 
 (use-package helpful
   :commands (helpful-function helpful-variable helpful-at-point helpful-key))
-
-(use-package poporg
-  :bind
-  ("C-c \"" . poporg-dwim)
-  :commands (poporg-dwim))
 
 ;; A mode for jumping to definitions that works far better than it has any right
 ;; to.  Works on most languages worth mentioning, and then some.
