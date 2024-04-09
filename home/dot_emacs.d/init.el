@@ -1090,8 +1090,7 @@
               ("C-c i" . java-imports-add-import-dwim))
   :init
   (add-hook 'java-ts-mode-hook #'tr/init-java-ts-mode)
-  (add-hook 'java-ts-mode-hook #'(lambda () (setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f")))
-  (add-hook 'java-ts-mode-hook #'java-imports-scan-file))
+  (add-hook 'java-ts-mode-hook #'(lambda () (setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f"))))
 
 (use-package bash-ts-mode
   :ensure nil
