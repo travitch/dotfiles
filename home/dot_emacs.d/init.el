@@ -295,8 +295,14 @@
 (use-package fish-mode
   :mode ("\\.fish$" . fish-mode))
 
-(use-package lean-mode
-  :mode ("\\.lean$" . lean-mode))
+(use-package lean4-mode
+  :ensure (lean4-mode
+	     :type git
+	     :host github
+	     :repo "leanprover/lean4-mode"
+	     :files ("*.el" "data"))
+  :mode ("\\.lean$" . lean4-mode))
+
 
 (use-package boogie-friends
   :ensure (boogie-friends :host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
