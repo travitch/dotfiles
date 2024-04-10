@@ -1,10 +1,3 @@
-;; Work around an issue with updating built-in packages (especially eldoc)
-;;
-;; https://github.com/progfolio/elpaca/issues/236xs
-(unload-feature 'eldoc t)
-(setq custom-delayed-init-variables '())
-(defvar global-eldoc-mode nil)
-
 ;; * Configuration
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
@@ -84,19 +77,6 @@
 (use-package diminish)
 
 (elpaca-wait)
-
-;; While this package is included with emacs now, a newer version is required for dape
-(use-package jsonrpc
-  :ensure (:depth nil))
-
-;; Work around an issue with updating built-in packages (especially eldoc)
-;;
-;; https://github.com/progfolio/elpaca/issues/236
-;;
-;; A newer eldoc is required in order to update eglot from [M]ELPA
-(elpaca eldoc
-  (require 'eldoc)
-  (global-eldoc-mode))
 
 (use-package org
   :mode ("\\.org$" . org-mode)
@@ -341,9 +321,9 @@
 (use-package protobuf-mode
   :mode ("\\.proto$" . protobuf-mode))
 
-;; Update the built-in eglot with the latest from [M]ELPA
+;; Set up eglot (which now ships with emacs)
 (use-package eglot
-  :ensure (:depth nil)
+  :ensure nil
   :init
   ;; Prevent the server from auto-updating buffer contents while typing
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
@@ -355,6 +335,11 @@
   (fset #'jsonrpc--log-event #'ignore)
   ;; Add a custom handler for Dafny programs to start up Dafny's built-in LSP server
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
+  (let ((lombok-arg (format "--jvm-arg=-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")))
+        (jdtls-bin (expand-file-name "~/.emacs.d/language-servers/java-language-server/bin/jdtls")))
+    (add-to-list 'eglot-server-programs `(java-mode ,jdtls-bin ,lombok-arg))
+    (add-to-list 'eglot-server-programs `(java-ts-mode ,jdtls-bin ,lombok-arg)))
+
   :commands (eglot eglot-inlay-hints-mode eglot-code-actions eglot-rename)
   :bind (("C-c e a" . eglot-code-actions)
          ("C-c e r" . eglot-rename)))
@@ -364,16 +349,20 @@
   :commands (consult-eglot-symbols))
 
 ;; This mode adds easy (and automated) installation of the Java language server
-(use-package eglot-java
-  :config
-  (setq eglot-java-eclipse-jdt-args (cons (format "-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")) eglot-java-eclipse-jdt-args))
-  :commands (eglot-java-mode))
+;; (use-package eglot-java
+;;   :config
+;;   (setq eglot-java-eclipse-jdt-args (cons (format "-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")) eglot-java-eclipse-jdt-args))
+;;   :commands (eglot-java-mode))
 
 ;; A debug adapter protocol implementation that works with eglot
 ;;
 ;; Note: This needs some extra configuration that isn't done yet
-(use-package dape
-  :commands (dape))
+;;
+;; This will be nice, but requires a newer jsonrpc than is included with emacs. Updating that is
+;; painful, so just wait to install it.
+;;
+;; (use-package dape
+;;   :commands (dape))
 
 (use-package corfu
   :custom
@@ -1086,8 +1075,6 @@
 (use-package java-ts-mode
   :ensure nil
   :mode ("\\.java$" . java-ts-mode)
-  :bind (:map java-ts-mode-map
-              ("C-c i" . java-imports-add-import-dwim))
   :init
   (add-hook 'java-ts-mode-hook #'tr/init-java-ts-mode)
   (add-hook 'java-ts-mode-hook #'(lambda () (setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f"))))

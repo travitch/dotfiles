@@ -90,10 +90,7 @@ install_rustup() {
 
 
 install_mise_pkgs() {
-    mise use -g python@3.12
     mise use -g go@1.22
-    mise use -g java@openjdk-17
-    mise use -g java@openjdk-21
 
     mise plugin install -y chezmoi
     mise use -g chezmoi
@@ -247,31 +244,6 @@ install_yices() {
     fi
 }
 
-GIT_MACHETE_VERSION=3.12.0
-GIT_MACHETE_URL="https://github.com/VirtusLab/git-machete/releases/download/v${GIT_MACHETE_VERSION}/git-machete-${GIT_MACHETE_VERSION}-1.noarch.rpm"
-install_git_machete() {
-    if [ ! -x "$(which git-machete)" ]
-    then
-        local tmpdir
-        tmpdir=$(mktemp -d)
-        pushd "${tmpdir}"
-        curl -L -o git-machete.rpm "${GIT_MACHETE_URL}"
-        sudo dnf install --assumeyes ./git-machete.rpm
-        popd
-        rm -rf "${tmpdir}"
-    fi
-}
-
-REMOVED_PKGS=( chromium-browser
-               chromium-codecs-ffmpeg-extra
-               chromium-browser-l10n
-             )
-
-remove_obsolete() {
-    # sudo apt-mark auto "${REMOVED_PKGS[@]}"
-    echo "Remove obsolete"
-}
-
 LANGUAGE_SERVER_ROOT=$HOME/.emacs.d/language-servers
 
 install_bash_language_server() {
@@ -283,6 +255,17 @@ install_bash_language_server() {
         # Haven't figured this out yet - it doesn't seem amenable to local installation
         npm i bash-language-server
         popd
+    fi
+}
+
+JAVA_LS_URL="https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.34.0/jdt-language-server-1.34.0-202404031240.tar.gz"
+
+install_java_language_server() {
+    if [ ! -d "${LANGUAGE_SERVER_ROOT}/java-language-server" ]
+    then
+        mkdir -p "${LANGUAGE_SERVER_ROOT}/java-language-server"
+        wget $JAVA_LS_URL --output-document=/tmp/jdtls.tar.gz
+        tar xf /tmp/jdtls.tar.gz -C "${LANGUAGE_SERVER_ROOT}/java-language-server"
     fi
 }
 
@@ -300,7 +283,6 @@ install_packages() {
 bootstrap_core() {
     local pkgs=( ${core_packages[@]} )
     install_packages ${pkgs[@]}
-    install_git_machete
 }
 
 add_fedora_repositories() {
@@ -336,4 +318,6 @@ install_common() {
     install_mise_pkgs
 
     install_cargo_pkgs
+
+    install_java_language_server
 }
