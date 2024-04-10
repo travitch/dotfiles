@@ -340,6 +340,14 @@
     (add-to-list 'eglot-server-programs `(java-mode ,jdtls-bin ,lombok-arg))
     (add-to-list 'eglot-server-programs `(java-ts-mode ,jdtls-bin ,lombok-arg)))
 
+  ;; jdtls has a non-standard reply for workspace edit requests
+  ;;
+  ;; See: https://github.com/joaotavora/eglot/discussions/888
+  (cl-defmethod eglot-execute-command
+    (_server (_cmd (eql java.apply.workspaceEdit)) arguments)
+    "Eclipse JDT breaks spec and replies with edits as arguments."
+    (mapc #'eglot--apply-workspace-edit arguments))
+
   :commands (eglot eglot-inlay-hints-mode eglot-code-actions eglot-rename)
   :bind (("C-c e a" . eglot-code-actions)
          ("C-c e r" . eglot-rename)))
