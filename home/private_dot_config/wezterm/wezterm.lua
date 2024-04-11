@@ -3,7 +3,10 @@ local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
 
 config.font = wezterm.font 'MonoLisa'
-config.color_scheme = 'Solarized (light) (terminal.sexy)'
+-- config.color_scheme = 'Builtin Solarized Light'
+config.color_scheme = 'dayfox'
+
+
 
 config.enable_tab_bar = false
 config.term = 'wezterm'
