@@ -587,6 +587,9 @@
   (setq browse-url-browser-function 'browse-url-generic)
   (setq browse-url-generic-program "xdg-open"))
 
+(use-package literate-calc-mode
+  :commands (literate-calc-minor-mode literate-calc-eval-line literate-calc-eval-region literate-calc-eval-buffer))
+
 (use-package transient :ensure (:depth nil))
 
 ;; The ultimate git interface
