@@ -129,6 +129,7 @@ CARGO_PKGS=( du-dust
              tokei
              jql
              git-delta
+             hexyl
              difftastic
              jless
              zellij
