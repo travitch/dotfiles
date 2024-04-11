@@ -140,6 +140,8 @@ CARGO_PKGS=( du-dust
              procs
              tagref
              sd
+             jnv
+             rust-parallel
              ouch
              mdcat
              hyperfine
