@@ -346,6 +346,50 @@
     (add-to-list 'eglot-server-programs `(java-mode ,jdtls-bin ,lombok-arg))
     (add-to-list 'eglot-server-programs `(java-ts-mode ,jdtls-bin ,lombok-arg)))
 
+  ;; jdtls has non-standard URIs (sometimes)
+  ;;
+  ;; See https://github.com/joaotavora/eglot/discussions/1185
+  (defvar eglot-path-uri-cache (make-hash-table :test #'equal)
+    "File path to uri cache.")
+
+  (cl-defgeneric +eglot/ext-uri-to-path (uri)
+    "Support extension uri."
+    nil)
+
+  (define-advice eglot--uri-to-path (:around (orig-fn uri) advice)
+    "Support non standard LSP uri scheme."
+    (when (keywordp uri) (setq uri (substring (symbol-name uri) 1)))
+    (or (+eglot/ext-uri-to-path uri)
+        (funcall orig-fn uri)))
+
+  (define-advice eglot--path-to-uri (:around (orig-fn path) advice)
+    "Support non standard LSP uri scheme."
+    (or (gethash path eglot-path-uri-cache)
+        (funcall orig-fn path)))
+
+  (defun +eglot/jdtls-uri-to-path (uri)
+    "Support Eclipse jdtls `jdt://' uri scheme."
+    (when-let* ((jdt-scheme-p (string-prefix-p "jdt://" uri))
+                (filename (when (string-match "^jdt://contents/\\(.*?\\)/\\(.*\\)\.class\\?" uri)
+                            (format "%s.java" (replace-regexp-in-string "/" "." (match-string 2 uri) t t))))
+                (source-dir (file-name-concat (project-root (eglot--current-project)) ".eglot"))
+                (source-file (expand-file-name (file-name-concat source-dir filename))))
+      (unless (file-directory-p source-dir)
+        (make-directory source-dir t))
+      (unless (file-readable-p source-file)
+        (let ((content (jsonrpc-request (eglot--current-server-or-lose)
+                                        :java/classFileContents
+                                        (list :uri uri))))
+          (with-temp-file source-file (insert content))))
+      (puthash source-file uri eglot-path-uri-cache)
+      source-file))
+
+  (cl-defmethod +eglot/ext-uri-to-path (uri &context (major-mode java-mode))
+    (+eglot/jdtls-uri-to-path uri))
+
+  (cl-defmethod +eglot/ext-uri-to-path (uri &context (major-mode java-ts-mode))
+    (+eglot/jdtls-uri-to-path uri))
+
   ;; jdtls has a non-standard reply for workspace edit requests
   ;;
   ;; See: https://github.com/joaotavora/eglot/discussions/888
