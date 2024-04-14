@@ -342,9 +342,10 @@
   ;; Add a custom handler for Dafny programs to start up Dafny's built-in LSP server
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
   (let ((lombok-arg (format "--jvm-arg=-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")))
-        (jdtls-bin (expand-file-name "~/.emacs.d/language-servers/java-language-server/bin/jdtls")))
-    (add-to-list 'eglot-server-programs `(java-mode ,jdtls-bin ,lombok-arg))
-    (add-to-list 'eglot-server-programs `(java-ts-mode ,jdtls-bin ,lombok-arg)))
+        (jdtls-bin (expand-file-name "~/.emacs.d/language-servers/java-language-server/bin/jdtls"))
+        (init-opts `(:bundles [,(expand-file-name "~/.emacs.d/language-servers/java-debug-adapter/com.microsoft.java.debug.repository/target/repository/plugins/com.microsoft.java.debug.plugin_0.52.0.jar")])))
+    (add-to-list 'eglot-server-programs `(java-mode ,jdtls-bin ,lombok-arg :initializationOptions ,init-opts))
+    (add-to-list 'eglot-server-programs `(java-ts-mode ,jdtls-bin ,lombok-arg :initializationOptions ,init-opts)))
 
   ;; jdtls has non-standard URIs (sometimes)
   ;;
@@ -589,6 +590,12 @@
 
 (use-package literate-calc-mode
   :commands (literate-calc-minor-mode literate-calc-eval-line literate-calc-eval-region literate-calc-eval-buffer))
+
+(use-package jsonrpc :ensure (:depth nil))
+(use-package dape
+  :commands (dape)
+  :config
+  (setq dape-cwd-fn 'projectile-project-root))
 
 (use-package transient :ensure (:depth nil))
 

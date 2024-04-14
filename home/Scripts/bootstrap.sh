@@ -271,6 +271,20 @@ install_java_language_server() {
     fi
 }
 
+JAVA_DEBUG_ADAPTER_URL=https://github.com/microsoft/java-debug/archive/refs/tags/0.52.0.tar.gz
+
+install_java_debug_adapter() {
+    if [ ! -d "${LANGUAGE_SERVER_ROOT}/java-debug-adapter" ]
+    then
+        mkdir -p "${LANGUAGE_SERVER_ROOT}/java-debug-adapter"
+        wget $JAVA_DEBUG_ADAPTER_URL --output-document=/tmp/java-debug-adapter.tar.gz
+        tar xf /tmp/java-debug-adapter.tar.gz -C "${LANGUAGE_SERVER_ROOT}/java-debug-adapter" --strip-components=1
+        pushd "${LANGUAGE_SERVER_ROOT}/java-debug-adapter"
+        ./mvnw clean install
+        popd
+    fi
+}
+
 install_packages() {
     local pkgs=($@)
     # Sort the package names (xargs breaks the single line up into a column)
@@ -322,4 +336,5 @@ install_common() {
     install_cargo_pkgs
 
     install_java_language_server
+    install_java_debug_adapter
 }
