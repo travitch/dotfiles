@@ -853,6 +853,11 @@
           (cdr args)))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
+  ;; Temporary: Suppress some warnings that arise due to upgrading jsonrpc
+  ;;
+  ;; This should be deleted after updating to emacs-30
+  (setq warning-suppress-types '((emacs) (eglot)))
+
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
         '(read-only t cursor-intangible t face minibuffer-prompt))
