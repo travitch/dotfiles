@@ -327,6 +327,15 @@
 (use-package protobuf-mode
   :mode ("\\.proto$" . protobuf-mode))
 
+(defconst +tr/jdtls-path (expand-file-name "~/.emacs.d/language-servers/java-language-server/bin/jdtls")
+  "The absolute path to the JDTLS langauge server binary.")
+
+(defconst +tr/java-debug-plugin-path (expand-file-name "~/.emacs.d/language-servers/java-debug-adapter/com.microsoft.java.debug.repository/target/repository/plugins/com.microsoft.java.debug.plugin_0.52.0.jar")
+  "The absolute path to the compiled Java debug plugin (for dape).")
+
+(defconst +tr/lombok-jar-path (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")
+  "The absolute path to the lombok jar.")
+
 ;; Set up eglot (which now ships with emacs)
 (use-package eglot
   :ensure nil
@@ -341,9 +350,9 @@
   (fset #'jsonrpc--log-event #'ignore)
   ;; Add a custom handler for Dafny programs to start up Dafny's built-in LSP server
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
-  (let ((lombok-arg (format "--jvm-arg=-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")))
-        (jdtls-bin (expand-file-name "~/.emacs.d/language-servers/java-language-server/bin/jdtls"))
-        (init-opts `(:bundles [,(expand-file-name "~/.emacs.d/language-servers/java-debug-adapter/com.microsoft.java.debug.repository/target/repository/plugins/com.microsoft.java.debug.plugin_0.52.0.jar")])))
+  (let ((lombok-arg (format "--jvm-arg=-javaagent:%s" +tr/lombok-jar-path))
+        (jdtls-bin +tr/jdtls-path)
+        (init-opts `(:bundles [,+tr/java-debug-plugin-path])))
     (add-to-list 'eglot-server-programs `(java-mode ,jdtls-bin ,lombok-arg :initializationOptions ,init-opts))
     (add-to-list 'eglot-server-programs `(java-ts-mode ,jdtls-bin ,lombok-arg :initializationOptions ,init-opts)))
 
