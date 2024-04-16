@@ -1,28 +1,19 @@
-;; * Configuration
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file 'noerror)
+;;; init.el --- Emacs configuration -*- lexical-binding: t; -*-
 
-;; ** Customization requiring function calls
+;;; Commentary:
 
-;; Disable some unneeded UI elements
+;; This configuration is managed primarily with the elpaca package manager.
+
+;;; Code:
+
+(defconst +tr/custom-file "~/.emacs.d/custom.el")
+(load +tr/custom-file 'noerror)
+
+;; Disable some unneeded UI elements (as early as possible)
 (when (display-graphic-p)
   (tooltip-mode -1))
 
-;; Have delete and backspace delete the entire marked region, if any
-(delete-selection-mode t)
-;; Automatically decompress some file types
-(auto-compression-mode t)
-;; Show matching parens
-(show-paren-mode t)
-;; Enable syntax highlighting
-(global-font-lock-mode 1)
-;; Indicate file size in the modeline
-(size-indication-mode 1)
-
-
 ;; * Package system setup
-;;
-;; Currently using elpaca
 
 (defvar elpaca-installer-version 0.7)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
@@ -73,10 +64,118 @@
 ;; Block until current queue processed.
 (elpaca-wait)
 
-;; Hide some minor mode indicators in the modeline
+;; Hide some minor mode indicators in the modeline (and, since this can introduce a keyword to
+;; elpaca, we need to wait for the install to finish, so wait after).
 (use-package diminish)
 
 (elpaca-wait)
+
+;; Configuration for builtins
+(use-package emacs
+  :ensure nil
+  :init
+  ;; ** Customization requiring function calls
+
+  ;; Have delete and backspace delete the entire marked region, if any
+  (delete-selection-mode t)
+  ;; Automatically decompress some file types
+  (auto-compression-mode t)
+  ;; Show matching parens
+  (show-paren-mode t)
+  ;; Enable syntax highlighting
+  (global-font-lock-mode 1)
+  ;; Indicate file size in the modeline
+  (size-indication-mode 1)
+
+  ;; ** Filling parameters
+  ;;
+  ;; Set up some bits to try to make paragraph filling  behave a bit better.
+
+  ;; Try to make auto-fill work a bit better in the context of bulleted lists.
+  (setq paragraph-start "\f\\|>*[ \t]*$\\|>*[ \t]*[-+*] \\|>*[ \t]*[0-9#]+\\. ")
+  (setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f")
+  (setq-default fill-column 100)
+
+  ;; ** Core Behavior
+
+  ;; Suppress annoying backup files
+  (setq make-backup-files nil)
+
+  ;; ** GUI Control
+
+  ;; Maximize font locking
+  (setq font-lock-maximum-decoration t)
+  ;; Flash the screen instead of generating an audible bell
+  (setq visible-bell t)
+  ;; Show column numbers next to line numbers
+  (setq column-number-mode t)
+  ;; Highlight marked regions (default is invisible)
+  (setq transient-mark-mode t)
+  (setq mark-even-if-inactive nil)
+  ;; Don't let the cursor hit the bottom line
+  (setq scroll-margin 3)
+
+
+  ;; ** Window control
+
+  ;; Only split a window vertically if it has at least this many lines; prevents a
+  ;; preponderance of tiny windows
+  (setq split-height-threshold 50)
+  ;; Keep the compilation window small
+  (setq compilation-window-height 8)
+  ;; Make font locking quiet
+  (setq font-lock-verbose nil)
+
+
+  ;; ** Copy and paste
+  ;;
+  ;; Attempt to tame the various clipboards and make interaction with the system
+  ;; clipboard a bit smoother.
+  (setq select-enable-clipboard t)
+  (setq select-enable-primary t)
+  (setq save-interprogram-paste-before-kill t)
+
+  ;; ** Interaction
+  ;;
+  ;; Make interactive prompts a bit less annoying
+
+  ;; Let me use just y or n to answer prompts
+  (fset 'yes-or-no-p 'y-or-n-p)
+  ;; Do not enter the interactive debugger when encountering elisp errors.  Set to
+  ;; t when debugging
+  (setq debug-on-error nil)
+
+  ;; ** Buffer-local variables
+  ;;
+  ;; Set up defaults for values that are buffer local (using setq-default instead
+  ;; of just setq)
+
+  ;;; Set some buffer-local variables to sensible defaults
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 2)
+  (setq-default truncate-lines t)
+  (setq-default require-final-newline t)
+
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Temporary: Suppress some warnings that arise due to upgrading jsonrpc
+  ;;
+  ;; This should be deleted after updating to emacs-30
+  (setq warning-suppress-types '((emacs) (eglot)))
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
 (use-package org
   :mode ("\\.org$" . org-mode)
@@ -86,6 +185,7 @@
   :config
   (setq org-log-done t))
 
+;; Visual improvements for org mode
 (use-package org-modern
   :commands (org-modern-mode org-modern-agenda)
   :init
@@ -162,8 +262,6 @@
 
 (use-package modus-themes
   :hook (elpaca-after-init . (lambda () (load-theme 'modus-operandi-tinted))))
-
-(add-hook 'elpaca-after-init-hook (lambda () (load-theme 'modus-operandi-tinted)))
 
 ;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
 (use-package simple-modeline
@@ -303,7 +401,6 @@
 	     :files ("*.el" "data"))
   :mode ("\\.lean$" . lean4-mode))
 
-
 (use-package boogie-friends
   :ensure (boogie-friends :host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
   :config
@@ -326,6 +423,13 @@
 
 (use-package protobuf-mode
   :mode ("\\.proto$" . protobuf-mode))
+
+(use-package groovy-mode
+  :mode (("\\.gradle$" . groovy-mode)
+         ("\\.groovy$" . groovy-mode)))
+
+(use-package ninja-mode
+  :mode ("\\.ninja$" . ninja-mode))
 
 (defconst +tr/jdtls-path (expand-file-name "~/.emacs.d/language-servers/java-language-server/bin/jdtls")
   "The absolute path to the JDTLS langauge server binary.")
@@ -437,21 +541,13 @@
   :bind ("C-c e s" . consult-eglot-symbols)
   :commands (consult-eglot-symbols))
 
-;; This mode adds easy (and automated) installation of the Java language server
-;; (use-package eglot-java
-;;   :config
-;;   (setq eglot-java-eclipse-jdt-args (cons (format "-javaagent:%s" (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")) eglot-java-eclipse-jdt-args))
-;;   :commands (eglot-java-mode))
-
-;; A debug adapter protocol implementation that works with eglot
-;;
-;; Note: This needs some extra configuration that isn't done yet
-;;
-;; This will be nice, but requires a newer jsonrpc than is included with emacs. Updating that is
-;; painful, so just wait to install it.
-;;
-;; (use-package dape
-;;   :commands (dape))
+;; dape is a debug adapter interface that is compatible with eglot.  It requires a newer version of
+;; jsonrpc than is included with emacs 29.3, so also upgrade that.
+(use-package jsonrpc :ensure (:depth nil))
+(use-package dape
+  :commands (dape)
+  :config
+  (setq dape-cwd-fn 'projectile-project-root))
 
 (use-package corfu
   :custom
@@ -484,14 +580,6 @@
   :ensure (corfu-terminal :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :commands (corfu-terminal-mode)
   :hook (elpaca-after-init . tr/enable-corfu-terminal))
-
-
-(use-package groovy-mode
-  :mode (("\\.gradle$" . groovy-mode)
-         ("\\.groovy$" . groovy-mode)))
-
-(use-package ninja-mode
-  :mode ("\\.ninja$" . ninja-mode))
 
 ;; ** Markup modes
 
@@ -621,12 +709,7 @@
 (use-package literate-calc-mode
   :commands (literate-calc-minor-mode literate-calc-eval-line literate-calc-eval-region literate-calc-eval-buffer))
 
-(use-package jsonrpc :ensure (:depth nil))
-(use-package dape
-  :commands (dape)
-  :config
-  (setq dape-cwd-fn 'projectile-project-root))
-
+;; Update transient (which is now included with emacs) to let the latest magit install.
 (use-package transient :ensure (:depth nil))
 
 ;; The ultimate git interface
@@ -656,6 +739,7 @@
 (use-package vlf
   :commands (vlf))
 
+;; Local (and searchable) dev documentation
 (use-package devdocs
   :commands (devdocs-lookup devdocs-peruse))
 
@@ -666,6 +750,8 @@
   :ensure t
   :hook (elpaca-after-init . global-clipetty-mode))
 
+;; Pop out the contents of comments to edit them as separate markdown documents.  This is most
+;; useful for long-form design documentation comments.
 (use-package separedit
   :bind ("C-c '" . separedit)
   :commands (separedit)
@@ -728,6 +814,7 @@
 (use-package htmlize
   :commands (htmlize))
 
+;; Undo (and redo) hard line wraps
 (use-package unfill
   :commands (unfill-toggle))
 
@@ -766,7 +853,7 @@
   :commands (bufler bufler-mode bufler-switch-buffer)
   :hook (elpaca-after-init . bufler-mode))
 
-;; Enable vertico
+;; Enable vertico (vertical completion)
 (use-package vertico
   :commands (vertico-mode)
   :hook (elpaca-after-init . vertico-mode)
@@ -789,100 +876,6 @@
   :ensure nil
   :commands (savehist-mode)
   :hook (elpaca-after-init . savehist-mode))
-
-;; Configuration for builtins
-(use-package emacs
-  :ensure nil
-  :init
-  ;; ** Filling parameters
-  ;;
-  ;; Set up some bits to try to make paragraph filling  behave a bit better.
-
-  ;; Try to make auto-fill work a bit better in the context of bulleted lists.
-  (setq paragraph-start "\f\\|>*[ \t]*$\\|>*[ \t]*[-+*] \\|>*[ \t]*[0-9#]+\\. ")
-  (setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f")
-  (setq-default fill-column 100)
-
-  ;; ** Core Behavior
-
-  ;; Suppress annoying backup files
-  (setq make-backup-files nil)
-
-  ;; ** GUI Control
-
-  ;; Maximize font locking
-  (setq font-lock-maximum-decoration t)
-  ;; Flash the screen instead of generating an audible bell
-  (setq visible-bell t)
-  ;; Show column numbers next to line numbers
-  (setq column-number-mode t)
-  ;; Highlight marked regions (default is invisible)
-  (setq transient-mark-mode t)
-  (setq mark-even-if-inactive nil)
-  ;; Don't let the cursor hit the bottom line
-  (setq scroll-margin 3)
-
-
-  ;; ** Window control
-
-  ;; Only split a window vertically if it has at least this many lines; prevents a
-  ;; preponderance of tiny windows
-  (setq split-height-threshold 50)
-  ;; Keep the compilation window small
-  (setq compilation-window-height 8)
-  ;; Make font locking quiet
-  (setq font-lock-verbose nil)
-
-
-  ;; ** Copy and paste
-  ;;
-  ;; Attempt to tame the various clipboards and make interaction with the system
-  ;; clipboard a bit smoother.
-  (setq select-enable-clipboard t)
-  (setq select-enable-primary t)
-  (setq save-interprogram-paste-before-kill t)
-
-  ;; ** Interaction
-  ;;
-  ;; Make interactive prompts a bit less annoying
-
-  ;; Let me use just y or n to answer prompts
-  (fset 'yes-or-no-p 'y-or-n-p)
-  ;; Do not enter the interactive debugger when encountering elisp errors.  Set to
-  ;; t when debugging
-  (setq debug-on-error nil)
-
-  ;; ** Buffer-local variables
-  ;;
-  ;; Set up defaults for values that are buffer local (using setq-default instead
-  ;; of just setq)
-
-  ;;; Set some buffer-local variables to sensible defaults
-  (setq-default indent-tabs-mode nil)
-  (setq-default tab-width 2)
-  (setq-default truncate-lines t)
-  (setq-default require-final-newline t)
-
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
-  (defun crm-indicator (args)
-    (cons (format "[CRM%s] %s"
-                  (replace-regexp-in-string
-                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                   crm-separator)
-                  (car args))
-          (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
-  ;; Temporary: Suppress some warnings that arise due to upgrading jsonrpc
-  ;;
-  ;; This should be deleted after updating to emacs-30
-  (setq warning-suppress-types '((emacs) (eglot)))
-
-  ;; Do not allow the cursor in the minibuffer prompt
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
@@ -991,6 +984,7 @@
 (use-package resize-window
   :bind (("C-c ;" . resize-window)))
 
+;; Lay down navigation breadcrumbs
 (use-package dogears
   :commands (dogears-list dogears-mode)
   :hook (elpaca-after-init . dogears-mode)
@@ -1194,7 +1188,7 @@
           (t (flyspell-mode 1)))))
 
 (defun llvmize (&optional start end)
-  "Convert the current buffer or region (containing C code) to LLVM assembly via clang and opt."
+  "Convert the current buffer or region (from START to END) containing C code to LLVM assembly via clang and opt."
   (interactive)
   (let ((start (if mark-active (region-beginning) (point-min)))
         (end (if mark-active (region-end) (point-max)))
@@ -1352,6 +1346,6 @@ If I let Windows handle DPI everything looks blurry."
 
 (load "~/.emacs.d/local" 'noerror)
 
-;; Local Variables:
+ ;; Local Variables:
 ;; eval: (outline-minor-mode 1)
 ;; End:
