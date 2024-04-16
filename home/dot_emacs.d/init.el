@@ -336,6 +336,18 @@
 (defconst +tr/lombok-jar-path (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")
   "The absolute path to the lombok jar.")
 
+(defconst +tr/java-decomp-common-jar-path (expand-file-name "~/.emacs.d/language-servers/java-decompilers/dg.jdt.ls.decompiler.common-0.0.3.jar")
+  "The absolute path to the Java common decompilation jar.")
+
+(defconst +tr/java-decomp-cfr-jar-path (expand-file-name "~/.emacs.d/language-servers/java-decompilers/dg.jdt.ls.decompiler.cfr-0.0.3.jar")
+  "The absolute path to the Java CFR decompilation jar.")
+
+(defconst +tr/java-decomp-fernflower-jar-path (expand-file-name "~/.emacs.d/language-servers/java-decompilers/dg.jdt.ls.decompiler.fernflower-0.0.3.jar")
+  "The absolute path to the Java fernflower decompilation jar.")
+
+(defconst +tr/java-decomp-procyon-jar-path (expand-file-name "~/.emacs.d/language-servers/java-decompilers/dg.jdt.ls.decompiler.procyon-0.0.3.jar")
+  "The absolute path to the Java procyon decompilation jar.")
+
 ;; Set up eglot (which now ships with emacs)
 (use-package eglot
   :ensure nil
@@ -352,7 +364,16 @@
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
   (let ((lombok-arg (format "--jvm-arg=-javaagent:%s" +tr/lombok-jar-path))
         (jdtls-bin +tr/jdtls-path)
-        (init-opts `(:bundles [,+tr/java-debug-plugin-path])))
+        (init-opts `(:settings
+                     (:java
+                       (:contentProvider (:preferred "fernflower")))
+                     :extendedClientCapabilities (:classFileContentsSupport t)
+                     :bundles [,+tr/java-debug-plugin-path
+                               ,+tr/java-decomp-common-jar-path
+                               ,+tr/java-decomp-cfr-jar-path
+                               ,+tr/java-decomp-fernflower-jar-path
+                               ,+tr/java-decomp-procyon-jar-path
+                               ])))
     (add-to-list 'eglot-server-programs `(java-mode ,jdtls-bin ,lombok-arg :initializationOptions ,init-opts))
     (add-to-list 'eglot-server-programs `(java-ts-mode ,jdtls-bin ,lombok-arg :initializationOptions ,init-opts)))
 
