@@ -115,6 +115,10 @@ install_mise_pkgs() {
 
     mise plugin install -y zola
     mise use -g zola
+
+    mise install java@openjdk-17
+    mise install java@openjdk-21
+    mise use -g java@openjdk-21
 }
 
 CARGO_PKGS=( du-dust
@@ -330,7 +334,11 @@ install_common() {
 
     # This needs cargo to be installed, but we also need the mise packages to be installed
     # (specifically, cmake) before the rest of the cargo packages can be installed
-    cargo install mise
+    if [[ ! -x $HOME/.cargo/bin/mise ]]
+    then
+        cargo install mise
+    fi
+
     install_mise_pkgs
 
     install_cargo_pkgs
