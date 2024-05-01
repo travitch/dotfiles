@@ -183,7 +183,8 @@
   (add-hook 'org-mode-hook #'toc-org-enable)
   (add-hook 'org-mode-hook #'visual-line-mode)
   :config
-  (setq org-log-done t))
+  (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d!)" "CANCELED(c@)")))
+  (setq org-log-into-drawer t))
 
 ;; Visual improvements for org mode
 (use-package org-modern
