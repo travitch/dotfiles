@@ -177,11 +177,19 @@
         '(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
+(defun tr/org-agenda-current-buffer ()
+  "Create an `org-agenda' from the current buffer."
+  (interactive)
+  (let ((org-agenda-files (list (buffer-file-name (current-buffer)))))
+    (org-agenda)))
+
 (use-package org
   :mode ("\\.org$" . org-mode)
   :init
   (add-hook 'org-mode-hook #'toc-org-enable)
   (add-hook 'org-mode-hook #'visual-line-mode)
+  :bind
+  ("C-c a" . #'tr/org-agenda-current-buffer)
   :config
   (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d!)" "CANCELED(c@)")))
   (setq org-log-into-drawer t))
@@ -192,6 +200,18 @@
   :init
   (add-hook 'org-mode-hook #'org-modern-mode)
   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
+
+(use-package org-super-agenda
+  :commands (org-super-agenda-mode)
+  :config
+  (setq org-super-agenda-groups
+        '(
+          (:name "Overdue" :deadline past :order 0)
+          (:name "Important" :priority "A" :order 1)
+          (:name "Scheduled" :todo "TODO" :deadline t :order 2)
+          (:name "Other" :todo "TODO" :order 3)
+          ))
+  :hook (elpaca-after-init . org-super-agenda-mode))
 
 ;; * Package selection and initialization
 
