@@ -208,7 +208,7 @@
         '(
           (:name "Overdue" :deadline past :order 0)
           (:name "Important" :priority "A" :order 1)
-          (:name "Scheduled" :todo "TODO" :deadline t :order 2)
+          (:name "Scheduled" :and (:todo "TODO" :deadline t) :order 2)
           (:name "Other" :todo "TODO" :order 3)
           ))
   :hook (elpaca-after-init . org-super-agenda-mode))
