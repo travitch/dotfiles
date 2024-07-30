@@ -77,6 +77,14 @@ gui_packages=(
     python3-jupyter-console
 )
 
+ELAN=$HOME/.elan/bin/elan
+
+install_elan() {
+  if [ ! -x "${ELAN}" ]
+  then
+      curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- --no-modify-path -y
+  fi
+}
 
 RUSTUP=$HOME/.cargo/bin/rustup
 
@@ -332,6 +340,7 @@ basic_setup() {
 install_common() {
     basic_setup
     install_rustup
+    install_elan
 
     # This needs cargo to be installed, but we also need the mise packages to be installed
     # (specifically, cmake) before the rest of the cargo packages can be installed
