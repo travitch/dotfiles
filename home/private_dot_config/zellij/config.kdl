@@ -20,7 +20,7 @@ keybinds clear-defaults=true {
     }
     tmux {
         bind "[" { SwitchToMode "Scroll"; }
-        bind "Alt Up" { Write 2; SwitchToMode "Normal"; }
+        bind "Alt z" { Write 2; SwitchToMode "Normal"; }
         bind "Esc" { Write 2; SwitchToMode "Normal"; }
         bind "Ctrl g" { Write 2; SwitchToMode "Normal"; }
         bind "\"" { NewPane "Down"; SwitchToMode "Normal"; }
@@ -60,7 +60,7 @@ keybinds clear-defaults=true {
         bind "9" { GoToTab 9; SwitchToMode "Normal"; }
     }
     shared_except "tmux" "locked" {
-        bind "Alt Up" { SwitchToMode "Tmux"; }
+        bind "Alt z" { SwitchToMode "Tmux"; }
     }
 }
 
