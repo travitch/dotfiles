@@ -41,6 +41,7 @@ bindsym $mod+Control+x kill
 
 # start dmenu (a program launcher)
 bindsym $mod+p exec rofi -show run
+bindsym $mod+space exec i3-dmenu-desktop --dmenu='rofi -dmenu'
 bindsym $mod+Shift+p exec i3-dmenu-desktop --dmenu='rofi -dmenu'
 bindsym $mod+s exec rofi -show window
 # There also is the (new) i3-dmenu-desktop which only displays applications
@@ -101,7 +102,7 @@ bindsym $mod+Control+e layout toggle split
 bindsym $mod+Shift+space floating toggle
 
 # change focus between tiling / floating windows
-bindsym $mod+space focus mode_toggle
+# bindsym $mod+space focus mode_toggle
 
 
 
