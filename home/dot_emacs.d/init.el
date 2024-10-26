@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 
-;; This configuration is managed primarily with the elpaca package manager.
+;; This configuration is managed primarily with the straight.el package manager.
 
 ;;; Code:
 
@@ -15,64 +15,36 @@
 
 ;; * Package system setup
 
-(defvar elpaca-installer-version 0.7)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                 ,@(when-let ((depth (plist-get order :depth)))
-                                                     (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                 ,(plist-get order :repo) ,repo))))
-                 ((zerop (call-process "git" nil buffer t "checkout"
-                                       (or (plist-get order :ref) "--"))))
-                 (emacs (concat invocation-directory invocation-name))
-                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                 ((require 'elpaca))
-                 ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; Install use-package support
-(elpaca elpaca-use-package
-  ;; Enable :elpaca use-package keyword.
-  (elpaca-use-package-mode)
-  ;; Assume :elpaca t unless otherwise specified.
-  (setq elpaca-use-package-by-default t))
-
-;; Block until current queue processed.
-(elpaca-wait)
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
 
 ;; Hide some minor mode indicators in the modeline (and, since this can introduce a keyword to
-;; elpaca, we need to wait for the install to finish, so wait after).
+;; use-package, we load it early).
 (use-package diminish)
 
-(elpaca-wait)
+(use-package eldoc
+  :straight (:type built-in)
+  :diminish)
 
 ;; Configuration for builtins
 (use-package emacs
-  :ensure nil
+  :straight (:type built-in)
   :init
   ;; ** Customization requiring function calls
 
@@ -211,7 +183,7 @@
           (:name "Scheduled" :and (:todo "TODO" :deadline t) :order 2)
           (:name "Other" :todo "TODO" :order 3)
           ))
-  :hook (elpaca-after-init . org-super-agenda-mode))
+  :hook (after-init . org-super-agenda-mode))
 
 ;; * Package selection and initialization
 
@@ -222,7 +194,7 @@
 ;; customizations are grouped by the relevant modes.
 
 (use-package comp
-  :ensure nil
+  :straight (:type built-in)
   :config
   ;; Be a bit less noisy with async native compilation warnings
   (setq native-comp-async-report-warnings-errors nil))
@@ -232,19 +204,19 @@
   (setq show-trailing-whitespace t))
 
 (use-package text-mode
-  :ensure nil
+  :straight (:type built-in)
   :preface (provide 'text-mode)
   :init
   (add-hook 'text-mode-hook #'tr/show-trailing-whitespace))
 
 (use-package prog-mode
-  :ensure nil
+  :straight (:type built-in)
   :preface (provide 'prog-mode)
   :init
   (add-hook 'prog-mode-hook #'tr/show-trailing-whitespace))
 
 (use-package conf-mode
-  :ensure nil
+  :straight (:type built-in)
   :preface (provide 'conf-mode)
   :init
   (add-hook 'conf-mode-hook #'tr/show-trailing-whitespace))
@@ -252,7 +224,7 @@
 ;; Set up some handling of mail mode (used through mutt).  mail-mode is provided
 ;; by the sendmail library built-in to emacs, but we want to add some hooks here.
 (use-package sendmail
-  :ensure nil
+  :straight (:type built-in)
   :mode ("/tmp/mutt.*" . mail-mode)
   :init
   (add-hook 'mail-mode-hook #'turn-on-visual-line-mode)
@@ -260,14 +232,14 @@
 
 (use-package abbrev
   :diminish abbrev-mode
-  :ensure nil
+  :straight (:type built-in)
   :config
   (when (file-exists-p abbrev-file-name)
     (quietly-read-abbrev-file)))
 
 ;; Give unique tags to buffers that have the same name to distinguish them.
 (use-package uniquify
-  :ensure nil
+  :straight (:type built-in)
   :config
   (setq uniquify-buffer-name-style #'post-forward-angle-brackets))
 
@@ -276,17 +248,17 @@
 ;; Use solarized light, and turn down some of the more aggressive font choices
 ;; that (especially a few that are proportional).
 ;; (use-package solarized-theme
-;;   :hook (elpaca-after-init . (lambda () (load-theme 'solarized-light t)))
+;;   :hook (after-init . (lambda () (load-theme 'solarized-light t)))
 ;;   :config
 ;;   (setq solarized-use-variable-pitch nil)
 ;;   (setq solarized-scale-org-headlines nil))
 
 (use-package modus-themes
-  :hook (elpaca-after-init . (lambda () (load-theme 'modus-operandi-tinted))))
+  :hook (after-init . (lambda () (load-theme 'modus-operandi-tinted))))
 
 ;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
 (use-package simple-modeline
-  :hook (elpaca-after-init . simple-modeline-mode))
+  :hook (after-init . simple-modeline-mode))
 
 ;; This mode provides a function that enables a server running from emacs that
 ;; can edit text boxes in browsers using an appropriate extension.
@@ -336,7 +308,7 @@
                              (modes quote (haskell-mode literate-haskell-mode)))))))
 
 (use-package cmake-ts-mode
-  :ensure nil
+  :straight (:type built-in)
   :mode ("CMakeLists.txt$" . cmake-ts-mode))
 
 (use-package csharp-mode
@@ -356,7 +328,7 @@
   :mode ("\\.jsx$" . rjsx-mode))
 
 (use-package typescript-ts-mode
-  :ensure nil
+  :straight (:type built-in)
   :mode (("\\.ts$" . typescript-ts-mode)
          ("\\.js$" . typescript-ts-mode)))
 
@@ -367,7 +339,7 @@
   :mode ("\\.clj$" . clojure-mode))
 
 (use-package go-ts-mode
-  :ensure nil
+  :straight (:type built-in)
   :mode ("\\.go$" . go-ts-mode))
 
 (use-package scala-mode
@@ -396,14 +368,14 @@
   :mode ("\\.idr$" . idris-mode))
 
 (use-package rust-ts-mode
-  :ensure nil
+  :straight (:type built-in)
   :mode ("\\.rs$" . rust-ts-mode))
 
 (use-package forth-mode
   :mode ("\\.fth$" . forth-mode))
 
 (use-package python-ts-mode
-  :ensure nil
+  :straight (:type built-in)
   :config
   (setq python-shell-interpreter "ipython3")
   (setq python-shell-interpreter-args "--simple-prompt -i")
@@ -415,19 +387,19 @@
   :mode ("\\.fish$" . fish-mode))
 
 (use-package lean4-mode
-  :ensure (lean4-mode
-	     :type git
+  :straight (lean4-mode
+       :type git
 	     :host github
 	     :repo "leanprover/lean4-mode"
 	     :files ("*.el" "data"))
   :mode ("\\.lean$" . lean4-mode))
 
-(use-package boogie-friends
-  :ensure (boogie-friends :host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
-  :config
-  (setq lsp-dafny-preferred-version "4.3.0")
-  :mode (("\\.bpl$" . boogie-mode)
-         ("\\.dfy$" . dafny-mode)))
+;; (use-package boogie-friends
+;;   :straight (:host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
+;;   :config
+;;   (setq lsp-dafny-preferred-version "4.3.0")
+;;   :mode (("\\.bpl$" . boogie-mode)
+;;          ("\\.dfy$" . dafny-mode)))
 
 (use-package z3-mode
   :mode ("\\.smt$" . z3-mode))
@@ -475,7 +447,7 @@
 
 ;; Set up eglot (which now ships with emacs)
 (use-package eglot
-  :ensure nil
+  :straight (:type built-in)
   :init
   ;; Prevent the server from auto-updating buffer contents while typing
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
@@ -564,7 +536,7 @@
 
 ;; dape is a debug adapter interface that is compatible with eglot.  It requires a newer version of
 ;; jsonrpc than is included with emacs 29.3, so also upgrade that.
-(use-package jsonrpc :ensure (:depth nil))
+(use-package jsonrpc)
 (use-package dape
   :commands (dape)
   :config
@@ -583,7 +555,7 @@
   ;; (corfu-scroll-margin 5)        ;; Use scroll margin
 
   :commands (global-corfu-mode)
-  :hook (elpaca-after-init . global-corfu-mode))
+  :hook (after-init . global-corfu-mode))
 
 (use-package cape
   :commands (cape-dabbrev cape-file)
@@ -598,9 +570,9 @@
     (corfu-terminal-mode +1)))
 
 (use-package corfu-terminal
-  :ensure (corfu-terminal :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :straight (:repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :commands (corfu-terminal-mode)
-  :hook (elpaca-after-init . tr/enable-corfu-terminal))
+  :hook (after-init . tr/enable-corfu-terminal))
 
 ;; ** Markup modes
 
@@ -608,7 +580,7 @@
   :mode ("\\.plantuml$" . plantuml-mode))
 
 (use-package rst
-  :ensure nil
+  :straight (:type built-in)
   :mode ("\\.rst$" . rst-mode)
   :init
   (add-hook 'rst-mode-hook #'visual-line-mode))
@@ -643,14 +615,14 @@
   ("\\.gql$" . graphql-mode))
 
 (use-package font-latex
-  :ensure nil
+  :straight (:type built-in)
   :defer t
   :config
   (setq font-latex-fontify-script nil)
   (setq font-latex-fontify-sectioning 'color))
 
 (use-package tex
-  :ensure nil
+  :straight (:type built-in)
   :defer t
   :config
   (setq TeX-auto-save t)
@@ -697,10 +669,10 @@
 (use-package which-key
   :diminish
   :commands (which-key-mode)
-  :hook (elpaca-after-init . which-key-mode))
+  :hook (after-init . which-key-mode))
 
 (use-package compile
-  :ensure nil
+  :straight (:type built-in)
   :defer
   :config
   ;; Scroll the compilation window as output is generated
@@ -712,15 +684,8 @@
   (add-hook 'rust-mode-hook #'cargo-minor-mode)
   (add-hook 'toml-mode-hook #'cargo-minor-mode))
 
-;; This is disabled for now; Eglot is better in general
-;;
-;; (use-package flycheck-rust
-;;   :commands (flycheck-rust-setup)
-;;   :init
-;;   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-
 (use-package browse-url
-  :ensure nil
+  :straight (:type built-in)
   :commands (browse-url-generic)
   :if window-system
   :config
@@ -731,7 +696,7 @@
   :commands (literate-calc-minor-mode literate-calc-eval-line literate-calc-eval-region literate-calc-eval-buffer))
 
 ;; Update transient (which is now included with emacs) to let the latest magit install.
-(use-package transient :ensure (:depth nil))
+;; (use-package transient :ensure (:depth nil))
 
 ;; The ultimate git interface
 (use-package magit
@@ -768,8 +733,8 @@
 ;;
 ;; This uses the OSC 52 escape sequence to tell the terminal to sync the clipboard if running in a terminal
 (use-package clipetty
-  :ensure t
-  :hook (elpaca-after-init . global-clipetty-mode))
+  :diminish
+  :hook (after-init . global-clipetty-mode))
 
 ;; Pop out the contents of comments to edit them as separate markdown documents.  This is most
 ;; useful for long-form design documentation comments.
@@ -801,6 +766,7 @@
 ;; On-the-fly spell checking in various modes.  The prog-mode version spell
 ;; checks text appearing in comments and string literals.
 (use-package jit-spell
+  :diminish
   :commands (jit-spell-correct-word jit-spell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
@@ -857,7 +823,7 @@
 ;; of a character at a time)
 (use-package bracketed-paste
   :commands (bracketed-paste-enable)
-  :hook (elpaca-after-init . bracketed-paste-enable))
+  :hook (after-init . bracketed-paste-enable))
 
 
 ;; Add support for fancy quotes and a few other typographical niceties in plain
@@ -871,13 +837,14 @@
 ;; ** Navigation
 
 (use-package bufler
+  :diminish
   :commands (bufler bufler-mode bufler-switch-buffer)
-  :hook (elpaca-after-init . bufler-mode))
+  :hook (after-init . bufler-mode))
 
 ;; Enable vertico (vertical completion)
 (use-package vertico
   :commands (vertico-mode)
-  :hook (elpaca-after-init . vertico-mode)
+  :hook (after-init . vertico-mode)
 
   ;; Different scroll margin
   ;; (setq vertico-scroll-margin 0)
@@ -894,9 +861,9 @@
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
-  :ensure nil
+  :straight (:type built-in)
   :commands (savehist-mode)
-  :hook (elpaca-after-init . savehist-mode))
+  :hook (after-init . savehist-mode))
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
@@ -978,7 +945,7 @@
 (use-package marginalia
   ;; The :init configuration is always executed (Not lazy!)
   :commands (marginalia-mode)
-  :hook (elpaca-after-init . marginalia-mode))
+  :hook (after-init . marginalia-mode))
 
 (use-package affe
   :after orderless
@@ -1008,7 +975,7 @@
 ;; Lay down navigation breadcrumbs
 (use-package dogears
   :commands (dogears-list dogears-mode)
-  :hook (elpaca-after-init . dogears-mode)
+  :hook (after-init . dogears-mode)
   ;; These bindings are optional, of course:
   :bind (:map global-map
               ("M-g d" . dogears-go)
@@ -1063,7 +1030,7 @@
   :diminish projectile-mode
   :bind (("C-c p p" . projectile-switch-project))
   :commands (projectile-mode projectile-project-root)
-  :hook (elpaca-after-init . projectile-mode)
+  :hook (after-init . projectile-mode)
   :config
   (setq projectile-keymap-prefix  (kbd "C-c p"))
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -1154,8 +1121,8 @@
 
 ;; Install tree-sitter modes if needed
 (use-package treesit
-  :ensure nil
-  :hook (elpaca-after-init . tr/install-treesitter-grammars)
+  :straight (:type built-in)
+  :hook (after-init . tr/install-treesitter-grammars)
   :config
   ;; This special setting method is required for the font lock level
   (customize-set-variable 'treesit-font-lock-level 4)
@@ -1185,20 +1152,20 @@
   (setq-local treesit-simple-indent-rules (tr/java-indent-style)))
 
 (use-package c-ts-mode
-  :ensure nil
+  :straight (:type built-in)
   :mode ("\\.c$" . c-ts-mode))
 
-;; Configure Java treesitter mode; this declaration tells elpaca to not install
+;; Configure Java treesitter mode; this declaration tells straight to not install
 ;; the mode, as tree-sitter is built-in.
 (use-package java-ts-mode
-  :ensure nil
+  :straight (:type built-in)
   :mode ("\\.java$" . java-ts-mode)
   :init
   (add-hook 'java-ts-mode-hook #'tr/init-java-ts-mode)
   (add-hook 'java-ts-mode-hook #'(lambda () (setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f"))))
 
 (use-package bash-ts-mode
-  :ensure nil
+  :straight (:type built-in)
   :mode (("\\.bash$" . bash-ts-mode)
          ("\\.sh$" . bash-ts-mode)))
 
@@ -1277,11 +1244,11 @@ narrowed."
           (forward-line ))))))
 
 (use-package haskell-pragma
-  :ensure (haskell-pragma :host github :repo "travitch/haskell-pragma.el")
+  :straight (:host github :repo "travitch/haskell-pragma.el")
   :commands (hydra-haskell-pragma/body))
 
 (use-package haskell-interactive-import
-  :ensure (haskell-interactive-import :host github :repo "travitch/haskell-interactive-import.el")
+  :straight (:host github :repo "travitch/haskell-interactive-import.el")
   :commands (haskell-interactive-import-begin))
 
 ;; * Keybindings
@@ -1367,6 +1334,19 @@ If I let Windows handle DPI everything looks blurry."
 
 (load "~/.emacs.d/local" 'noerror)
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("712dda0818312c175a60d94ba676b404fc815f8c7e6c080c9b4061596c60a1db" "99d1e29934b9e712651d29735dd8dcd431a651dfbe039df158aa973461af003e" "c1638a7061fb86be5b4347c11ccf274354c5998d52e6d8386e997b862773d1d2" default)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
  ;; Local Variables:
 ;; eval: (outline-minor-mode 1)
 ;; End:
