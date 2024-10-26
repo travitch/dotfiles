@@ -263,7 +263,7 @@
 (use-package lambda-line
   :straight (:type git :host github :repo "lambda-emacs/lambda-line")
   :custom
-  (lambda-line-position 'top) ;; Set position of status-line
+  (lambda-line-position 'bottom) ;; Set position of status-line
   (lambda-line-abbrev t) ;; abbreviate major modes
   (lambda-line-hspace "  ")  ;; add some cushion
   (lambda-line-prefix t) ;; use a prefix symbol
