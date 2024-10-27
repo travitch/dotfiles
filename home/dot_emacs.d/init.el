@@ -734,7 +734,7 @@
   (setq ediff-window-setup-function #'ediff-setup-windows-plain)
   :init
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
-  (add-hook 'git-commit-mode-hook #'visual-line-mode)
+  (add-hook 'git-commit-setup-hook #'visual-line-mode)
   :bind ("C-x g" . magit-status))
 
 ;; This package (and keybinding) generates a link to the current point in the
