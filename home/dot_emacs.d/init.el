@@ -607,6 +607,10 @@
   :init
   (add-hook 'rst-mode-hook #'visual-line-mode))
 
+(use-package kdl-mode
+  :straight (:host github :repo "bobuk/kdl-mode")
+  :mode ("\\.kdl$" . kdl-mode))
+
 (use-package markdown-mode
   :mode ("\\.markdown$\\|\\.md$" . markdown-mode)
   :init
