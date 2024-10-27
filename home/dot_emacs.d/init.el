@@ -161,7 +161,9 @@
   (add-hook 'org-mode-hook #'toc-org-enable)
   (add-hook 'org-mode-hook #'visual-line-mode)
   :bind
-  ("C-c a" . #'tr/org-agenda-current-buffer)
+  (("C-c a" . #'tr/org-agenda-current-buffer)
+  :map org-mode-map
+  ("C-c M-l" . org-store-link))
   :config
   (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d!)" "CANCELED(c@)")))
   (setq org-log-into-drawer t))
