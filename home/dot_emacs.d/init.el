@@ -593,8 +593,6 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file))
 
-
-
 (use-package corfu-terminal
   :straight (:repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :commands (corfu-terminal-mode)
@@ -1317,7 +1315,7 @@ narrowed."
 ;; (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-x r i")  'string-insert-rectangle)
 ;; Don't prompt for the buffer to kill - I always mean the current one
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
+(global-set-key (kbd "C-x k") 'kill-current-buffer)
 (global-set-key (kbd "M-*") 'pop-tag-mark)
 
 (global-set-key (kbd "M-;") 'tr/comment-dwim)
