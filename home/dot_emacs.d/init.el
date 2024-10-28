@@ -177,6 +177,7 @@
 
 (use-package org-super-agenda
   :commands (org-super-agenda-mode)
+  :defines org-super-agenda-groups
   :config
   (setq org-super-agenda-groups
         '(
@@ -290,6 +291,7 @@
 ;; See Ghost Text: https://github.com/fregante/GhostText
 (use-package atomic-chrome
   :commands (atomic-chrome-start-server)
+  :defines atomic-chrome-default-major-mode
   :config
   (setq atomic-chrome-default-major-mode 'markdown-mode))
 
@@ -309,6 +311,7 @@
   ("C-c h i g" . haskell-navigate-imports)
   ("C-c h i r" . haskell-navigate-imports-return)
   ("C-c h i f" . haskell-mode-format-imports)
+  :defines (haskell-font-lock-symbols haskell-indentation-starter-offset)
   :config
   (setq haskell-font-lock-symbols nil)
   (setq haskell-indentation-starter-offset 2)
@@ -563,6 +566,7 @@
 (use-package jsonrpc)
 (use-package dape
   :commands (dape)
+  :defines dape-cwd-fn
   :config
   (setq dape-cwd-fn 'projectile-project-root))
 
@@ -588,14 +592,16 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file))
 
-(defun tr/enable-corfu-terminal ()
-  "Enable corfu-terminal if running outside the GUI context."
-  (unless (display-graphic-p)
-    (corfu-terminal-mode +1)))
+
 
 (use-package corfu-terminal
   :straight (:repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :commands (corfu-terminal-mode)
+  :init
+  (defun tr/enable-corfu-terminal ()
+    "Enable corfu-terminal if running outside the GUI context."
+    (unless (display-graphic-p)
+      (corfu-terminal-mode +1)))
   :hook (after-init . tr/enable-corfu-terminal))
 
 ;; ** Markup modes
@@ -617,6 +623,7 @@
   :mode ("\\.markdown$\\|\\.md$" . markdown-mode)
   :init
   (add-hook 'markdown-mode-hook #'visual-line-mode)
+  :defines (markdown-command markdown-fontify-code-blocks-natively)
   :config
   (setq markdown-fontify-code-blocks-natively t)
   (setq markdown-command "comrak"))
@@ -723,24 +730,34 @@
 (use-package literate-calc-mode
   :commands (literate-calc-minor-mode literate-calc-eval-line literate-calc-eval-region literate-calc-eval-buffer))
 
-;; Update transient (which is now included with emacs) to let the latest magit install.
-;; (use-package transient :ensure (:depth nil))
+(use-package ediff-wind
+  :straight (:type built-in)
+  :defines ediff-window-setup-function
+  :functions ediff-setup-windows-plain
+  :config
+  (setq ediff-window-setup-function #'ediff-setup-windows-plain))
+
+(use-package with-editor)
+
+(use-package git-commit
+  :defines (git-commit-major-mode git-commit-summary-max-length)
+  :config
+  ;; Edit it commit messages as if they were markdown
+  (setq git-commit-major-mode 'markdown-mode)
+  (setq git-commit-summary-max-length 500)
+  :init
+  (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
+  (add-hook 'git-commit-setup-hook #'visual-line-mode))
 
 ;; The ultimate git interface
 (use-package magit
+  :defines (magit-auto-revert-mode magit-auto-revert-immediately magit-diff-refine-hunk)
   :config
   ;; Disable vc-mode (using magit)
   (setq vc-handled-backends nil)
   (setq magit-auto-revert-mode nil)
   (setq magit-auto-revert-immediately nil)
   (setq magit-diff-refine-hunk t)
-  ;; Edit it commit messages as if they were markdown
-  (setq git-commit-major-mode 'markdown-mode)
-  (setq git-commit-summary-max-length 500)
-  (setq ediff-window-setup-function #'ediff-setup-windows-plain)
-  :init
-  (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
-  (add-hook 'git-commit-setup-hook #'visual-line-mode)
   :bind ("C-x g" . magit-status))
 
 ;; This package (and keybinding) generates a link to the current point in the
@@ -769,6 +786,7 @@
 (use-package separedit
   :bind ("C-c '" . separedit)
   :commands (separedit)
+  :defines separedit-default-mode
   :config
   (setq separedit-default-mode 'markdown-mode))
 
@@ -776,6 +794,7 @@
   :init
   (add-hook 'prog-mode-hook #'ligature-mode)
   :commands (ligature-mode)
+  :functions ligature-set-ligatures
   :config
   ;; Enable ligatures in programming modes
   (ligature-set-ligatures 'prog-mode '("<==>" "<!--"
@@ -791,14 +810,18 @@
                                        ".=" ".-"
                                        ";;" "/>" "//" "__")))
 
+(use-package ispell
+  :straight (:type built-in)
+  :defines (ispell-program-name ispell-dictionary)
+  :config
+  (setq ispell-program-name (executable-find "hunspell"))
+  (setq ispell-dictionary "en_US"))
+
 ;; On-the-fly spell checking in various modes.  The prog-mode version spell
 ;; checks text appearing in comments and string literals.
 (use-package jit-spell
   :diminish
   :commands (jit-spell-correct-word jit-spell-mode)
-  :config
-  (setq ispell-program-name (executable-find "hunspell")
-        ispell-dictionary "en_US")
   :init
   (add-hook 'text-mode-hook #'jit-spell-mode)
   (add-hook 'rst-mode-hook #'jit-spell-mode)
@@ -836,6 +859,7 @@
 ;; A mode for profiling emacs startup times
 (use-package esup
   :commands (esup)
+  :defines esup-depth
   :config (setq esup-depth 0))
 
 ;; ** Helpful minor modes
@@ -903,6 +927,8 @@
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
+
+
 (use-package consult
   ;; Replace bindings
   :bind (;; C-c bindings in `mode-specific-map'
@@ -959,6 +985,8 @@
          ("M-r" . consult-history))                ;; orig. previous-matching-history-element
   :commands (consult-annotate-mode consult-annotate-command consult-show-xrefs consult-ripgrep consult-xref consult-multi-occur)
 
+  :defines consult-project-function
+
   ;; Enable automatic preview at point in the *Completions* buffer. This is
   ;; relevant when you use the default completion UI.
   :hook (completion-list-mode . consult-preview-at-point-mode)
@@ -966,24 +994,18 @@
   :config
   ;; Replace functions (consult-multi-occur is a drop-in replacement)
   (fset 'multi-occur #'consult-multi-occur)
-  (setq xref-show-definitions-function #'consult-xref)
-  (setq xref-show-xrefs-function #'consult-xref)
   (setq consult-project-function #'projectile-project-root))
+
+(use-package xref
+  :straight (:type built-in)
+  :config
+  (setq xref-show-definitions-function #'consult-xref)
+  (setq xref-show-xrefs-function #'consult-xref))
 
 (use-package marginalia
   ;; The :init configuration is always executed (Not lazy!)
   :commands (marginalia-mode)
   :hook (after-init . marginalia-mode))
-
-(use-package affe
-  :after orderless
-  :config
-  ;; Configure Orderless
-  (setq affe-regexp-function #'orderless-pattern-compiler
-        affe-highlight-function #'orderless-highlight-matches)
-
-  ;; Manual preview key for `affe-grep'
-  (consult-customize affe-grep :preview-key (kbd "M-.")))
 
 (use-package helpful
   :commands (helpful-function helpful-variable helpful-at-point helpful-key))
@@ -992,6 +1014,7 @@
 ;; to.  Works on most languages worth mentioning, and then some.
 (use-package dumb-jump
   :commands (dumb-jump-xref-activate)
+  :defines dumb-jump-force-searcher
   :init
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   :config
@@ -1056,6 +1079,7 @@
 ;; Project management
 (use-package projectile
   :diminish projectile-mode
+  :defines (projectile-keymap-prefix projectile-mode-map projectile-globally-ignored-directories projectile-git-command projectile-completion-system projectile-enable-caching projectile-tags-backend projectile-globally-ignored-file-suffixes)
   :bind (("C-c p p" . projectile-switch-project))
   :commands (projectile-mode projectile-project-root)
   :hook (after-init . projectile-mode)
@@ -1074,6 +1098,8 @@
                                                     "jpg" "png" "JPG" "PANG" "PEG" "Peg")))
 
 (use-package eacl
+  :defines eacl-project-root-callback
+  :functions eacl-get-project-root
   :commands (eacl-complete-line)
   :config
   ;; Use projectile to get the root, if possible.  This has many more heuristics
@@ -1090,6 +1116,7 @@
 ;; Press the key stroke to start the mode, type a few characters, then type the
 ;; value displayed on the hint you want the cursor to jump to.
 (use-package avy
+  :defines (avy-dispatch-alist avy-all-windows)
   :commands (avy-goto-char-timer avy-process)
   :config
   (setf (alist-get ?g avy-dispatch-alist) 'avy-action-goto)
