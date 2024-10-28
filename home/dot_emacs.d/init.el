@@ -15,6 +15,7 @@
 
 ;; * Package system setup
 
+(setq straight-check-for-modifications '(check-on-save))
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
