@@ -5,15 +5,12 @@ IFS=$'\n\t'
 
 core_packages=(
     # System utilities
-    emacs-nox
     tmux
     zsh
     fish
     htop
     powertop
     hunspell
-    mutt
-    fuse-sshfs
     curl
     zip
     unzip
@@ -23,6 +20,7 @@ core_packages=(
     openssh
     gnupg2
     fzf
+
     # Dev things
     ShellCheck
     clang
@@ -39,8 +37,8 @@ core_packages=(
     cmake
     lua
     ctags
-    golang
     texinfo
+
     # SCM
     git
     git-lfs
@@ -159,19 +157,20 @@ CARGO_PKGS=( du-dust
              xh
              comrak
              deno
+             television
              )
 
 
 install_cargo_pkgs() {
-    . $HOME/.cargo/env
-    mkdir -p $HOME/.cargo/installed
+    . "$HOME/.cargo/env"
+    mkdir -p "$HOME/.cargo/installed"
     for PKG in "${CARGO_PKGS[@]}"
     do
         local GUARD=$HOME/.cargo/installed/$PKG
-        if [ ! -f $GUARD ]
+        if [ ! -f "$GUARD" ]
         then
             cargo install --locked --force "${PKG}"
-            touch $GUARD
+            touch "$GUARD"
         fi
     done
 }
@@ -189,8 +188,8 @@ GHCUP=$HOME/.local/bin/ghcup
 install_ghcup() {
     if [ ! -f "${GHCUP}" ]
     then
-        curl "${GHCUP_URL}" > ${GHCUP}
-        chmod +x ${GHCUP}
+        curl "${GHCUP_URL}" > "${GHCUP}"
+        chmod +x "${GHCUP}"
     fi
 }
 
