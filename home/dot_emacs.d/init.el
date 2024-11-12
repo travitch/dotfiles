@@ -140,6 +140,30 @@
           (cdr args)))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
+  (defun find-file-noselect--advice-around-with-line-number (orig-fun filename &rest args)
+    "Advice wrapper to open files from the command line with a line number specified."
+    (save-match-data
+      (let* ((matched (string-match "^\\(.*\\):\\([0-9]+\\):?$" filename))
+             (line-number (and matched
+                               (match-string 2 filename)
+                               (string-to-number (match-string 2 filename))))
+             (filename (if matched (match-string 1 filename) filename))
+
+             ;; Call the underlying function
+             (buf (apply orig-fun filename args)))
+
+        (when line-number
+          (with-current-buffer buf
+            ;; goto-line is for interactive use
+            (goto-char (point-min))
+            (forward-line (1- line-number))))
+
+        ;; Always need to return the buffer for other things to use
+        buf)))
+  ;; By advising find-file-noselect instead of find-file we also get this
+  ;; behavior in lots of other places, e.g. opening files from emacsclient.
+  (advice-add #'find-file-noselect :around #'find-file-noselect--advice-around-with-line-number)
+
   ;; Temporary: Suppress some warnings that arise due to upgrading jsonrpc
   ;;
   ;; This should be deleted after updating to emacs-30
