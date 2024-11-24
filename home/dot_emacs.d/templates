@@ -1,0 +1,9 @@
+org-mode
+
+(meeting2 "** " p n ":PROPERTIES" n ":Date: " (format-time-string "[%Y-%m-%d %a %H:%M]") n ":Attendees: " n ":END:" n)
+(meeting1 "* " p n ":PROPERTIES" n ":Date: " (format-time-string "[%Y-%m-%d %a %H:%M]") n ":Attendees: " n ":END:" n)
+
+(todo2 "** TODO " p n)
+(todo2n "** TODO " p "[/]" n)
+(todo3 "*** TODO " p n)
+(todo1 "* TODO " p n)

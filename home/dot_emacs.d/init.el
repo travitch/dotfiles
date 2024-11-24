@@ -813,6 +813,9 @@
   :config
   (setq separedit-default-mode 'markdown-mode))
 
+(use-package tempel
+  :bind ("M-=" . tempel-insert))
+
 (use-package ligature
   :init
   (add-hook 'prog-mode-hook #'ligature-mode)
