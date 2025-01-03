@@ -272,7 +272,7 @@ install_bash_language_server() {
     fi
 }
 
-JAVA_LS_URL="https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.34.0/jdt-language-server-1.34.0-202404031240.tar.gz"
+JAVA_LS_URL="https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.43.0/jdt-language-server-1.43.0-202412191447.tar.gz"
 
 install_java_language_server() {
     if [ ! -d "${LANGUAGE_SERVER_ROOT}/java-language-server" ]
