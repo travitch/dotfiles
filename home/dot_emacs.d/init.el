@@ -282,7 +282,7 @@
 ;;   (setq solarized-scale-org-headlines nil))
 
 (use-package modus-themes
-  :hook (after-init . (lambda () (load-theme 'modus-operandi-tinted))))
+  :hook (after-init . (lambda () (load-theme 'modus-operandi))))
 
 ;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
 ;; (use-package simple-modeline
@@ -1421,7 +1421,10 @@ If I let Windows handle DPI everything looks blurry."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("712dda0818312c175a60d94ba676b404fc815f8c7e6c080c9b4061596c60a1db" "99d1e29934b9e712651d29735dd8dcd431a651dfbe039df158aa973461af003e" "c1638a7061fb86be5b4347c11ccf274354c5998d52e6d8386e997b862773d1d2" default)))
+   '("fbf73690320aa26f8daffdd1210ef234ed1b0c59f3d001f342b9c0bbf49f531c"
+     "712dda0818312c175a60d94ba676b404fc815f8c7e6c080c9b4061596c60a1db"
+     "99d1e29934b9e712651d29735dd8dcd431a651dfbe039df158aa973461af003e"
+     "c1638a7061fb86be5b4347c11ccf274354c5998d52e6d8386e997b862773d1d2" default)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
