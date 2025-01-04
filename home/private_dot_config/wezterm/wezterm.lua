@@ -4,7 +4,11 @@ local config = wezterm.config_builder()
 
 config.font = wezterm.font 'MonoLisa'
 -- config.color_scheme = 'Builtin Solarized Light'
-config.color_scheme = 'dayfox'
+-- config.color_scheme = 'Violet Light'
+-- config.color_scheme = 'Alabaster'
+config.color_scheme = 'Night Owlish Light'
+-- config.color_scheme = 'ayu_light'
+-- config.color_scheme = 'dayfox'
 
 
 
