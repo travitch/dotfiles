@@ -2,6 +2,7 @@ add_newline = true
 format = """
 $username\
 $hostname\
+$shell\
 $directory\
 $aws\
 $git_branch\
@@ -19,8 +20,13 @@ ssh_only = false
 format = "[$ssh_symbol on ](bold blue)[$hostname](bold red) "
 disabled = false
 
-
 [aws]
 format = 'on [$symbol$profile]($style) '
 style = 'bold blue'
 symbol = '🅰 '
+
+[shell]
+bash_indicator = 'ⓑ '
+fish_indicator = '󰈺 '
+zsh_indicator = 'ⓩ '
+disabled = false
