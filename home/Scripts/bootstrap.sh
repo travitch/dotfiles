@@ -156,8 +156,8 @@ CARGO_PKGS=( du-dust
              hyperfine
              xh
              comrak
-             deno
              television
+             silicon
              )
 
 
