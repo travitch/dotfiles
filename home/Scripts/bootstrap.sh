@@ -125,6 +125,9 @@ install_mise_pkgs() {
     mise install java@openjdk-17
     mise install java@openjdk-21
     mise use -g java@openjdk-21
+
+    mise install rclone
+    mise use -g rclone
 }
 
 CARGO_PKGS=( du-dust
@@ -157,7 +160,6 @@ CARGO_PKGS=( du-dust
              xh
              comrak
              television
-             silicon
              )
 
 
