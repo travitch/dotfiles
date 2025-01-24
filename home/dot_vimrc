@@ -10,7 +10,6 @@ filetype plugin indent on
 set nocompatible
 
 set background=light
-colorscheme solarized
 
 finish
 
