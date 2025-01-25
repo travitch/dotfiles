@@ -160,6 +160,7 @@ CARGO_PKGS=( du-dust
              xh
              comrak
              television
+             dedoc
              )
 
 
@@ -334,6 +335,23 @@ bootstrap_gui() {
     install_packages ${pkgs[@]}
 }
 
+install_dev_docs() {
+    dedoc download \
+          c \
+          cpp \
+          cmake \
+          elisp \
+          git \
+          openjdk~17 \
+          openjdk~21 \
+          python~3.9 \
+          python~3.10 \
+          python~3.11 \
+          python~3.12 \
+          rust \
+          typescript
+}
+
 basic_setup() {
     mkdir -p $HOME/.local/bin
 }
@@ -353,6 +371,8 @@ install_common() {
     install_mise_pkgs
 
     install_cargo_pkgs
+
+    install_dev_docs
 
     install_java_language_server
     install_java_debug_adapter
