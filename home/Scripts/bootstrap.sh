@@ -336,6 +336,7 @@ bootstrap_gui() {
 }
 
 install_dev_docs() {
+    dedoc fetch
     dedoc download \
           c \
           cpp \
