@@ -435,6 +435,9 @@
          ("SConstruct$" . python-ts-mode)
          ("SConscript$" . python-ts-mode)))
 
+(use-package code-cells
+  :mode ("\\.ipynb$" . code-cells-mode))
+
 (use-package fish-mode
   :mode ("\\.fish$" . fish-mode))
 
@@ -701,12 +704,6 @@
 ;;                 (custom-set-faces '(font-latex-slide-title-face ((t (:inherit font-lock-type-face)))))
 ;;                 (font-latex-update-sectioning-faces))))
 
-
-;; Highlighting for git commit messages
-(use-package git-commit
-  :commands (git-commit-turn-on-flyspell)
-  :mode ("COMMIT_EDITMSG$" . git-commit-mode))
-
 ;; ** Configuration modes
 
 (use-package git-modes
@@ -762,25 +759,22 @@
 
 (use-package with-editor)
 
-(use-package git-commit
-  :defines (git-commit-major-mode git-commit-summary-max-length)
+;; The ultimate git interface
+(use-package magit
+  :defines (magit-auto-revert-mode magit-auto-revert-immediately magit-diff-refine-hunk git-commit-major-mode git-commit-summary-max-length)
+  :init
+  (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
+  (add-hook 'git-commit-setup-hook #'visual-line-mode)
   :config
   ;; Edit it commit messages as if they were markdown
   (setq git-commit-major-mode 'markdown-mode)
   (setq git-commit-summary-max-length 500)
-  :init
-  (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
-  (add-hook 'git-commit-setup-hook #'visual-line-mode))
-
-;; The ultimate git interface
-(use-package magit
-  :defines (magit-auto-revert-mode magit-auto-revert-immediately magit-diff-refine-hunk)
-  :config
   ;; Disable vc-mode (using magit)
   (setq vc-handled-backends nil)
   (setq magit-auto-revert-mode nil)
   (setq magit-auto-revert-immediately nil)
   (setq magit-diff-refine-hunk t)
+  :mode ("COMMIT_EDITMSG$" . git-commit-mode)
   :bind ("C-x g" . magit-status))
 
 ;; This package (and keybinding) generates a link to the current point in the
@@ -1421,7 +1415,10 @@ If I let Windows handle DPI everything looks blurry."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("fbf73690320aa26f8daffdd1210ef234ed1b0c59f3d001f342b9c0bbf49f531c"
+   '("6819104c5f7d70485b32c10323aa396806d282fcee5b707e462bf3d156f44c39"
+     "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3"
+     "c038d994d271ebf2d50fa76db7ed0f288f17b9ad01b425efec09519fa873af53"
+     "fbf73690320aa26f8daffdd1210ef234ed1b0c59f3d001f342b9c0bbf49f531c"
      "712dda0818312c175a60d94ba676b404fc815f8c7e6c080c9b4061596c60a1db"
      "99d1e29934b9e712651d29735dd8dcd431a651dfbe039df158aa973461af003e"
      "c1638a7061fb86be5b4347c11ccf274354c5998d52e6d8386e997b862773d1d2" default)))
