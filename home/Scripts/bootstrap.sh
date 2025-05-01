@@ -275,7 +275,7 @@ install_bash_language_server() {
     fi
 }
 
-JAVA_LS_URL="https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.43.0/jdt-language-server-1.43.0-202412191447.tar.gz"
+JAVA_LS_URL="https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.46.1/jdt-language-server-1.46.1-202504011455.tar.gz"
 
 install_java_language_server() {
     if [ ! -d "${LANGUAGE_SERVER_ROOT}/java-language-server" ]
@@ -336,7 +336,7 @@ bootstrap_gui() {
 }
 
 install_dev_docs() {
-    dedoc fetch
+    dedoc fetch || true
     dedoc download \
           c \
           cpp \
@@ -350,7 +350,7 @@ install_dev_docs() {
           python~3.11 \
           python~3.12 \
           rust \
-          typescript
+          typescript || true
 }
 
 basic_setup() {
