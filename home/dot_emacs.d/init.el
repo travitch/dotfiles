@@ -1223,6 +1223,42 @@
     ;; Place the base rules after the overrides
    ,@(alist-get 'java java-ts-mode--indent-rules))))
 
+
+(defun tr/add-javadoc-in-java-ts-mode ()
+  "Add javadoc syntax highlighting to java-ts-mode."
+  (when (treesit-ready-p 'java)
+    (when (treesit-ready-p 'javadoc)
+        (setq-local treesit-range-settings
+                    (treesit-range-rules
+                      :embed 'javadoc
+                      :host 'java
+                      :local t
+                      `(((block_comment) @capture (:match ,(rx bos "/**") @capture)))))
+        (setq c-ts-common--comment-regexp (rx (or "description" "line_comment" "block_comment")))
+
+        (defvar tr/treesit-font-lock-settings-javadoc
+          (treesit-font-lock-rules
+           :language 'javadoc
+           :override t
+           :feature 'document
+           '((document) @font-lock-doc-face)
+
+           :language 'javadoc
+           :override t
+           :feature 'keyword
+           '((tag_name) @font-lock-constant-face)
+
+           :language 'javadoc
+           :override t
+           :feature 'definition
+           '((param_tag parameter_name: (identifier) @font-lock-builtin-face))
+
+           :language 'javadoc
+           :override t
+           :feature 'definition
+           '((identifier) @font-lock-variable-face)))
+        (setq-local treesit-font-lock-settings (append treesit-font-lock-settings tr/treesit-font-lock-settings-javadoc)))))
+
 (defun tr/init-java-ts-mode ()
   "This hook just sets up the java indent style."
   (setq-local treesit-simple-indent-rules (tr/java-indent-style)))
@@ -1238,6 +1274,7 @@
   :mode ("\\.java$" . java-ts-mode)
   :init
   (add-hook 'java-ts-mode-hook #'tr/init-java-ts-mode)
+  (add-hook 'java-ts-mode-hook #'tr/add-javadoc-in-java-ts-mode)
   (add-hook 'java-ts-mode-hook #'(lambda () (setq paragraph-separate "[ ]*\\(//+\\|\\**\\)\\([ ]*\\| <.*>\\)$\\|^\f"))))
 
 (use-package bash-ts-mode
