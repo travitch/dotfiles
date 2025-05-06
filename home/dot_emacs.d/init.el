@@ -1246,12 +1246,12 @@
            :language 'javadoc
            :override t
            :feature 'keyword
-           '((tag_name) @font-lock-constant-face)
+           '((tag_name) @font-lock-escape-face)
 
            :language 'javadoc
            :override t
            :feature 'definition
-           '((param_tag parameter_name: (identifier) @font-lock-builtin-face))
+           '((param_tag parameter_name: (identifier) @font-lock-punctuation-face))
 
            :language 'javadoc
            :override t
