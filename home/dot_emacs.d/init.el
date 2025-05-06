@@ -1176,6 +1176,7 @@
     (go "https://github.com/tree-sitter/tree-sitter-go")
     (html "https://github.com/tree-sitter/tree-sitter-html")
     (java "https://github.com/tree-sitter/tree-sitter-java" "master" "src")
+    (javadoc "https://github.com/rmuir/tree-sitter-javadoc" "main" "src")
     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
     (json "https://github.com/tree-sitter/tree-sitter-json")
     (lua "https://github.com/Azganoth/tree-sitter-lua")
@@ -1415,7 +1416,8 @@ If I let Windows handle DPI everything looks blurry."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("6819104c5f7d70485b32c10323aa396806d282fcee5b707e462bf3d156f44c39"
+   '("5e39e95c703e17a743fb05a132d727aa1d69d9d2c9cde9353f5350e545c793d4"
+     "6819104c5f7d70485b32c10323aa396806d282fcee5b707e462bf3d156f44c39"
      "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3"
      "c038d994d271ebf2d50fa76db7ed0f288f17b9ad01b425efec09519fa873af53"
      "fbf73690320aa26f8daffdd1210ef234ed1b0c59f3d001f342b9c0bbf49f531c"
