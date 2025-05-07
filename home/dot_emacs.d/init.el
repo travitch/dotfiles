@@ -1235,7 +1235,7 @@
                       :local t
                       `(((block_comment) @capture (:match ,(rx bos "/**") @capture)))))
         (setq c-ts-common--comment-regexp (rx (or "description" "line_comment" "block_comment")))
-
+        (add-to-list 'jit-spell-ignored-faces 'font-lock-delimiter-face 'append)
         (defvar tr/treesit-font-lock-settings-javadoc
           (treesit-font-lock-rules
            :language 'javadoc
@@ -1256,7 +1256,22 @@
            :language 'javadoc
            :override t
            :feature 'definition
-           '((identifier) @font-lock-variable-face)))
+           '((identifier) @font-lock-variable-face)
+
+           ;; Assign some special faces to Javadoc elements that should not be spell checked.  This
+           ;; works in conjunction with the jit-spell-ignored-faces change above, which marks this
+           ;; face as exempt from spell checking.
+           ;;
+           ;; These are elements that refer to method references, which are rarely words.
+           :language 'javadoc
+           :override t
+           :feature 'document
+           '((link_tag reference: (reference) @font-lock-delimiter-face))
+
+           :language 'javadoc
+           :override t
+           :feature 'document
+           '((see_tag reference: (reference) @font-lock-delimiter-face))))
         (setq-local treesit-font-lock-settings (append treesit-font-lock-settings tr/treesit-font-lock-settings-javadoc)))))
 
 (defun tr/init-java-ts-mode ()
