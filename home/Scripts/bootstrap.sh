@@ -161,6 +161,7 @@ CARGO_PKGS=( du-dust
              comrak
              television
              dedoc
+             pylyzer
              )
 
 
