@@ -13,8 +13,8 @@ Device = collections.namedtuple('Device', ['bus', 'device', 'rest'])
 
 device_rx = re.compile(r"Bus (\d+) Device (\d+): (.*)")
 
-def parse_devices(lsusb_output):
-    res = []
+def parse_devices(lsusb_output : str) -> list[Device]:
+    res : list[Device] = []
     for line in lsusb_output.splitlines():
         md = re.match(device_rx, line)
         if md is None:
@@ -35,10 +35,10 @@ def main():
 
     for dev in devices:
         if re.search(audio_rx, dev.rest):
-            format("Resetting USB device: {}".format(dev))
+            print("Resetting USB device: {}".format(dev))
             dev_filename = '/dev/bus/usb/{}/{}'.format(dev.bus, dev.device)
             dev_file = open(dev_filename, 'w')
-            fcntl.ioctl(dev_file, USBDEVFS_RESET, 0)
+            _ = fcntl.ioctl(dev_file, USBDEVFS_RESET, 0)
 
 if __name__ == '__main__':
     main()
