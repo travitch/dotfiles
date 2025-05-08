@@ -515,6 +515,8 @@
   ;; Add a custom handler for Dafny programs to start up Dafny's built-in LSP server
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
 
+  (add-to-list 'eglot-server-programs '(python-ts-mode . ("basedpyright-langserver" "--stdio")))
+
   (let ((lombok-arg (format "--jvm-arg=-javaagent:%s" +tr/lombok-jar-path))
         (jdtls-bin +tr/jdtls-path)
         (init-opts `(:settings
