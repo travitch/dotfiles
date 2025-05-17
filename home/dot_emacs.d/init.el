@@ -485,7 +485,7 @@
 (defconst +tr/java-debug-plugin-path (expand-file-name "~/.emacs.d/language-servers/java-debug-adapter/com.microsoft.java.debug.repository/target/repository/plugins/com.microsoft.java.debug.plugin_0.52.0.jar")
   "The absolute path to the compiled Java debug plugin (for dape).")
 
-(defconst +tr/lombok-jar-path (expand-file-name "~/.emacs.d/lombok-1.18.30.jar")
+(defconst +tr/lombok-jar-path (expand-file-name "~/.emacs.d/lombok-1.18.38.jar")
   "The absolute path to the lombok jar.")
 
 (defconst +tr/java-decomp-common-jar-path (expand-file-name "~/.emacs.d/language-servers/java-decompilers/dg.jdt.ls.decompiler.common-0.0.3.jar")
