@@ -1292,6 +1292,11 @@
            :language 'javadoc
            :override t
            :feature 'document
+           '((code_tag text: (code) @font-lock-delimiter-face))
+
+           :language 'javadoc
+           :override t
+           :feature 'document
            '((see_tag reference: (reference) @font-lock-delimiter-face))))
         (setq-local treesit-font-lock-settings (append treesit-font-lock-settings tr/treesit-font-lock-settings-javadoc)))))
 
