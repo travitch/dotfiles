@@ -790,8 +790,6 @@
   ;; Edit it commit messages as if they were markdown
   (setq git-commit-major-mode 'markdown-mode)
   (setq git-commit-summary-max-length 500)
-  ;; Disable vc-mode (using magit)
-  (setq vc-handled-backends nil)
   (setq magit-auto-revert-mode nil)
   (setq magit-auto-revert-immediately nil)
   (setq magit-diff-refine-hunk 'all)
@@ -802,6 +800,12 @@
 ;; buffer (or selected range) on github
 (use-package git-link
   :bind ("C-c g l" . git-link))
+
+(use-package git-review
+  :straight (:type git :host nil :repo "https://git.sr.ht/~niklaseklund/git-review")
+  :custom
+  (git-review-comment-major-mode #'markdown-mode)
+  :commands (git-review-change git-review-patchset git-review-commit git-review-select-change git-review-select-patchset))
 
 ;; Allow loading very large files in an efficient way (i.e., on demand and
 ;; incrementally)
