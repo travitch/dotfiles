@@ -794,7 +794,7 @@
   (setq vc-handled-backends nil)
   (setq magit-auto-revert-mode nil)
   (setq magit-auto-revert-immediately nil)
-  (setq magit-diff-refine-hunk t)
+  (setq magit-diff-refine-hunk 'all)
   :mode ("COMMIT_EDITMSG$" . git-commit-mode)
   :bind ("C-x g" . magit-status))
 
