@@ -877,6 +877,7 @@
 (use-package flycheck
   :commands (flycheck-mode)
   :init
+  (setq-default flycheck-emacs-lisp-load-path 'inherit)
   (add-hook 'python-mode-hook #'flycheck-mode)
   (add-hook 'python-ts-mode-hook #'flycheck-mode)
   (add-hook 'rst-mode-hook #'flycheck-mode)
