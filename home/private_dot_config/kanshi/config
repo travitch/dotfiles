@@ -1,0 +1,5 @@
+profile {
+  output DP-1 mode 2560x1440 position 0,390 transform 270
+  output DP-3 mode 3840x2160 position 1440,790
+  output HDMI-A-1 mode 2560x1440 position 5280,390 transform 90
+}
