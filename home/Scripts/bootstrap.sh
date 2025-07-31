@@ -162,6 +162,7 @@ CARGO_PKGS=( du-dust
              television
              dedoc
              pylyzer
+             cargo-update-installed
              )
 
 
