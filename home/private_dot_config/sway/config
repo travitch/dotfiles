@@ -267,10 +267,7 @@ client.urgent           $base08 $base08 $base00 $base08 $base08
 client.placeholder      $base00 $base00 $base05 $base00 $base00
 client.background       $base07
 
-exec_always swayidle -w \
-           timeout 600 'swaymsg output \* dpms off' \
-           resume 'swaymsg output \* dpms on'
-
-exec_always gammastep
 exec_always kanshi
-exec_always swaync
+
+exec "systemctl --user import-environment {,WAYLAND_}DISPLAY SWAYSOCK; systemctl --user start sway-session.target"
+exec swaymsg -t subscribe '["shutdown"]' && systemctl --user stop sway-session.target

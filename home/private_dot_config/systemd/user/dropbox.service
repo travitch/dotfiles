@@ -1,0 +1,11 @@
+[Unit]
+Description=Dropbox Daemon
+Documentation=man:dropbox(1)
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.dropbox-dist/dropboxd
+
+[Install]
+WantedBy=default.target
