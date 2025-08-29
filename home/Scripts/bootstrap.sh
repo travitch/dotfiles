@@ -128,6 +128,8 @@ install_mise_pkgs() {
 
     mise install rclone
     mise use -g rclone
+
+    mise use -g node@24
 }
 
 CARGO_PKGS=( du-dust
