@@ -16,5 +16,6 @@ config.enable_tab_bar = false
 config.term = 'wezterm'
 config.adjust_window_size_when_changing_font_size = false
 -- config.default_cursor_style = 'SteadyBar'
+config.mux_enable_ssh_agent = false
 
 return config
