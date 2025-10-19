@@ -485,6 +485,18 @@
 (use-package ninja-mode
   :mode ("\\.ninja$" . ninja-mode))
 
+;; Tools for installing LSP servers
+(use-package mason
+  :commands (mason-ensure mason-install mason-manager))
+
+(defconst +tr/mason-lsps '(basedpyright bash-language-server java-debug-adapter jdtls typescript-language-server))
+
+(defun tr/install-lsps ()
+  "Install LSP servers using Mason."
+  (mason-ensure)
+  (dolist (lsp +tr/mason-lsps)
+    (mason-install (symbol-name lsp))))
+
 (defconst +tr/jdtls-path (expand-file-name "~/.emacs.d/language-servers/java-language-server/bin/jdtls")
   "The absolute path to the JDTLS langauge server binary.")
 
