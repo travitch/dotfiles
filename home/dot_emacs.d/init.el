@@ -489,7 +489,7 @@
 (use-package mason
   :commands (mason-ensure mason-install mason-manager))
 
-(defconst +tr/mason-lsps '(basedpyright bash-language-server java-debug-adapter jdtls typescript-language-server))
+(defconst +tr/mason-lsps '(basedpyright bash-language-server java-debug-adapter jdtls typescript-language-server vscode-java-decompiler))
 
 (defun tr/install-lsps ()
   "Install LSP servers using Mason."
