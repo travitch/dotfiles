@@ -1,0 +1,13 @@
+[tools]
+chezmoi = "latest"
+cmake = "latest"
+fzf = "latest"
+go = "1.25"
+java = "openjdk-21"
+jq = "latest"
+maven = "latest"
+node = "24"
+pandoc = "latest"
+yq = "latest"
+zola = "latest"
+rust = { version = "latest", components = "rust-analyzer" }

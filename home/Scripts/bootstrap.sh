@@ -48,27 +48,25 @@ core_packages=(
 
 gui_packages=(
     # GUI
-    i3
-    i3lock
+    sway
+    sway-config-fedora
+    sway-systemd
+    swayidle
+    swaylock
+    waybar
+    kanshi
     i3status-rust
     dunst
     rofi
     pavucontrol
     graphviz
     doxygen
-    playerctl
     obs-studio
-    alacritty
-    code
 
     # Tex
     texlive
     texlive-xetex
     latexmk
-
-    # Tools
-    vim-X11
-    xdotool
 
     # Python
     python3-ipython
@@ -96,7 +94,7 @@ install_rustup() {
 
 
 install_mise_pkgs() {
-    mise use -g go@1.22
+    mise use -g go@1.25
 
     mise plugin install -y chezmoi
     mise use -g chezmoi
@@ -124,10 +122,8 @@ install_mise_pkgs() {
 
     mise install java@openjdk-17
     mise install java@openjdk-21
+    mise install java@openjdk-25
     mise use -g java@openjdk-21
-
-    mise install rclone
-    mise use -g rclone
 
     mise use -g node@24
 }
@@ -165,6 +161,7 @@ CARGO_PKGS=( du-dust
              dedoc
              pylyzer
              cargo-update-installed
+             kalker
              )
 
 
