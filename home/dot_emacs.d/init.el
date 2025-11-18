@@ -185,6 +185,10 @@
   :init
   (add-hook 'org-mode-hook #'toc-org-enable)
   (add-hook 'org-mode-hook #'visual-line-mode)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((shell . t)
+     (python . t)))
   :bind
   (("C-c a" . #'tr/org-agenda-current-buffer)
   :map org-mode-map
