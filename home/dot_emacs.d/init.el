@@ -498,7 +498,7 @@
     (mason-install (symbol-name lsp))))
 
 (defconst +tr/jdtls-path (expand-file-name "~/.emacs.d/language-servers/java-language-server/bin/jdtls")
-  "The absolute path to the JDTLS langauge server binary.")
+  "The absolute path to the JDTLS language server binary.")
 
 (defconst +tr/java-debug-plugin-path (expand-file-name "~/.emacs.d/language-servers/java-debug-adapter/com.microsoft.java.debug.repository/target/repository/plugins/com.microsoft.java.debug.plugin_0.52.0.jar")
   "The absolute path to the compiled Java debug plugin (for dape).")
