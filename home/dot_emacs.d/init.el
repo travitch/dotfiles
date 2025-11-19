@@ -204,19 +204,6 @@
   (add-hook 'org-mode-hook #'org-modern-mode)
   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
 
-(use-package org-super-agenda
-  :commands (org-super-agenda-mode)
-  :defines org-super-agenda-groups
-  :config
-  (setq org-super-agenda-groups
-        '(
-          (:name "Overdue" :deadline past :order 0)
-          (:name "Important" :priority "A" :order 1)
-          (:name "Scheduled" :and (:todo "TODO" :deadline t) :order 2)
-          (:name "Other" :todo "TODO" :order 3)
-          ))
-  :hook (after-init . org-super-agenda-mode))
-
 ;; * Package selection and initialization
 
 ;; ** Built-in modes
