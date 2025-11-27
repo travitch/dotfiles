@@ -381,9 +381,6 @@
   :mode (("\\.ts$" . typescript-ts-mode)
          ("\\.js$" . typescript-ts-mode)))
 
-(use-package erlang
-  :mode ("\\.erl$" . erlang-mode))
-
 (use-package clojure-mode
   :mode ("\\.clj$" . clojure-mode))
 
@@ -445,13 +442,6 @@
 	     :repo "leanprover/lean4-mode"
 	     :files ("*.el" "data"))
   :mode ("\\.lean$" . lean4-mode))
-
-;; (use-package boogie-friends
-;;   :straight (:host github :repo "travitch/boogie-friends" :branch "tr/new-lsp-versions")
-;;   :config
-;;   (setq lsp-dafny-preferred-version "4.3.0")
-;;   :mode (("\\.bpl$" . boogie-mode)
-;;          ("\\.dfy$" . dafny-mode)))
 
 (use-package z3-mode
   :mode ("\\.smt$" . z3-mode))
