@@ -123,7 +123,7 @@ install_mise_pkgs() {
     mise install java@openjdk-17
     mise install java@openjdk-21
     mise install java@openjdk-25
-    mise use -g java@openjdk-21
+    mise use -g java@openjdk-25
 
     mise use -g node@24
 }
@@ -162,6 +162,7 @@ CARGO_PKGS=( du-dust
              pylyzer
              cargo-update-installed
              kalker
+             uv
              )
 
 
@@ -370,7 +371,7 @@ install_common() {
         cargo install mise
     fi
 
-    install_mise_pkgs
+    # install_mise_pkgs
 
     install_cargo_pkgs
 
