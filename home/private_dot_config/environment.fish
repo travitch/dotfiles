@@ -15,8 +15,13 @@ set -gx COLORTERM truecolor
 
 alias e 'emacs -nw'
 
-if type -q mise
-    mise activate fish | source
+# if type -q mise
+#     mise activate fish | source
+# end
+
+# On Linux, set the SSH agent socket
+if test -d /etc/xdg
+    set -gx SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
 end
 
 set LOCAL_ENV $HOME/.config/local-environment.fish
