@@ -591,6 +591,10 @@
   :bind ("C-c e s" . consult-eglot-symbols)
   :commands (consult-eglot-symbols))
 
+(use-package consult-jq
+  :straight (:host github :repo "bigbuger/consult-jq")
+  :commands (consult-jq))
+
 ;; dape is a debug adapter interface that is compatible with eglot.  It requires a newer version of
 ;; jsonrpc than is included with emacs 29.3, so also upgrade that.
 (use-package jsonrpc)
