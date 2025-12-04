@@ -164,21 +164,12 @@
   ;; behavior in lots of other places, e.g. opening files from emacsclient.
   (advice-add #'find-file-noselect :around #'find-file-noselect--advice-around-with-line-number)
 
-  ;; Temporary: Suppress some warnings that arise due to upgrading jsonrpc
-  ;;
-  ;; This should be deleted after updating to emacs-30
-  (setq warning-suppress-types '((emacs) (eglot)))
-
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
         '(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
-(defun tr/org-agenda-current-buffer ()
-  "Create an `org-agenda' from the current buffer."
-  (interactive)
-  (let ((org-agenda-files (list (buffer-file-name (current-buffer)))))
-    (org-agenda)))
+(use-package project)
 
 (use-package org
   :mode ("\\.org$" . org-mode)
@@ -190,9 +181,8 @@
    '((shell . t)
      (python . t)))
   :bind
-  (("C-c a" . #'tr/org-agenda-current-buffer)
-  :map org-mode-map
-  ("C-c M-l" . org-store-link))
+  (:map org-mode-map
+        ("C-c M-l" . org-store-link))
   :config
   (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d!)" "CANCELED(c@)")))
   (setq org-log-into-drawer t))
@@ -400,9 +390,8 @@
 (use-package kotlin-mode
   :mode ("\\.kt$" . kotlin-mode))
 
-;; The best ocaml mode
-(use-package tuareg
-  :mode ("\\.ml$\\|\\.mli$" . tuareg-mode))
+(use-package neocaml
+  :straight (:host github :repo "bbatsov/neocaml"))
 
 (use-package vimrc-mode
   :mode ("vimrc" . vimrc-mode))
@@ -516,6 +505,8 @@
 
   (add-to-list 'eglot-server-programs '(python-ts-mode . ("basedpyright-langserver" "--stdio")))
 
+  (add-to-list 'eglot-server-programs '((nocaml-mode :language-id "ocaml") . ("ocamllsp")))
+
   (let ((lombok-arg (format "--jvm-arg=-javaagent:%s" +tr/lombok-jar-path))
         (jdtls-bin +tr/jdtls-path)
         (init-opts `(:settings
@@ -595,9 +586,7 @@
   :straight (:host github :repo "bigbuger/consult-jq")
   :commands (consult-jq))
 
-;; dape is a debug adapter interface that is compatible with eglot.  It requires a newer version of
-;; jsonrpc than is included with emacs 29.3, so also upgrade that.
-(use-package jsonrpc)
+;; dape is a debug adapter interface that is compatible with eglot.
 (use-package dape
   :commands (dape)
   :defines dape-cwd-fn
@@ -803,12 +792,6 @@
 ;; buffer (or selected range) on github
 (use-package git-link
   :bind ("C-c g l" . git-link))
-
-(use-package git-review
-  :straight (:type git :host nil :repo "https://git.sr.ht/~niklaseklund/git-review")
-  :custom
-  (git-review-comment-major-mode #'markdown-mode)
-  :commands (git-review-change git-review-patchset git-review-commit git-review-select-change git-review-select-patchset))
 
 ;; Allow loading very large files in an efficient way (i.e., on demand and
 ;; incrementally)
@@ -1071,17 +1054,6 @@
 
 (use-package resize-window
   :bind (("C-c ;" . resize-window)))
-
-;; Lay down navigation breadcrumbs
-(use-package dogears
-  :commands (dogears-list dogears-mode)
-  :hook (after-init . dogears-mode)
-  ;; These bindings are optional, of course:
-  :bind (:map global-map
-              ("M-g d" . dogears-go)
-              ("M-g M-b" . dogears-back)
-              ("M-g M-f" . dogears-forward)
-              ("M-g M-d" . dogears-list)))
 
 ;; An interesting package for building modal commands
 (use-package hydra
