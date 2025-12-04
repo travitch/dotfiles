@@ -364,15 +364,6 @@ install_common() {
     install_rustup
     install_elan
 
-    # This needs cargo to be installed, but we also need the mise packages to be installed
-    # (specifically, cmake) before the rest of the cargo packages can be installed
-    if [[ ! -x $HOME/.cargo/bin/mise ]]
-    then
-        cargo install mise
-    fi
-
-    # install_mise_pkgs
-
     install_cargo_pkgs
 
     install_dev_docs
