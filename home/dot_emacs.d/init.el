@@ -169,7 +169,9 @@
         '(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
-(use-package project)
+(use-package project
+  :bind-keymap
+  (("C-c p" . project-prefix-map)))
 
 (use-package org
   :mode ("\\.org$" . org-mode)
@@ -555,10 +557,7 @@
 
 ;; dape is a debug adapter interface that is compatible with eglot.
 (use-package dape
-  :commands (dape)
-  :defines dape-cwd-fn
-  :config
-  (setq dape-cwd-fn 'projectile-project-root))
+  :commands (dape))
 
 (use-package corfu
   :custom
@@ -992,8 +991,7 @@
 
   :config
   ;; Replace functions (consult-multi-occur is a drop-in replacement)
-  (fset 'multi-occur #'consult-multi-occur)
-  (setq consult-project-function #'projectile-project-root))
+  (fset 'multi-occur #'consult-multi-occur))
 
 (use-package xref
   :straight (:type built-in)
@@ -1063,41 +1061,6 @@
   (global-set-key (kbd "C-<SPC>") #'hydra-mark)
   (global-set-key (kbd "C-c C-m") #'hydra-move/body)
   (global-set-key (kbd "C-c m") #'hydra-move/body))
-
-;; Project management
-(use-package projectile
-  :diminish projectile-mode
-  :defines (projectile-keymap-prefix projectile-mode-map projectile-globally-ignored-directories projectile-git-command projectile-completion-system projectile-enable-caching projectile-tags-backend projectile-globally-ignored-file-suffixes)
-  :bind (("C-c p p" . projectile-switch-project))
-  :commands (projectile-mode projectile-project-root)
-  :hook (after-init . projectile-mode)
-  :config
-  (setq projectile-keymap-prefix  (kbd "C-c p"))
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  (define-key projectile-mode-map (kbd "C-c p s r") 'consult-ripgrep)
-  (add-to-list 'projectile-globally-ignored-directories ".stack-work")
-  (add-to-list 'projectile-globally-ignored-directories ".cabal-sandbox")
-  (add-to-list 'projectile-globally-ignored-directories "dist-newstyle")
-  (setq projectile-git-command "git ls-files -zc --exclude-standard --recurse-submodules")
-  (setq projectile-completion-system 'default)
-  (setq projectile-enable-caching t)
-  (setq projectile-tags-backend 'etags)
-  (setq projectile-globally-ignored-file-suffixes '("o" "hi" "a" "so" "p_o"
-                                                    "jpg" "png" "JPG" "PANG" "PEG" "Peg")))
-
-(use-package eacl
-  :defines eacl-project-root-callback
-  :functions eacl-get-project-root
-  :commands (eacl-complete-line)
-  :config
-  ;; Use projectile to get the root, if possible.  This has many more heuristics
-  ;; and can do a better job
-  (setq eacl-project-root-callback #'(lambda () (if (boundp 'projectile-project-root)
-                                                    (projectile-project-root)
-                                                  (eacl-get-project-root))))
-  ;; Override this eacl function to force it to never use git-grep (which doesn't grep
-  ;; in submodules)
-  (defun eacl-git-p () nil))
 
 ;; Very fast and precise navigation based on short substrings.
 ;;
