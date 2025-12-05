@@ -467,6 +467,32 @@
   (dolist (lsp +tr/mason-lsps)
     (mason-install (symbol-name lsp))))
 
+;; JDTLS replies with non-standard file URLs in some cases.  This code handles them.
+;;
+;; Taken from https://gitlab.com/skybert/my-little-friends/-/blob/master/emacs/.emacs.d/tkj-java-eglot.el
+(defun tr/jdt-file-name-handler (operation &rest args)
+  "Support Eclipse jdtls `jdt://' uri scheme."
+  (let* ((uri (car args))
+         (cache-dir "/tmp/.eglot")
+         (source-file
+          (expand-file-name
+           (file-name-concat
+            cache-dir
+            (save-match-data
+              (when (string-match "jdt://contents/\\(.*?\\)/\\(.*\\)\.class\\?" uri)
+                (format "%s.java" (replace-regexp-in-string "/" "." (match-string 2 uri) t t))))))))
+    (unless (file-readable-p source-file)
+      (let ((content (jsonrpc-request (eglot-current-server) :java/classFileContents (list :uri uri)))
+            (metadata-file (format "%s.%s.metadata"
+                                   (file-name-directory source-file)
+                                   (file-name-base source-file))))
+        (unless (file-directory-p cache-dir) (make-directory cache-dir t))
+        (with-temp-file source-file (insert content))
+        (with-temp-file metadata-file (insert uri))))
+    source-file))
+
+(add-to-list 'file-name-handler-alist '("\\`jdt://" . tr/jdt-file-name-handler))
+
 (defconst +tr/jdtls-path (expand-file-name "~/.emacs.d/language-servers/java-language-server/bin/jdtls")
   "The absolute path to the JDTLS language server binary.")
 
@@ -475,18 +501,6 @@
 
 (defconst +tr/lombok-jar-path (expand-file-name "~/.emacs.d/lombok-1.18.38.jar")
   "The absolute path to the lombok jar.")
-
-(defconst +tr/java-decomp-common-jar-path (expand-file-name "~/.emacs.d/language-servers/java-decompilers/dg.jdt.ls.decompiler.common-0.0.3.jar")
-  "The absolute path to the Java common decompilation jar.")
-
-(defconst +tr/java-decomp-cfr-jar-path (expand-file-name "~/.emacs.d/language-servers/java-decompilers/dg.jdt.ls.decompiler.cfr-0.0.3.jar")
-  "The absolute path to the Java CFR decompilation jar.")
-
-(defconst +tr/java-decomp-fernflower-jar-path (expand-file-name "~/.emacs.d/language-servers/java-decompilers/dg.jdt.ls.decompiler.fernflower-0.0.3.jar")
-  "The absolute path to the Java fernflower decompilation jar.")
-
-(defconst +tr/java-decomp-procyon-jar-path (expand-file-name "~/.emacs.d/language-servers/java-decompilers/dg.jdt.ls.decompiler.procyon-0.0.3.jar")
-  "The absolute path to the Java procyon decompilation jar.")
 
 ;; Set up eglot (which now ships with emacs)
 (use-package eglot
@@ -516,57 +530,8 @@
                        (:contentProvider (:preferred "fernflower")))
                      :extendedClientCapabilities (:classFileContentsSupport t)
                      :bundles [,+tr/java-debug-plugin-path
-                               ,+tr/java-decomp-common-jar-path
-                               ,+tr/java-decomp-cfr-jar-path
-                               ,+tr/java-decomp-fernflower-jar-path
-                               ,+tr/java-decomp-procyon-jar-path
                                ])))
-    (add-to-list 'eglot-server-programs `(java-mode ,jdtls-bin ,zgc-arg ,generational ,lombok-arg :initializationOptions ,init-opts))
-    (add-to-list 'eglot-server-programs `(java-ts-mode ,jdtls-bin ,zgc-arg ,generational ,lombok-arg :initializationOptions ,init-opts)))
-
-  ;; jdtls has non-standard URIs (sometimes)
-  ;;
-  ;; See https://github.com/joaotavora/eglot/discussions/1185
-  (defvar eglot-path-uri-cache (make-hash-table :test #'equal)
-    "File path to uri cache.")
-
-  (cl-defgeneric +eglot/ext-uri-to-path (uri)
-    "Support extension uri."
-    nil)
-
-  (define-advice eglot--uri-to-path (:around (orig-fn uri) advice)
-    "Support non standard LSP uri scheme."
-    (when (keywordp uri) (setq uri (substring (symbol-name uri) 1)))
-    (or (+eglot/ext-uri-to-path uri)
-        (funcall orig-fn uri)))
-
-  (define-advice eglot--path-to-uri (:around (orig-fn path) advice)
-    "Support non standard LSP uri scheme."
-    (or (gethash path eglot-path-uri-cache)
-        (funcall orig-fn path)))
-
-  (defun +eglot/jdtls-uri-to-path (uri)
-    "Support Eclipse jdtls `jdt://' uri scheme."
-    (when-let* ((jdt-scheme-p (string-prefix-p "jdt://" uri))
-                (filename (when (string-match "^jdt://contents/\\(.*?\\)/\\(.*\\)\.class\\?" uri)
-                            (format "%s.java" (replace-regexp-in-string "/" "." (match-string 2 uri) t t))))
-                (source-dir (file-name-concat (project-root (eglot--current-project)) ".eglot"))
-                (source-file (expand-file-name (file-name-concat source-dir filename))))
-      (unless (file-directory-p source-dir)
-        (make-directory source-dir t))
-      (unless (file-readable-p source-file)
-        (let ((content (jsonrpc-request (eglot--current-server-or-lose)
-                                        :java/classFileContents
-                                        (list :uri uri))))
-          (with-temp-file source-file (insert content))))
-      (puthash source-file uri eglot-path-uri-cache)
-      source-file))
-
-  (cl-defmethod +eglot/ext-uri-to-path (uri &context (major-mode java-mode))
-    (+eglot/jdtls-uri-to-path uri))
-
-  (cl-defmethod +eglot/ext-uri-to-path (uri &context (major-mode java-ts-mode))
-    (+eglot/jdtls-uri-to-path uri))
+    (add-to-list 'eglot-server-programs `((java-mode java-ts-mode) . (,jdtls-bin ,zgc-arg ,generational ,lombok-arg :initializationOptions ,init-opts))))
 
   ;; jdtls has a non-standard reply for workspace edit requests
   ;;
