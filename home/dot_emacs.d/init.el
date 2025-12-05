@@ -508,6 +508,8 @@
   (add-to-list 'eglot-server-programs '((nocaml-mode :language-id "ocaml") . ("ocamllsp")))
 
   (let ((lombok-arg (format "--jvm-arg=-javaagent:%s" +tr/lombok-jar-path))
+        (zgc-arg "--jvm-arg=-XX:+UseZGC")
+        (generational "--jvm-arg=-XX:+ZGenerational")
         (jdtls-bin +tr/jdtls-path)
         (init-opts `(:settings
                      (:java
@@ -519,8 +521,8 @@
                                ,+tr/java-decomp-fernflower-jar-path
                                ,+tr/java-decomp-procyon-jar-path
                                ])))
-    (add-to-list 'eglot-server-programs `(java-mode ,jdtls-bin ,lombok-arg :initializationOptions ,init-opts))
-    (add-to-list 'eglot-server-programs `(java-ts-mode ,jdtls-bin ,lombok-arg :initializationOptions ,init-opts)))
+    (add-to-list 'eglot-server-programs `(java-mode ,jdtls-bin ,zgc-arg ,generational ,lombok-arg :initializationOptions ,init-opts))
+    (add-to-list 'eglot-server-programs `(java-ts-mode ,jdtls-bin ,zgc-arg ,generational ,lombok-arg :initializationOptions ,init-opts)))
 
   ;; jdtls has non-standard URIs (sometimes)
   ;;
