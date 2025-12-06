@@ -460,9 +460,9 @@
 (use-package ninja-mode
   :mode ("\\.ninja$" . ninja-mode))
 
-(defconst +tr/mason-lsps '(basedpyright
-                           bash-language-server
+(defconst +tr/mason-lsps '(bash-language-server
                            clangd
+                           gopls
                            fish-lsp
                            smithy-language-server
                            jdtls
