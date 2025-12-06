@@ -92,42 +92,6 @@ install_rustup() {
     fi
 }
 
-
-install_mise_pkgs() {
-    mise use -g go@1.25
-
-    mise plugin install -y chezmoi
-    mise use -g chezmoi
-
-    mise plugin install cmake https://github.com/asdf-community/asdf-cmake.git
-    mise use -g cmake
-
-    mise plugin install -y fzf
-    mise use -g fzf
-
-    mise plugin install -y jq
-    mise use -g jq
-
-    mise plugin install -y maven
-    mise use -g maven
-
-    mise plugin install -y pandoc
-    mise use -g pandoc
-
-    mise plugin install -y yq
-    mise use -g yq
-
-    mise plugin install -y zola
-    mise use -g zola
-
-    mise install java@openjdk-17
-    mise install java@openjdk-21
-    mise install java@openjdk-25
-    mise use -g java@openjdk-25
-
-    mise use -g node@24
-}
-
 CARGO_PKGS=( du-dust
              bat
              flamegraph
@@ -279,21 +243,7 @@ bootstrap_core() {
     install_packages ${pkgs[@]}
 }
 
-add_fedora_repositories() {
-    # Set up COPR to pull in some extra packages *before* installing GUI packages
-    sudo dnf copr enable atim/i3status-rust -y
-
-    # Add the upstream VSCode repo
-    if [ ! -f /etc/yum.repos.d/vscode.repo ]
-    then
-        sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-        sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-    fi
-}
-
 bootstrap_gui() {
-    add_fedora_repositories
-
     local pkgs=( ${core_packages[@]} ${gui_packages[@]} )
     install_packages ${pkgs[@]}
 }
