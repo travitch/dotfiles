@@ -263,45 +263,6 @@ install_yices() {
     fi
 }
 
-LANGUAGE_SERVER_ROOT=$HOME/.emacs.d/language-servers
-
-install_bash_language_server() {
-    if [ ! -d "${LANGUAGE_SERVER_ROOT}/bash-language-server" ]
-    then
-        pushd "${LANGUAGE_SERVER_ROOT}"
-        git clone git@github.com:bash-lsp/bash-language-server.git
-        cd bash-language-server
-        # Haven't figured this out yet - it doesn't seem amenable to local installation
-        npm i bash-language-server
-        popd
-    fi
-}
-
-JAVA_LS_URL="https://www.eclipse.org/downloads/download.php?file=/jdtls/milestones/1.46.1/jdt-language-server-1.46.1-202504011455.tar.gz"
-
-install_java_language_server() {
-    if [ ! -d "${LANGUAGE_SERVER_ROOT}/java-language-server" ]
-    then
-        mkdir -p "${LANGUAGE_SERVER_ROOT}/java-language-server"
-        wget $JAVA_LS_URL --output-document=/tmp/jdtls.tar.gz
-        tar xf /tmp/jdtls.tar.gz -C "${LANGUAGE_SERVER_ROOT}/java-language-server"
-    fi
-}
-
-JAVA_DEBUG_ADAPTER_URL=https://github.com/microsoft/java-debug/archive/refs/tags/0.52.0.tar.gz
-
-install_java_debug_adapter() {
-    if [ ! -d "${LANGUAGE_SERVER_ROOT}/java-debug-adapter" ]
-    then
-        mkdir -p "${LANGUAGE_SERVER_ROOT}/java-debug-adapter"
-        wget $JAVA_DEBUG_ADAPTER_URL --output-document=/tmp/java-debug-adapter.tar.gz
-        tar xf /tmp/java-debug-adapter.tar.gz -C "${LANGUAGE_SERVER_ROOT}/java-debug-adapter" --strip-components=1
-        pushd "${LANGUAGE_SERVER_ROOT}/java-debug-adapter"
-        ./mvnw clean install
-        popd
-    fi
-}
-
 install_packages() {
     local pkgs=($@)
     # Sort the package names (xargs breaks the single line up into a column)
@@ -367,7 +328,4 @@ install_common() {
     install_cargo_pkgs
 
     install_dev_docs
-
-    install_java_language_server
-    install_java_debug_adapter
 }

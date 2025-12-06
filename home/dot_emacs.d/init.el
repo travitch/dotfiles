@@ -457,17 +457,20 @@
 (use-package ninja-mode
   :mode ("\\.ninja$" . ninja-mode))
 
+(defconst +tr/mason-lsps '(basedpyright bash-language-server java-debug-adapter jdtls typescript-language-server))
+
 ;; Tools for installing LSP servers
 (use-package mason
-  :commands (mason-ensure mason-install mason-manager))
-
-(defconst +tr/mason-lsps '(basedpyright bash-language-server java-debug-adapter jdtls typescript-language-server vscode-java-decompiler))
-
-(defun tr/install-lsps ()
-  "Install LSP servers using Mason."
-  (mason-ensure)
-  (dolist (lsp +tr/mason-lsps)
-    (mason-install (symbol-name lsp))))
+  :init
+  (defun tr/install-lsps ()
+    "Install required LSPs."
+    (mason-ensure
+     (lambda ()
+       (dolist (lsp-name +tr/mason-lsps)
+         (ignore-errors (mason-install (symbol-name lsp-name)))))))
+  :functions (mason-ensure mason-install)
+  :hook
+  (after-init-hook . tr/install-lsps))
 
 ;; JDTLS replies with non-standard file URLs in some cases.  This code handles them.
 ;;
@@ -495,10 +498,10 @@
 
 (add-to-list 'file-name-handler-alist '("\\`jdt://" . tr/jdt-file-name-handler))
 
-(defconst +tr/jdtls-path (expand-file-name "~/.emacs.d/language-servers/java-language-server/bin/jdtls")
+(defconst +tr/jdtls-path "jdtls"
   "The absolute path to the JDTLS language server binary.")
 
-(defconst +tr/java-debug-plugin-path (expand-file-name "~/.emacs.d/language-servers/java-debug-adapter/com.microsoft.java.debug.repository/target/repository/plugins/com.microsoft.java.debug.plugin_0.52.0.jar")
+(defconst +tr/java-debug-plugin-path (expand-file-name "~/.emacs.d/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin_0.53.2.jar")
   "The absolute path to the compiled Java debug plugin (for dape).")
 
 (defconst +tr/lombok-jar-path (expand-file-name "~/.emacs.d/lombok-1.18.38.jar")
