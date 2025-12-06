@@ -426,6 +426,9 @@
 (use-package fish-mode
   :mode ("\\.fish$" . fish-mode))
 
+(use-package smithy-mode
+  :mode ("\\.smithy$" . smithy-mode))
+
 (use-package lean4-mode
   :straight (lean4-mode
        :type git
@@ -457,7 +460,13 @@
 (use-package ninja-mode
   :mode ("\\.ninja$" . ninja-mode))
 
-(defconst +tr/mason-lsps '(basedpyright bash-language-server java-debug-adapter jdtls typescript-language-server))
+(defconst +tr/mason-lsps '(basedpyright
+                           bash-language-server
+                           smithy-language-server
+                           jdtls
+                           java-debug-adapter
+                           typescript-language-server
+                           pyrefly))
 
 ;; Tools for installing LSP servers
 (use-package mason
@@ -522,7 +531,9 @@
   ;; Add a custom handler for Dafny programs to start up Dafny's built-in LSP server
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
 
-  (add-to-list 'eglot-server-programs '(python-ts-mode . ("basedpyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyrefly" "lsp")))
+
+  (add-to-list 'eglot-server-programs '(smithy-mode . ("smithy-language-server")))
 
   (add-to-list 'eglot-server-programs '((nocaml-mode :language-id "ocaml") . ("ocamllsp")))
 
