@@ -462,6 +462,7 @@
 
 (defconst +tr/mason-lsps '(basedpyright
                            bash-language-server
+                           clangd
                            fish-lsp
                            smithy-language-server
                            jdtls
