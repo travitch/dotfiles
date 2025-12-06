@@ -7,9 +7,10 @@ set -u Z3 $HOME/Tools/Z3/current/bin
 set -u CVC5 $HOME/Tools/CVC5/current/bin
 set -u DAFNY $HOME/Tools/Dafny/4.4.0
 set -u ELAN $HOME/.elan/bin
+set -u LSPS $HOME/.emacs.d/mason/bin
 
 set -gx EDITOR 'emacs -nw'
-set -gx PATH $EMACS:$HOME/Scripts:$CARGO:$ELAN:$HOME/.local/bin:$Z3:$CVC5:$HOMEBREW:$GHC:$CABAL:$DAFNY:/bin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin
+set -gx PATH $EMACS:$LSPS:$HOME/Scripts:$CARGO:$ELAN:$HOME/.local/bin:$Z3:$CVC5:$HOMEBREW:$GHC:$CABAL:$DAFNY:/bin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin
 set -gx CLICOLOR 1
 set -gx COLORTERM truecolor
 

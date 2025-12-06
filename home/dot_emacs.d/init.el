@@ -462,6 +462,7 @@
 
 (defconst +tr/mason-lsps '(basedpyright
                            bash-language-server
+                           fish-lsp
                            smithy-language-server
                            jdtls
                            java-debug-adapter
@@ -532,6 +533,8 @@
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
 
   (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyrefly" "lsp")))
+
+  (add-to-list 'eglot-server-programs '(fish-mode . ("fish-lsp" "start")))
 
   (add-to-list 'eglot-server-programs '(smithy-mode . ("smithy-language-server")))
 
