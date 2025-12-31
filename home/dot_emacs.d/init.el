@@ -733,6 +733,7 @@
   :defines ediff-window-setup-function
   :functions ediff-setup-windows-plain
   :config
+  (setq ediff-split-window-function #'split-window-horizontally)
   (setq ediff-window-setup-function #'ediff-setup-windows-plain))
 
 (use-package nerd-icons-dired
