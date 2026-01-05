@@ -429,13 +429,8 @@
 (use-package smithy-mode
   :mode ("\\.smithy$" . smithy-mode))
 
-(use-package lean4-mode
-  :straight (lean4-mode
-       :type git
-	     :host github
-	     :repo "leanprover/lean4-mode"
-	     :files ("*.el" "data"))
-  :mode ("\\.lean$" . lean4-mode))
+(use-package nael
+  :mode ("\\.lean$" . nael-mode))
 
 (use-package z3-mode
   :mode ("\\.smt$" . z3-mode))
