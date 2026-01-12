@@ -770,6 +770,13 @@
   :mode ("COMMIT_EDITMSG$" . git-commit-mode)
   :bind ("C-x g" . magit-status))
 
+(use-package lgtm
+  :straight (:host github :repo "travitch/lgtm.el")
+  :commands (lgtm-github-review-pr)
+  :init
+  (add-hook 'lgtm-comment-mode-hook #'visual-line-mode)
+  (setopt lgtm-comment-major-mode #'markdown-mode))
+
 ;; This package (and keybinding) generates a link to the current point in the
 ;; buffer (or selected range) on github
 (use-package git-link
