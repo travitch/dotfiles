@@ -530,7 +530,7 @@
   ;; Add a custom handler for Dafny programs to start up Dafny's built-in LSP server
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
 
-  (add-to-list 'eglot-server-programs '(python-ts-mode . ("pyrefly" "lsp")))
+  (add-to-list 'eglot-server-programs '(python-ts-mode . ("basedpyright")))
 
   (add-to-list 'eglot-server-programs '(fish-mode . ("fish-lsp" "start")))
 
