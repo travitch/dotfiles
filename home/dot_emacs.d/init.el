@@ -60,6 +60,12 @@
   ;; Indicate file size in the modeline
   (size-indication-mode 1)
 
+  ;; Communicate with subprocesses with pipes instead of PTYs.
+  ;;
+  ;; This improves IPC speed on MacOS, which has tiny PTY buffer sizes.
+  (when (eq system-type 'darwin)
+    (setq process-connection-type nil))
+
   ;; ** Filling parameters
   ;;
   ;; Set up some bits to try to make paragraph filling  behave a bit better.
