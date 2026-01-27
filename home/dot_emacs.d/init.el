@@ -760,6 +760,12 @@
 
 (use-package with-editor)
 
+(use-package exec-path-from-shell
+  :commands exec-path-from-shell-initialize
+  :init
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
 ;; The ultimate git interface
 (use-package magit
   :defines (magit-auto-revert-mode magit-auto-revert-immediately magit-diff-refine-hunk git-commit-major-mode git-commit-summary-max-length)
