@@ -88,3 +88,8 @@ mutex
 initializer
 nullary
 dominator
+bitvector
+bitvectors
+changesets
+changeset
+unreviewed
