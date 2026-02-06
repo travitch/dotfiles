@@ -1350,6 +1350,33 @@ narrowed."
   :straight (:host github :repo "travitch/haskell-interactive-import.el")
   :commands (haskell-interactive-import-begin))
 
+(defconst +tr/pygmentize-lexers (make-hash-table))
+(defconst +tr/pygmentize-style "solarized-light")
+
+(puthash 'java-mode "java" +tr/pygmentize-lexers)
+(puthash 'java-ts-mode "java" +tr/pygmentize-lexers)
+(puthash 'python-mode "python" +tr/pygmentize-lexers)
+(puthash 'python-ts-mode "python" +tr/pygmentize-lexers)
+(puthash 'js-mode "javascript" +tr/pygmentize-lexers)
+(puthash 'js-ts-mode "javascript" +tr/pygmentize-lexers)
+(puthash 'rust-mode "rust" +tr/pygmentize-lexers)
+(puthash 'rust-ts-mode "rust" +tr/pygmentize-lexers)
+
+(defun tr/pygmentize-rtf-command ()
+  "Return the command to pygmentize code in the current major mode."
+  (let ((lexer (gethash major-mode +tr/pygmentize-lexers))
+        (copy-prog (if (eq system-type 'darwin) "pbcopy" "wl-copy")))
+    (when (not lexer)
+      (error "No lexer found for major mode %s" (symbol-name major-mode)))
+    (format "pygmentize -f rtf -l %s -O style=%s,linenos=true | %s" lexer +tr/pygmentize-style copy-prog)))
+
+(defun pygmentize-copy-region (&optional b e)
+  "Pygmentize the text in the region and copy the RTF-ified result to the system clipboard."
+  (interactive "r")
+  (let ((cmd (tr/pygmentize-rtf-command)))
+    (message "Running command %s" cmd)
+    (shell-command-on-region b e cmd nil nil "*Messages*" t)))
+
 ;; * Keybindings
 
 ;; ** Custom keybindings
