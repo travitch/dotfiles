@@ -1374,8 +1374,24 @@ narrowed."
   "Pygmentize the text in the region and copy the RTF-ified result to the system clipboard."
   (interactive "r")
   (let ((cmd (tr/pygmentize-rtf-command)))
-    (message "Running command %s" cmd)
     (shell-command-on-region b e cmd nil nil "*Messages*" t)))
+
+(defun copy-region-formatted (&optional b e)
+  "Copy a region of text formatted as RTF to the system clipboard."
+  (interactive "r")
+  (let ((mode major-mode)
+        (beg (region-beginning))
+        (end (region-end))
+        (buf (current-buffer)))
+    (with-temp-buffer
+      (switch-to-buffer (current-buffer) nil t)
+      (funcall mode)
+      (insert-buffer-substring buf beg end)
+      (font-lock-ensure)
+      (let ((html-buffer (htmlize-buffer))
+            (copy-prog (if (eq system-type 'darwin) "pbcopy" "wl-copy --type text/html")))
+        (with-current-buffer html-buffer
+          (shell-command-on-region (point-min) (point-max) copy-prog nil nil "*Messages*" t))))))
 
 ;; * Keybindings
 
