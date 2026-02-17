@@ -470,8 +470,7 @@
                            smithy-language-server
                            jdtls
                            java-debug-adapter
-                           typescript-language-server
-                           pyrefly))
+                           typescript-language-server))
 
 ;; Tools for installing LSP servers
 (use-package mason
