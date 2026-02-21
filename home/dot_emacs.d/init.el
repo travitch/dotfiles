@@ -464,6 +464,27 @@
 (use-package ninja-mode
   :mode ("\\.ninja$" . ninja-mode))
 
+(defconst +tr/mason-lsps '(bash-language-server
+                           clangd
+                           fish-lsp
+                           smithy-language-server
+                           jdtls
+                           java-debug-adapter
+                           typescript-language-server))
+
+(use-package mason
+  :init
+  (defun tr/install-lsps ()
+    "Install required LSPs."
+    (mason-ensure
+     (lambda ()
+       (seq-doseq (pkg +tr/mason-lsps)
+         (unless (mason-installed-p pkg)
+           (ignore-errors (mason-install (symbol-name pkg))))))))
+  :functions (mason-ensure mason-install mason-installed-p)
+  :hook
+  (after-init-hook . tr/install-lsps))
+
 ;; JDTLS replies with non-standard file URLs in some cases.  This code handles them.
 ;;
 ;; Taken from https://gitlab.com/skybert/my-little-friends/-/blob/master/emacs/.emacs.d/tkj-java-eglot.el
