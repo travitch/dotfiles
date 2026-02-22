@@ -467,6 +467,7 @@
 (defconst +tr/mason-lsps '(bash-language-server
                            clangd
                            fish-lsp
+                           gopls
                            smithy-language-server
                            jdtls
                            java-debug-adapter
