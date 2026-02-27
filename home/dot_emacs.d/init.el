@@ -200,7 +200,9 @@
   :commands (org-modern-mode org-modern-agenda)
   :init
   (add-hook 'org-mode-hook #'org-modern-mode)
-  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+  :config
+  (setq org-modern-star 'replace))
 
 ;; * Package selection and initialization
 
