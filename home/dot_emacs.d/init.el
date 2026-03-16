@@ -473,6 +473,7 @@
                            smithy-language-server
                            jdtls
                            basedpyright
+                           zuban
                            java-debug-adapter
                            typescript-language-server))
 
@@ -539,7 +540,7 @@
   ;; Add a custom handler for Dafny programs to start up Dafny's built-in LSP server
   (add-to-list 'eglot-server-programs '(dafny-mode . ("dafny" "server")))
 
-  (add-to-list 'eglot-server-programs '(python-ts-mode . ("basedpyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs '(python-ts-mode . ("zuban" "server")))
 
   (add-to-list 'eglot-server-programs '(fish-mode . ("fish-lsp" "start")))
 
