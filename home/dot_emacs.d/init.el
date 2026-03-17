@@ -437,11 +437,11 @@
 (use-package smithy-mode
   :mode ("\\.smithy$" . smithy-mode))
 
-(use-package nael
-  :mode ("\\.lean$" . nael-mode)
-  :init
-  (add-hook 'nael-mode-hook #'abbrev-mode)
-  (add-hook 'nael-mode-hook #'eldoc-doc-buffer))
+(use-package lean4-mode
+  :commands lean4-mode
+  :straight (lean4-mode :type git :host github
+                        :repo "leanprover-community/lean4-mode"
+                        :files ("*.el" "data")))
 
 (use-package z3-mode
   :mode ("\\.smt$" . z3-mode))
