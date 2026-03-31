@@ -4,7 +4,7 @@ local config = wezterm.config_builder()
 
 config.font = wezterm.font {
    family = 'Monaspace Argon NF',
-   harfbuzz_features = {'cv01=2', 'liga', 'ss07'},
+   harfbuzz_features = {'cv01=2', 'liga', 'ss01', 'ss02', 'ss03', 'ss07', 'ss10'},
 }
 
 -- config.font = wezterm.font_with_fallback { 'MonoLisa', 'Noto Color Emoji' }
