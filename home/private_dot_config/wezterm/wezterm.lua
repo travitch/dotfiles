@@ -10,8 +10,10 @@ config.font = wezterm.font {
 
 -- config.font = wezterm.font_with_fallback { 'MonoLisa', 'Noto Color Emoji' }
 -- config.font = wezterm.font_with_fallback { 'Maple Mono NF', 'Noto Color Emoji' }
--- config.color_scheme = 'Night Owlish Light'
-config.color_scheme = 'Ef-Light'
+
+-- config.color_scheme = 'Ef-Light'
+-- config.color_scheme = 'Raycast_Light'
+config.color_scheme = 'Night Owlish Light'
 
 config.enable_tab_bar = false
 config.term = 'wezterm'
