@@ -273,13 +273,13 @@
 ;;   (setq solarized-scale-org-headlines nil))
 
 (use-package modus-themes
-;;  :hook (after-init . (lambda () (load-theme 'modus-operandi)))
-  )
+  :hook (after-init . (lambda () (load-theme 'modus-operandi))))
 
-(use-package ef-themes
-  :init
-  (ef-themes-take-over-modus-themes-mode 1)
-  :hook (after-init . (lambda () (modus-themes-load-theme 'ef-light))))
+
+;; (use-package ef-themes
+;;   :init
+;;   (ef-themes-take-over-modus-themes-mode 1)
+;;   :hook (after-init . (lambda () (modus-themes-load-theme 'ef-light))))
 
 ;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
 ;; (use-package simple-modeline
@@ -1486,7 +1486,8 @@ If I let Windows handle DPI everything looks blurry."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("0592f1b03ba5d7d8cfade2ce3a23db4c0d5f9926c9ae918dd740739dd95b697c"
+   '("7e98dc1aa7f5db0557691da690c38d55e83ddd33c6d268205d66e430d57fb982"
+     "0592f1b03ba5d7d8cfade2ce3a23db4c0d5f9926c9ae918dd740739dd95b697c"
      "c3076fdee603e9768817cfe8dbf6253d5b3cf3bf4602cb32fa2f1df62fe70b1c"
      "5e39e95c703e17a743fb05a132d727aa1d69d9d2c9cde9353f5350e545c793d4"
      "6819104c5f7d70485b32c10323aa396806d282fcee5b707e462bf3d156f44c39"
