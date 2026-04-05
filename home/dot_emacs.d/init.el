@@ -297,6 +297,9 @@
   (lambda-line-gui-ro-symbol  " ⨂") ;; symbols
   (lambda-line-gui-mod-symbol " ⬤")
   (lambda-line-gui-rw-symbol  " ◯")
+  (lambda-line-tty-ro-symbol  " ⨂")
+  (lambda-line-tty-mod-symbol " ⬤")
+  (lambda-line-tty-rw-symbol  " ◯")
   (lambda-line-space-top +.50)  ;; padding on top and bottom of line
   (lambda-line-space-bottom -.50)
   (lambda-line-symbol-position 0.1) ;; adjust the vertical placement of symbol
