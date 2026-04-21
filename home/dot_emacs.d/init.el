@@ -272,43 +272,58 @@
 ;;   (setq solarized-use-variable-pitch nil)
 ;;   (setq solarized-scale-org-headlines nil))
 
+
 (use-package modus-themes
   :hook (after-init . (lambda () (load-theme 'modus-operandi))))
 
+
+;; (use-package doric-themes
+;;   :hook (after-init . (lambda () (doric-themes-select 'doric-light))))
 
 ;; (use-package ef-themes
 ;;   :init
 ;;   (ef-themes-take-over-modus-themes-mode 1)
 ;;   :hook (after-init . (lambda () (modus-themes-load-theme 'ef-light))))
 
+;;(use-package base16-theme)
+
 ;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
 ;; (use-package simple-modeline
 ;;   :hook (after-init . simple-modeline-mode))
 
-(use-package lambda-line
-  :straight (:type git :host github :repo "lambda-emacs/lambda-line")
-  :custom
-  (lambda-line-position 'bottom) ;; Set position of status-line
-  (lambda-line-abbrev t) ;; abbreviate major modes
-  (lambda-line-hspace "  ")  ;; add some cushion
-  (lambda-line-prefix t) ;; use a prefix symbol
-  (lambda-line-prefix-padding nil) ;; no extra space for prefix
-  (lambda-line-status-invert nil)  ;; no invert colors
-  (lambda-line-gui-ro-symbol  " ⨂") ;; symbols
-  (lambda-line-gui-mod-symbol " ⬤")
-  (lambda-line-gui-rw-symbol  " ◯")
-  (lambda-line-tty-ro-symbol  " ⨂")
-  (lambda-line-tty-mod-symbol " ⬤")
-  (lambda-line-tty-rw-symbol  " ◯")
-  (lambda-line-space-top +.50)  ;; padding on top and bottom of line
-  (lambda-line-space-bottom -.50)
-  (lambda-line-symbol-position 0.1) ;; adjust the vertical placement of symbol
-  :hook (after-init . lambda-line-mode)
-  :config
-  ;; set divider line in footer
-  (when (eq lambda-line-position 'top)
-    (setq-default mode-line-format (list "%_"))
-    (setq mode-line-format (list "%_"))))
+;; (use-package lambda-line
+;;   :straight (:type git :host github :repo "lambda-emacs/lambda-line")
+;;   :custom
+;;   (lambda-line-position 'bottom) ;; Set position of status-line
+;;   (lambda-line-abbrev t) ;; abbreviate major modes
+;;   (lambda-line-hspace "  ")  ;; add some cushion
+;;   (lambda-line-prefix t) ;; use a prefix symbol
+;;   (lambda-line-prefix-padding nil) ;; no extra space for prefix
+;;   (lambda-line-status-invert nil)  ;; no invert colors
+;;   (lambda-line-gui-ro-symbol  " ⨂") ;; symbols
+;;   (lambda-line-gui-mod-symbol " ⬤")
+;;   (lambda-line-gui-rw-symbol  " ◯")
+;;   (lambda-line-tty-ro-symbol  " ⨂")
+;;   (lambda-line-tty-mod-symbol " ⬤")
+;;   (lambda-line-tty-rw-symbol  " ◯")
+;;   (lambda-line-space-top +.50)  ;; padding on top and bottom of line
+;;   (lambda-line-space-bottom -.50)
+;;   (lambda-line-symbol-position 0.1) ;; adjust the vertical placement of symbol
+;;   :hook (after-init . lambda-line-mode)
+;;   :config
+;;   ;; set divider line in footer
+;;   (when (eq lambda-line-position 'top)
+;;     (setq-default mode-line-format (list "%_"))
+;;     (setq mode-line-format (list "%_"))))
+
+(use-package doom-modeline
+  :init
+  (setq doom-modeline-icon t)
+  (setq doom-modeline-major-mode-color-icon t)
+  (setq doom-modeline-unicode-fallback t)
+  (setq doom-modeline-total-line-number t)
+  :hook (after-init . doom-modeline-mode))
+
 
 ;; This mode provides a function that enables a server running from emacs that
 ;; can edit text boxes in browsers using an appropriate extension.
