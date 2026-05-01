@@ -273,8 +273,8 @@
 ;;   (setq solarized-scale-org-headlines nil))
 
 
-(use-package modus-themes
-  :hook (after-init . (lambda () (load-theme 'modus-operandi))))
+;; (use-package modus-themes
+;;   :hook (after-init . (lambda () (load-theme 'modus-operandi))))
 
 
 ;; (use-package doric-themes
@@ -285,7 +285,12 @@
 ;;   (ef-themes-take-over-modus-themes-mode 1)
 ;;   :hook (after-init . (lambda () (modus-themes-load-theme 'ef-light))))
 
-;;(use-package base16-theme)
+
+(use-package modus-flexoki
+  :straight (:type git :host github :repo "dpassen/modus-flexoki")
+  :hook (after-init . (lambda () (load-theme 'modus-flexoki-light))))
+
+;;(load-theme 'modus-flexoki-light)
 
 ;; This is a modeline replacement that is a bit cleaner while still being lightweight (compared to e.g., spaceline)
 ;; (use-package simple-modeline

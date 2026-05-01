@@ -14,6 +14,8 @@ config.font = wezterm.font {
 -- config.color_scheme = 'Ef-Light'
 -- config.color_scheme = 'Raycast_Light'
 config.color_scheme = 'Night Owlish Light'
+-- config.color_scheme = 'Default Light (base16)'
+config.color_scheme = 'flexoki-light'
 
 config.enable_tab_bar = false
 config.term = 'wezterm'
