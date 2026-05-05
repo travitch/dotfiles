@@ -29,4 +29,5 @@ symbol = '🅰 '
 bash_indicator = 'ⓑ '
 fish_indicator = '󰈺 '
 zsh_indicator = 'ⓩ '
+style = 'black'
 disabled = false
