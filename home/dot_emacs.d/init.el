@@ -197,9 +197,9 @@
 
 (use-package org-super-links
   :straight (:type git :host github :repo "toshism/org-super-links")
-  :bind (("C-c s s" . org-super-links-link)
-         ("C-c s l" . org-super-links-store-link)
-         ("C-c s C-l" . org-super-links-insert-link)))
+  :bind (("C-c s l" . org-super-links-link)
+         ("C-c s s" . org-super-links-store-link)
+         ("C-c s i" . org-super-links-insert-link)))
 
 ;; Visual improvements for org mode
 (use-package org-modern
