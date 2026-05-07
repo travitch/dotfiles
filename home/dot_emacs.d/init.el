@@ -195,6 +195,12 @@
   (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d!)" "CANCELED(c@)")))
   (setq org-log-into-drawer t))
 
+(use-package org-super-links
+  :straight (:type git :host github :repo "toshism/org-super-links")
+  :bind (("C-c s s" . org-super-links-link)
+         ("C-c s l" . org-super-links-store-link)
+         ("C-c s C-l" . org-super-links-insert-link)))
+
 ;; Visual improvements for org mode
 (use-package org-modern
   :commands (org-modern-mode org-modern-agenda)
@@ -1509,7 +1515,12 @@ If I let Windows handle DPI everything looks blurry."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("7e98dc1aa7f5db0557691da690c38d55e83ddd33c6d268205d66e430d57fb982"
+   '("ee24217382fe1dea821e91298dfc5c9c3cb46a553fc9720d7c232c7fdfc029a6"
+     "3468e63fa8ec3c767d755f2c077e680ec9583abf01a478107a245c5e4e224b92"
+     "6b9fbe5d88424ac7283b8f36b6f184d1140fcd4bfcab1f72a3c58c48dc254bae"
+     "664111db1521fe3351061dc87aea95fa98b3f244f4b830fbc048d39c3a8bc125"
+     "3d9512412d5874972f9142a6c230258e33ff1168d1d21aa68d7a568f328a400b"
+     "7e98dc1aa7f5db0557691da690c38d55e83ddd33c6d268205d66e430d57fb982"
      "0592f1b03ba5d7d8cfade2ce3a23db4c0d5f9926c9ae918dd740739dd95b697c"
      "c3076fdee603e9768817cfe8dbf6253d5b3cf3bf4602cb32fa2f1df62fe70b1c"
      "5e39e95c703e17a743fb05a132d727aa1d69d9d2c9cde9353f5350e545c793d4"
