@@ -637,6 +637,7 @@
 
 (use-package corfu-terminal
   :straight (:repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :when (< emacs-major-version 31)
   :commands (corfu-terminal-mode)
   :init
   (defun tr/enable-corfu-terminal ()
