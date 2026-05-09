@@ -188,15 +188,15 @@
   :init
   (add-hook 'org-mode-hook #'toc-org-enable)
   (add-hook 'org-mode-hook #'visual-line-mode)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((shell . t)
-     (python . t)))
   :config
   (require 'org-id)
   (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
   (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d!)" "CANCELED(c@)")))
-  (setq org-log-into-drawer t))
+  (setq org-log-into-drawer t)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((shell . t)
+     (python . t))))
 
 (use-package org-super-links
   :straight (:type git :host github :repo "toshism/org-super-links")
