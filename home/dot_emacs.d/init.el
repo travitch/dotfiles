@@ -35,6 +35,10 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
+;; Load compat early to pull it from elpa so that straight pulls the latest (before anything loads
+;; the built-in one)
+(use-package compat)
+
 ;; Hide some minor mode indicators in the modeline (and, since this can introduce a keyword to
 ;; use-package, we load it early).
 (use-package diminish)
