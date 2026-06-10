@@ -705,6 +705,9 @@
   (setq TeX-parse-self t)
   (setq TeX-source-correlate-start-server t))
 
+(use-package auctex
+  :ensure t)
+
 ;; ** Configuration modes
 
 (use-package git-modes
