@@ -1554,6 +1554,3 @@ If I let Windows handle DPI everything looks blurry."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
- ;; Local Variables:
-;; eval: (outline-minor-mode 1)
-;; End:
