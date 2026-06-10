@@ -790,9 +790,15 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
+;; Force install (and update) this so that magit works on older emacs version that bundle an older
+;; version of transient
+(use-package transient
+  :ensure t)
+
 ;; The ultimate git interface
 (use-package magit
   :ensure t
+  :after transient
   :defines (magit-auto-revert-mode magit-auto-revert-immediately magit-diff-refine-hunk git-commit-major-mode git-commit-summary-max-length)
   :init
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell)
