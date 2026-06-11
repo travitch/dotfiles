@@ -315,7 +315,7 @@
   :commands (atomic-chrome-start-server)
   :defines atomic-chrome-default-major-mode
   :config
-  (setq atomic-chrome-default-major-mode 'markdown-mode))
+  (setq atomic-chrome-default-major-mode 'markdown-ts-mode))
 
 ;; ** Programming modes
 
@@ -653,15 +653,15 @@
   :ensure t
   :mode ("\\.kdl$" . kdl-mode))
 
-(use-package markdown-mode
-  :ensure t
-  :mode ("\\.markdown$\\|\\.md$" . markdown-mode)
+(use-package markdown-ts-mode
+  :ensure nil
+  :hook (markdown-ts-mode . visual-line-mode)
   :init
-  (add-hook 'markdown-mode-hook #'visual-line-mode)
-  :defines (markdown-command markdown-fontify-code-blocks-natively)
-  :config
-  (setq markdown-fontify-code-blocks-natively t)
-  (setq markdown-command "comrak"))
+  ;; Forcibly remap uses of markdown mode to use this mode instead.  Many packages hard-code a use
+  ;; of markdown-mode and this seems to be the best way to intercept and modify their defaults.
+  (setq major-mode-remap-alist
+        '((markdown-mode . markdown-ts-mode)))
+  :mode (("\\.md$" . markdown-ts-mode)))
 
 (use-package yaml-mode
   :ensure t
@@ -807,7 +807,7 @@
   (add-hook 'git-commit-setup-hook #'visual-line-mode)
   :config
   ;; Edit commit messages as if they were markdown
-  (setq git-commit-major-mode 'markdown-mode)
+  (setq git-commit-major-mode 'markdown-ts-mode)
   (setq git-commit-summary-max-length 500)
   (setq magit-auto-revert-mode nil)
   (setq magit-auto-revert-immediately nil)
@@ -820,7 +820,7 @@
   :commands (lgtm-github-review-pr)
   :init
   (add-hook 'lgtm-comment-mode-hook #'visual-line-mode)
-  (setopt lgtm-comment-major-mode #'markdown-mode))
+  (setopt lgtm-comment-major-mode #'markdown-ts-mode))
 
 ;; Allow loading very large files in an efficient way (i.e., on demand and
 ;; incrementally)
@@ -848,7 +848,7 @@
   :commands (separedit)
   :defines separedit-default-mode
   :config
-  (setq separedit-default-mode 'markdown-mode))
+  (setq separedit-default-mode 'markdown-ts-mode))
 
 (use-package tempel
   :ensure t
