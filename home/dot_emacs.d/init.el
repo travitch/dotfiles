@@ -293,9 +293,13 @@
 ;; (use-package modus-themes
 ;;   :hook (after-init . (lambda () (load-theme 'modus-operandi))))
 
-(use-package modus-flexoki
-  :ensure (:type git :host github :repo "dpassen/modus-flexoki")
-  :hook (elpaca-after-init . (lambda () (load-theme 'modus-flexoki-light))))
+;; (use-package modus-flexoki
+;;   :ensure (:type git :host github :repo "dpassen/modus-flexoki")
+;;   :hook (elpaca-after-init . (lambda () (load-theme 'modus-flexoki-light))))
+
+(use-package folio-theme
+  :ensure (:type git :host github :repo "kn66/folio-theme.el")
+  :hook (elpaca-after-init . (lambda () (load-theme 'folio))))
 
 (use-package doom-modeline
   :ensure t
