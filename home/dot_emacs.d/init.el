@@ -1523,4 +1523,3 @@ If I let Windows handle DPI everything looks blurry."
   (add-hook 'window-size-change-functions #'tr/compute-font-size))
 
 (load "~/.emacs.d/local" 'noerror)
-
