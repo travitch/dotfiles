@@ -429,6 +429,10 @@
   :ensure nil
   :mode ("\\.rs$" . rust-ts-mode))
 
+(use-package ttl-mode
+  :ensure t
+  :mode ("\\.ttl" . ttl-mode))
+
 (use-package forth-mode
   :ensure t
   :mode ("\\.fth$" . forth-mode))
