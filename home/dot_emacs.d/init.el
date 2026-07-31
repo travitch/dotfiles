@@ -494,6 +494,7 @@
                            fish-lsp
                            gopls
                            smithy-language-server
+                           marksman
                            jdtls
                            basedpyright
                            zuban
@@ -571,6 +572,8 @@
   (add-to-list 'eglot-server-programs '(smithy-mode . ("smithy-language-server")))
 
   (add-to-list 'eglot-server-programs '((nocaml-mode :language-id "ocaml") . ("ocamllsp")))
+
+  (add-to-list 'eglot-server-programs '(markdown-ts-mode . ("marksman")))
 
   (let ((lombok-arg (format "--jvm-arg=-javaagent:%s" +tr/lombok-jar-path))
         (zgc-arg "--jvm-arg=-XX:+UseZGC")
