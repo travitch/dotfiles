@@ -13,14 +13,23 @@ config.font = wezterm.font {
 
 -- config.color_scheme = 'Ef-Light'
 -- config.color_scheme = 'Raycast_Light'
-config.color_scheme = 'Night Owlish Light'
+-- config.color_scheme = 'Night Owlish Light'
 -- config.color_scheme = 'Default Light (base16)'
 config.color_scheme = 'flexoki-light'
 
 config.enable_tab_bar = false
 config.term = 'wezterm'
 config.adjust_window_size_when_changing_font_size = false
--- config.default_cursor_style = 'SteadyBar'
+--config.default_cursor_style = 'SteadyBar'
 config.mux_enable_ssh_agent = false
+config.skip_close_confirmation_for_processes_named = {
+  'bash',
+  'sh',
+  'zsh',
+  'fish',
+  'tmux',
+  'nu',
+  'zellij',
+}
 
 return config
