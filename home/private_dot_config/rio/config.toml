@@ -21,7 +21,8 @@
 #
 # Example:
 # theme = "dracula"
-theme = "Night Owlish Light"
+# theme = "Night Owlish Light"
+theme = "Violet Light"
 
 # Margin
 #
@@ -277,17 +278,17 @@ args = ["-nw"]
 # weight = 800
 
 [fonts]
-
+size = 16
 features = ["cv01=2", "calt", "liga", "ss01", "ss02", "ss03", "ss06", "ss07", "ss09", "ss10"]
 
 [fonts.regular]
 family = "Monaspace Neon NF"
-style = "Normal"
-weight = 400
+style = "Medium"
+weight = 600
 
 [fonts.bold]
 family = "Monaspace Neon NF"
-style = "Normal"
+style = "Medium"
 weight = 800
 
 [fonts.italic]
