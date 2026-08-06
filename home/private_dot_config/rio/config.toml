@@ -277,13 +277,14 @@ args = ["-nw"]
 # weight = 800
 
 [fonts]
-size = 16
+#size = 16
 features = ["cv01=2", "calt", "liga", "ss01", "ss02", "ss03", "ss06", "ss07", "ss09", "ss10"]
+use-drawable-chars = false
 
 [fonts.regular]
 family = "Monaspace Neon NF"
 style = "Medium"
-weight = 600
+weight = 500
 
 [fonts.bold]
 family = "Monaspace Neon NF"
