@@ -1203,6 +1203,8 @@
 (use-package claude-code
   :ensure (:type git :host github :repo "stevemolitor/claude-code.el" :branch "main" :depth 1
                  :files ("*.el" (:exclude "images/*")))
+  :init
+  (setq claude-code-terminal-backend 'ghostel)
   :bind-keymap ("C-c y" . claude-code-command-map))
 
 ;; * Tree sitter
