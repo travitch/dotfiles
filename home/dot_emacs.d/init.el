@@ -1192,6 +1192,19 @@
   :init
   (add-hook 'prog-mode-hook #'ws-butler-mode))
 
+;; * Claude Code Things
+
+(use-package inheritenv
+  :ensure (:type git :host github :repo "purcell/inheritenv"))
+
+(use-package ghostel
+  :ensure (:type git :host github :repo "dakra/ghostel"))
+
+(use-package claude-code
+  :ensure (:type git :host github :repo "stevemolitor/claude-code.el" :branch "main" :depth 1
+                 :files ("*.el" (:exclude "images/*")))
+  :bind-keymap ("C-c y" . claude-code-command-map))
+
 ;; * Tree sitter
 
 (setq treesit-language-source-alist
