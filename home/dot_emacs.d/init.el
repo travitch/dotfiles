@@ -1194,18 +1194,13 @@
 
 ;; * Claude Code Things
 
-(use-package inheritenv
-  :ensure (:type git :host github :repo "purcell/inheritenv"))
+(use-package agent-shell
+  :ensure t
+  :config
+  (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
+  (setq agent-shell-anthropic-authentication (agent-shell-anthropic-make-authentication :login t))
+  :commands (agent-shell))
 
-(use-package ghostel
-  :ensure (:type git :host github :repo "dakra/ghostel"))
-
-(use-package claude-code
-  :ensure (:type git :host github :repo "stevemolitor/claude-code.el" :branch "main" :depth 1
-                 :files ("*.el" (:exclude "images/*")))
-  :init
-  (setq claude-code-terminal-backend 'ghostel)
-  :bind-keymap ("C-c y" . claude-code-command-map))
 
 ;; * Tree sitter
 
