@@ -112,6 +112,7 @@
   (setq mark-even-if-inactive nil)
   ;; Don't let the cursor hit the bottom line
   (setq scroll-margin 3)
+  (setq split-window-preferred-direction 'vertical)
 
 
   ;; ** Window control
@@ -142,6 +143,11 @@
   ;; Do not enter the interactive debugger when encountering elisp errors.  Set to
   ;; t when debugging
   (setq debug-on-error nil)
+
+  ;; ** Elisp handling
+  (setq elisp-fontify-semantically t)
+  (setq elisp-add-help-echo t)
+  (add-hook 'emacs-lisp-mode-hook (lambda () (cursor-sensor-mode t)))
 
   ;; ** Buffer-local variables
   ;;
