@@ -855,6 +855,7 @@
 ;; This uses the OSC 52 escape sequence to tell the terminal to sync the clipboard if running in a terminal
 (use-package clipetty
   :ensure t
+  :config (setq clipetty-tmux-ssh-tty "tmux show-environment SSH_TTY")
   :hook (elpaca-after-init . global-clipetty-mode))
 
 ;; Pop out the contents of comments to edit them as separate markdown documents.  This is most
