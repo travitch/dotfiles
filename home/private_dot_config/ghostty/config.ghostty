@@ -16,6 +16,8 @@ shell-integration-features = no-cursor
 clipboard-write = allow
 clipboard-read = allow
 
+link-url = true
+
 macos-option-as-alt = true
 
 window-height = 25
