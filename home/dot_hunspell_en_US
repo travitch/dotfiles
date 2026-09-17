@@ -122,3 +122,11 @@ injectivity
 datatypes
 accessors
 decompilation
+destructured
+scrutinee
+elaborator
+matcher
+decodable
+combinators
+namespaced
+positionally
