@@ -628,6 +628,10 @@
       (corfu-terminal-mode +1)))
   :hook (elpaca-after-init . tr/enable-corfu-terminal))
 
+(use-package treesit-fold
+  :ensure (:repo "https://github.com/emacs-tree-sitter/treesit-fold.git")
+  :commands (treesit-fold-mode))
+
 ;; ** Markup modes
 
 (use-package plantuml-mode
