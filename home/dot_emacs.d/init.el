@@ -460,9 +460,21 @@
   :ensure t
   :mode ("\\.smithy$" . smithy-mode))
 
+
 (use-package nael
-  :ensure t
+  :ensure (:host github :repo "travitch/nael.el")
   :hook (nael-mode . abbrev-mode)
+  :init (setq eldoc-echo-area-prefer-doc-buffer t)
+  :config
+  (defun nael-eglot-restart-file ()
+    "Restart the Lean worker for the current buffer.
+
+This is useful when the language server for a buffer
+gets out of sync with other files in the project."
+    (interactive)
+    (eglot--signal-textDocument/didClose)
+    (eglot--signal-textDocument/didOpen))
+
   :mode ("\\.lean$" . nael-mode))
 
 (use-package z3-mode
@@ -628,8 +640,26 @@
       (corfu-terminal-mode +1)))
   :hook (elpaca-after-init . tr/enable-corfu-terminal))
 
+;; Generic code folding interface with support for many backends
+(use-package kirigami
+  :ensure t
+  :bind
+  (("C-c z o" . kirigami-open-fold)          ; Open fold at point
+   ("C-c z O" . kirigami-open-fold-rec)      ; Open fold recursively
+   ("C-c z r" . kirigami-open-folds)         ; Open all folds
+   ("C-c z c" . kirigami-close-fold)         ; Close fold at point
+   ("C-c z m" . kirigami-close-folds)        ; Close all folds
+   ("C-c z a" . kirigami-toggle-fold))       ; Toggle fold at point
+  :hook (nael-mode . kirigami-mode))
+
+;; A code folding backend for tree-sitter based modes
 (use-package treesit-fold
   :ensure (:repo "https://github.com/emacs-tree-sitter/treesit-fold.git")
+  :config
+  (setq treesit-fold-line-count-show t)
+  (let ((lean-folding-definitions '((by . treesit-fold-range-seq))))
+    (push `(nael-mode . ,lean-folding-definitions) treesit-fold-range-alist))
+  :hook (nael-mode . treesit-fold-mode)
   :commands (treesit-fold-mode))
 
 ;; ** Markup modes
