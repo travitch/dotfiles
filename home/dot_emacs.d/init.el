@@ -657,7 +657,27 @@ gets out of sync with other files in the project."
   :ensure (:repo "https://github.com/emacs-tree-sitter/treesit-fold.git")
   :config
   (setq treesit-fold-line-count-show t)
-  (let ((lean-folding-definitions '((by . treesit-fold-range-seq))))
+  (defun tr/lean-fold-by (node offset)
+    "The fold range for a lean `by' block, detecting the end based on indentation.
+
+When the tree-sitter-lean grammar fails to parse constructs, the `by' node can
+swallow following declarations.  This clamps the range to the lines indented to
+at least as far as the first tactic in the block to contain the error."
+    (save-excursion
+      (let ((beg (+ (treesit-node-start node) 2))
+            (node-end (treesit-node-end node))
+            end)
+        (goto-char beg)
+        (skip-chars-forward " \t\n")
+        (let ((col (current-column)))
+          (setq end (line-end-position))
+          (while (and (zerop (forward-line 1)) (< (point) node-end))
+            (unless (looking-at-p "[ \t]*$")
+              (if (< (current-indentation) col)
+                  (goto-char (point-max))
+                (setq end (line-end-position))))))
+        (treesit-fold--cons-add (cons beg (min end node-end)) offset))))
+  (let ((lean-folding-definitions '((by . tr/lean-fold-by))))
     (push `(nael-mode . ,lean-folding-definitions) treesit-fold-range-alist))
   :hook (nael-mode . treesit-fold-mode)
   :commands (treesit-fold-mode))
