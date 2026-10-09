@@ -1252,7 +1252,7 @@ at least as far as the first tactic in the block to contain the error."
     (javadoc "https://github.com/rmuir/tree-sitter-javadoc" "main" "src")
     (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "master" "src"))
     (json "https://github.com/tree-sitter/tree-sitter-json")
-    (lean "https://github.com/Julian/tree-sitter-lean")
+    (lean "https://github.com/travitch/tree-sitter-lean")
     (lua "https://github.com/Azganoth/tree-sitter-lua")
     (make "https://github.com/alemuller/tree-sitter-make")
     (markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown" "split_parser" "tree-sitter-markdown/src")
