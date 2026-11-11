@@ -1236,6 +1236,12 @@ at least as far as the first tactic in the block to contain the error."
   (setq agent-shell-anthropic-authentication (agent-shell-anthropic-make-authentication :login t))
   :commands (agent-shell))
 
+(use-package agent-shell-consult
+  :ensure (:host github :repo "Gleek/agent-shell-consult")
+  :after agent-shell
+  :bind (("C-c q b" . agent-shell-consult)
+         (:map agent-shell-mode-map
+               ("C-z b" . agent-shell-consult))))
 
 ;; * Tree sitter
 
